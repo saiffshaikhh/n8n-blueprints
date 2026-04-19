@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice Extractor — Gmail to Sheets</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 900px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 30px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 16px; color: var(--c-muted); line-height: 1.6; max-width: 680px; }
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 40px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+  .diagram-card svg .node rect,
+  .diagram-card svg .node circle,
+  .diagram-card svg .node polygon {
+    cursor: pointer;
+    transition: filter .15s;
+  }
+  .diagram-card svg .node:hover rect,
+  .diagram-card svg .node:hover circle,
+  .diagram-card svg .node:hover polygon { filter: brightness(1.14); }
+  .diagram-card svg .edgePath path {
+    stroke-dasharray: 6 3;
+    animation: flowDash 1.4s linear infinite;
+  }
+  @keyframes flowDash { to { stroke-dashoffset: -36; } }
+  #tooltip {
+    position: fixed;
+    background: #1a1a18;
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    max-width: 260px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 9999;
+  }
+  #tooltip.visible { opacity: 1; }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .steps-label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: -8px; }
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .step:hover { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(91,80,214,.08); }
+  .step-badge {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--c-text); color: #fff;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .step-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .step-desc { color: var(--c-muted); font-size: 14px; line-height: 1.55; }
+  .step-desc code { background: #f0f0ee; padding: 1px 5px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+  .n8n-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; background: var(--c-text); color: #fff;
+    border-radius: 8px; font-size: 14px; font-weight: 600;
+    text-decoration: none; transition: opacity .15s; align-self: flex-start;
+  }
+  .n8n-btn:hover { opacity: .8; }
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+</style>
+</head>
+<body>
+<div id="tooltip"></div>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">Automation blueprint</div>
+    <h1>Invoice Extractor — Gmail to Sheets</h1>
+    <p class="summary">Every minute, this workflow scans your Gmail for unread emails with "Invoice" in the subject, uses GPT-4o to extract the invoice number, vendor, amount, currency, and due date — then appends a clean row to your Google Sheet. Zero manual data entry.</p>
+    <a class="n8n-btn" href="https://saif-shaikh.app.n8n.cloud/workflow/bcgSoeSY7RSC8UeD" target="_blank" rel="noopener">
+      ↗ Open in n8n
+    </a>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"14px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart LR
+  A(["📧 New Invoice Email\nGmail · every 1 min"]):::trigger --> B["🧠 Extract Invoice Fields\nAI Agent · GPT-4o"]:::ai
+  B --> C["🧩 Flatten Fields\nSet node"]:::util
+  C --> D(["📊 Log Invoice Row\nGoogle Sheets · append"]):::out
+
+  classDef trigger fill:#111110,stroke:#111110,color:#ffffff,rx:20
+  classDef ai fill:#5b50d6,stroke:#4a40c0,color:#ffffff
+  classDef util fill:#e2e8f0,stroke:#94a3b8,color:#334155
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#111110"></div>Trigger / Output</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#5b50d6"></div>AI Processing</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>Transform</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0d9467"></div>Destination</div>
+  </div>
+
+  <div class="steps-label">How it works</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-badge">1</div>
+      <div>
+        <div class="step-title">Watch the inbox</div>
+        <div class="step-desc">Gmail is polled every minute for unread emails matching <code>subject:Invoice</code>. Full email body, sender, and metadata are captured.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">2</div>
+      <div>
+        <div class="step-title">Extract with AI</div>
+        <div class="step-desc">GPT-4o reads the email and returns a structured object: <code>invoice_number</code>, <code>vendor</code>, <code>amount</code>, <code>currency</code>, <code>due_date</code>. Missing fields return as <code>null</code>.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">3</div>
+      <div>
+        <div class="step-title">Flatten + enrich</div>
+        <div class="step-desc">Extracted fields are combined with email context (subject, sender, received date) into a single flat row.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">4</div>
+      <div>
+        <div class="step-title">Log to Google Sheets</div>
+        <div class="step-desc">One row appended per invoice, columns auto-mapped — instant searchable audit trail ready for accounting.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Built with n8n &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 24, htmlLabels: false }
+});
+
+const tooltips = {
+  "New Invoice Email": "Polls Gmail every 60 seconds.\nFilter: unread + subject contains 'Invoice'.\nCaptures full email body for AI processing.",
+  "Extract Invoice Fields": "AI Agent powered by GPT-4o.\nExtracts: invoice_number, vendor, amount,\ncurrency, due_date from email text.",
+  "Flatten Fields": "Set node that merges AI output\nwith email metadata into one flat row.",
+  "Log Invoice Row": "Appends one row per invoice to\nyour configured Google Sheet.\nColumns auto-mapped by header name."
+};
+
+const tipEl = document.getElementById('tooltip');
+
+function wireTooltips() {
+  document.querySelectorAll('.node').forEach(node => {
+    const label = (node.querySelector('text, .nodeLabel, .label') || {}).textContent || '';
+    const key = Object.keys(tooltips).find(k => label.includes(k.split(' ')[0]) || label.includes(k.split(' ')[1] || ''));
+    if (!key) return;
+    node.addEventListener('mouseenter', () => { tipEl.textContent = tooltips[key]; tipEl.classList.add('visible'); });
+    node.addEventListener('mousemove', e => { tipEl.style.left = (e.clientX + 14) + 'px'; tipEl.style.top = (e.clientY - 8) + 'px'; });
+    node.addEventListener('mouseleave', () => tipEl.classList.remove('visible'));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => setTimeout(wireTooltips, 900));
+window.addEventListener('load', () => setTimeout(wireTooltips, 500));
+</script>
+</body>
+</html>
