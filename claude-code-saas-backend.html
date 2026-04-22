@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code SaaS Backend — Multi-Platform Automation Engine</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 900px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 30px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 16px; color: var(--c-muted); line-height: 1.6; max-width: 680px; }
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 40px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+  .diagram-card svg .node rect,
+  .diagram-card svg .node circle,
+  .diagram-card svg .node polygon {
+    cursor: pointer;
+    transition: filter .15s;
+  }
+  .diagram-card svg .node:hover rect,
+  .diagram-card svg .node:hover circle,
+  .diagram-card svg .node:hover polygon { filter: brightness(1.14); }
+  .diagram-card svg .edgePath path {
+    stroke-dasharray: 6 3;
+    animation: flowDash 1.4s linear infinite;
+  }
+  @keyframes flowDash { to { stroke-dashoffset: -36; } }
+  #tooltip {
+    position: fixed;
+    background: #1a1a18;
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    max-width: 280px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 9999;
+    white-space: pre-line;
+  }
+  #tooltip.visible { opacity: 1; }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .steps-label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: -8px; }
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .step:hover { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(91,80,214,.08); }
+  .step-badge {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--c-text); color: #fff;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .step-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .step-desc { color: var(--c-muted); font-size: 14px; line-height: 1.55; }
+  .step-desc code { background: #f0f0ee; padding: 1px 5px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+</style>
+</head>
+<body>
+<div id="tooltip"></div>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">Automation blueprint</div>
+    <h1>Claude Code SaaS Backend — Multi-Platform Automation Engine</h1>
+    <p class="summary">The core infrastructure layer of your SaaS. One Claude Code Routine engine that listens to every platform (GHL, Stripe, WhatsApp, Google), decides what to do, and executes across all your APIs — with retries, logging, and monitoring built in. Stop writing one-off scripts; start shipping a scalable system.</p>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"14px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart TD
+  WEBHOOKS["🌐 Platform Webhooks<br/>GHL · Stripe · WhatsApp · Google"]:::trigger --> HUB
+  REGISTRY(["⚙️ Routine Registry<br/>Per-tenant config · playbooks"]):::util --> HUB
+  HUB["🧠 Claude Code Engine<br/>Decide · personalize · execute"]:::ai --> APIS
+  APIS(["🔌 API Integration Layer<br/>Auth · retry · rate-limit"]):::util --> ACTIONS
+  HUB --> LOGS(["📊 Logging & Monitoring<br/>Traces · metrics · audit"]):::util
+  APIS --> ACTIONS(["🎯 Operations<br/>Onboarding · CRM · Reporting"]):::out
+  LOGS --> ADMIN(["🚨 Admin Alerts<br/>Slack · PagerDuty on failure"]):::out
+
+  classDef trigger fill:#111110,stroke:#111110,color:#ffffff
+  classDef ai fill:#5b50d6,stroke:#4a40c0,color:#ffffff
+  classDef util fill:#e2e8f0,stroke:#94a3b8,color:#334155
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#111110"></div>Webhook Ingress</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#5b50d6"></div>AI Engine</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>Infra Layer</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0d9467"></div>Actions & Alerts</div>
+  </div>
+
+  <div class="steps-label">How it works</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-badge">1</div>
+      <div>
+        <div class="step-title">One ingress for every platform</div>
+        <div class="step-desc">Every event — new GHL lead, Stripe payment, WhatsApp inbound, Google Calendar change — hits a single webhook gateway that normalizes the payload, authenticates the source, and routes to the right routine. Add a new platform in <code>config.yaml</code>, not in code.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">2</div>
+      <div>
+        <div class="step-title">Claude Code decides, doesn't just transform</div>
+        <div class="step-desc">The Routine Registry tells Claude which playbook to run per tenant. Claude reads the event + config, makes the decision (onboard this user? upsell? escalate? sync?), personalizes the output, and emits a structured action plan — no hardcoded if/else trees.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">3</div>
+      <div>
+        <div class="step-title">Execute through a hardened API layer</div>
+        <div class="step-desc">One shared integration library handles OAuth refresh, rate limits, idempotency keys, and exponential retries for every downstream API. Claude emits intent; the layer handles the messy reality of Stripe 429s, GHL timeouts, and WhatsApp quota.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">4</div>
+      <div>
+        <div class="step-title">Run the four core operations</div>
+        <div class="step-desc">Onboarding (provision accounts, send welcome, configure CRM), CRM syncing (keep GHL ↔ Stripe ↔ internal DB consistent), Reporting (scheduled digests to Slack / email), and Internal Ops (billing reconciliation, churn alerts, audit exports).</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">5</div>
+      <div>
+        <div class="step-title">Observability by default</div>
+        <div class="step-desc">Every routine emits structured traces — who triggered what, which API calls fired, latency, outcome. Failures and anomalies page the admin via Slack or PagerDuty immediately; the rest goes to a searchable audit log. No silent failures, no "it worked on my machine."</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Built with Claude Code &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 24, htmlLabels: false }
+});
+
+const tooltips = {
+  "Platform Webhooks": "Single ingress for all platforms:\n• GoHighLevel (leads, contacts)\n• Stripe (payments, subs, churn)\n• WhatsApp Business (inbound)\n• Google (calendar, sheets, drive)\nAdd new platforms via config.",
+  "Routine Registry": "YAML/DB-backed routine definitions.\nOne entry per tenant × event type.\nDefines which Claude playbook runs,\nwhich APIs to call, error policy.",
+  "Claude Code Engine": "The decision layer. Claude reads\nevent + routine config, decides\naction plan, personalizes messaging.\nRuns with prompt caching + thinking\nmode for complex reasoning.",
+  "API Integration Layer": "Shared library:\n• OAuth token refresh\n• Rate-limit backoff\n• Idempotency (no dupes)\n• Retry with exponential jitter\n• Circuit breakers per API",
+  "Operations": "Four core workstreams:\n• Onboarding flows\n• CRM sync (GHL ↔ Stripe ↔ DB)\n• Scheduled reporting\n• Internal ops (billing, churn)",
+  "Logging & Monitoring": "Structured traces per routine run:\n• Input event\n• Claude decision + cost\n• Each API call + latency\n• Final outcome\nSearchable audit log.",
+  "Admin Alerts": "Real-time on-call:\n• Slack for warnings\n• PagerDuty for critical\n• Daily digest of soft errors\n• Zero silent failures"
+};
+
+const tipEl = document.getElementById('tooltip');
+
+function wireTooltips() {
+  document.querySelectorAll('.node').forEach(node => {
+    const label = (node.querySelector('text, .nodeLabel, .label') || {}).textContent || '';
+    const key = Object.keys(tooltips).find(k => label.includes(k.split(' ')[0]));
+    if (!key) return;
+    node.addEventListener('mouseenter', () => { tipEl.textContent = tooltips[key]; tipEl.classList.add('visible'); });
+    node.addEventListener('mousemove', e => { tipEl.style.left = (e.clientX + 14) + 'px'; tipEl.style.top = (e.clientY - 8) + 'px'; });
+    node.addEventListener('mouseleave', () => tipEl.classList.remove('visible'));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => setTimeout(wireTooltips, 900));
+window.addEventListener('load', () => setTimeout(wireTooltips, 500));
+</script>
+</body>
+</html>
