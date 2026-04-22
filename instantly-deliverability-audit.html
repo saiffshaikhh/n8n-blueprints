@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instantly.ai Deliverability — Audit + Healthy Stack</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --c-danger: #c2410c;
+    --c-good: #0d9467;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 1040px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 16px; color: var(--c-muted); line-height: 1.6; max-width: 740px; }
+  .stats-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .stat { background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; padding: 16px 18px; }
+  .stat-num { font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--c-text); }
+  .stat-label { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 40px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+  .diagram-card svg .node rect,
+  .diagram-card svg .node circle,
+  .diagram-card svg .node polygon {
+    cursor: pointer;
+    transition: filter .15s;
+  }
+  .diagram-card svg .node:hover rect,
+  .diagram-card svg .node:hover circle,
+  .diagram-card svg .node:hover polygon { filter: brightness(1.14); }
+  .diagram-card svg .edgePath path {
+    stroke-dasharray: 6 3;
+    animation: flowDash 1.4s linear infinite;
+  }
+  @keyframes flowDash { to { stroke-dashoffset: -36; } }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .col-label {
+    font-size: 11px; font-weight: 600; letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+  .col-label.audit { background: #fff3ec; color: var(--c-danger); }
+  .col-label.healthy { background: #e6f6ef; color: var(--c-good); }
+  .tiles { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+  .tile {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+    display: flex;
+    gap: 12px;
+  }
+  .tile:hover { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(91,80,214,.08); }
+  .tile-num {
+    width: 22px; height: 22px; border-radius: 5px;
+    font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .tile.audit .tile-num { background: #fff3ec; color: var(--c-danger); }
+  .tile.healthy .tile-num { background: #e6f6ef; color: var(--c-good); }
+  .tile-title { font-weight: 600; font-size: 14px; margin-bottom: 3px; }
+  .tile-desc { color: var(--c-muted); font-size: 13px; line-height: 1.5; }
+  .tile-desc code { background: #f0f0ee; padding: 1px 5px; border-radius: 4px; font-size: 11px; font-family: monospace; }
+
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+  @media (max-width: 780px) {
+    .split { grid-template-columns: 1fr; }
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">Deliverability blueprint</div>
+    <h1>Instantly.ai Cold Email — Audit &amp; Healthy Stack</h1>
+    <p class="summary">Most Instantly setups fail on the same 11 levers. Before touching campaigns, I audit every one — then rebuild the infrastructure, warmup, copy, and sending discipline around what actually lands in the primary inbox. This is the full playbook.</p>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">90%+</div><div class="stat-label">inbox placement target</div></div>
+    <div class="stat"><div class="stat-num">&lt;2%</div><div class="stat-label">hard bounce rate</div></div>
+    <div class="stat"><div class="stat-num">6–15</div><div class="stat-label">mailboxes managed / client</div></div>
+    <div class="stat"><div class="stat-num">500+</div><div class="stat-label">safe sends / day at volume</div></div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"14px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart LR
+  AUDIT["🔍 Audit Current Stack<br/>DNS · warmup · volume · copy"]:::trigger --> FIX
+  FIX["🛠️ Rebuild Infrastructure<br/>domains · mailboxes · DNS"]:::ai --> PLAY
+  PLAY["✅ Healthy Sending Playbook<br/>warmup · volume · copy · hygiene"]:::out --> MONITOR
+  MONITOR(["📊 Weekly Monitoring<br/>Instantly score · Postmaster · Glock"]):::util --> PLAY
+
+  classDef trigger fill:#c2410c,stroke:#9a320a,color:#ffffff
+  classDef ai fill:#5b50d6,stroke:#4a40c0,color:#ffffff
+  classDef util fill:#e2e8f0,stroke:#94a3b8,color:#334155
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+    </div>
+  </div>
+
+  <div class="split">
+    <div>
+      <span class="col-label audit">Audit — what we check day 1</span>
+      <div class="tiles">
+        <div class="tile audit"><div class="tile-num">1</div><div><div class="tile-title">DNS authentication</div><div class="tile-desc">SPF, DKIM, DMARC correctly set per sending domain. Any misalignment = instant spam folder.</div></div></div>
+        <div class="tile audit"><div class="tile-num">2</div><div><div class="tile-title">Domain strategy</div><div class="tile-desc">Primary domain untouched? 3–5 secondary domains redirected to main site?</div></div></div>
+        <div class="tile audit"><div class="tile-num">3</div><div><div class="tile-title">Warmup status</div><div class="tile-desc">Instantly native warmup ON for 2–4 weeks, positive ramp curve, deliverability score ≥ 90%.</div></div></div>
+        <div class="tile audit"><div class="tile-num">4</div><div><div class="tile-title">Per-mailbox volume</div><div class="tile-desc">Staying under 30–50 sends/mailbox/day, or overblasting and getting filtered?</div></div></div>
+        <div class="tile audit"><div class="tile-num">5</div><div><div class="tile-title">List hygiene &amp; bounces</div><div class="tile-desc">Pre-verified through Bouncer / MillionVerifier / Debounce? Bounce rate under 2%?</div></div></div>
+        <div class="tile audit"><div class="tile-num">6</div><div><div class="tile-title">Copy audit</div><div class="tile-desc">Plain text (no HTML bloat, no images, no pixels), &lt;120 words, max 1 link, no spam triggers.</div></div></div>
+        <div class="tile audit"><div class="tile-num">7</div><div><div class="tile-title">Personalization depth</div><div class="tile-desc">Just <code>{{firstName}}</code> or real custom variables? Spintax on subject + opener?</div></div></div>
+        <div class="tile audit"><div class="tile-num">8</div><div><div class="tile-title">Smart sending settings</div><div class="tile-desc">Throttling on, randomized delays, sends mimic human pattern — not 9am-sharp blasts.</div></div></div>
+        <div class="tile audit"><div class="tile-num">9</div><div><div class="tile-title">Inbox rotation</div><div class="tile-desc">Campaign load balanced across all mailboxes, or stacking on one account?</div></div></div>
+        <div class="tile audit"><div class="tile-num">10</div><div><div class="tile-title">Reply &amp; unsubscribe handling</div><div class="tile-desc">Unsubscribe tag present, negative replies auto-pause, positive replies routed out to CRM fast.</div></div></div>
+        <div class="tile audit"><div class="tile-num">11</div><div><div class="tile-title">Reputation signals</div><div class="tile-desc">Google Postmaster, Glock Apps, MXToolbox, Mail-Tester scores — tracked weekly?</div></div></div>
+      </div>
+    </div>
+
+    <div>
+      <span class="col-label healthy">Healthy Stack — what we install</span>
+      <div class="tiles">
+        <div class="tile healthy"><div class="tile-num">1</div><div><div class="tile-title">Secondary-domain architecture</div><div class="tile-desc">Never send from the main domain. 3–5 look-alikes × 2–3 mailboxes = 6–15 inboxes, 300–500 sends/day at safe volume.</div></div></div>
+        <div class="tile healthy"><div class="tile-num">2</div><div><div class="tile-title">Full DNS stack per domain</div><div class="tile-desc">SPF + DKIM + DMARC (<code>p=none</code> first, tighten later) + custom tracking domain.</div></div></div>
+        <div class="tile healthy"><div class="tile-num">3</div><div><div class="tile-title">Warmup before outreach</div><div class="tile-desc">2–4 weeks of Instantly warmup before the first campaign. Keep warmup ON even during active sending.</div></div></div>
+        <div class="tile healthy"><div class="tile-num">4</div><div><div class="tile-title">Volume discipline</div><div class="tile-desc">30–50 new emails/mailbox/day, never above. Warmup volume on top.</div></div></div>
+        <div class="tile healthy"><div class="tile-num">5</div><div><div class="tile-title">Pre-campaign verification</div><div class="tile-desc">Every list scrubbed before upload. Remove catch-all, risky, and role-based addresses.</div></div></div>
+        <div class="tile healthy"><div class="tile-num">6</div><div><div class="tile-title">Plain-text, short, 1-link copy</div><div class="tile-desc">No images, no HTML styling, no tracking pixels, 40–120 words, conversational tone.</div></div></div>
+        <div class="tile healthy"><div class="tile-num">7</div><div><div class="tile-title">Real personalization + spintax</div><div class="tile-desc">Custom vars beyond name (role, trigger, pain). Spintax on subject lines and first sentence.</div></div></div>
+        <div class="tile healthy"><div class="tile-num">8</div><div><div class="tile-title">Smart sending schedule</div><div class="tile-desc">Throttled, 30s–3min randomized delays, business hours in recipient's timezone only.</div></div></div>
+        <div class="tile healthy"><div class="tile-num">9</div><div><div class="tile-title">Follow-up sequence design</div><div class="tile-desc">3–4 touches, 2–3 day gaps, break threads on touch 3, kill sequence on reply or unsubscribe.</div></div></div>
+        <div class="tile healthy"><div class="tile-num">10</div><div><div class="tile-title">Reply routing</div><div class="tile-desc">Positive replies → CRM within minutes. Negative → auto-blocklist. OOO → re-queue.</div></div></div>
+        <div class="tile healthy"><div class="tile-num">11</div><div><div class="tile-title">Weekly deliverability review</div><div class="tile-desc">Instantly score + Google Postmaster + Glock Apps every Monday. Rotate out any mailbox below 90%.</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Cold email deliverability engineering &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 24, htmlLabels: false }
+});
+</script>
+</body>
+</html>
