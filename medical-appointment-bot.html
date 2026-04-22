@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medical Appointment Bot — Omnichannel AI Receptionist</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 900px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 30px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 16px; color: var(--c-muted); line-height: 1.6; max-width: 680px; }
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 40px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+  .diagram-card svg .node rect,
+  .diagram-card svg .node circle,
+  .diagram-card svg .node polygon {
+    cursor: pointer;
+    transition: filter .15s;
+  }
+  .diagram-card svg .node:hover rect,
+  .diagram-card svg .node:hover circle,
+  .diagram-card svg .node:hover polygon { filter: brightness(1.14); }
+  .diagram-card svg .edgePath path {
+    stroke-dasharray: 6 3;
+    animation: flowDash 1.4s linear infinite;
+  }
+  @keyframes flowDash { to { stroke-dashoffset: -36; } }
+  #tooltip {
+    position: fixed;
+    background: #1a1a18;
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    max-width: 280px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 9999;
+    white-space: pre-line;
+  }
+  #tooltip.visible { opacity: 1; }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .steps-label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: -8px; }
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .step:hover { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(91,80,214,.08); }
+  .step-badge {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--c-text); color: #fff;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .step-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .step-desc { color: var(--c-muted); font-size: 14px; line-height: 1.55; }
+  .step-desc code { background: #f0f0ee; padding: 1px 5px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+</style>
+</head>
+<body>
+<div id="tooltip"></div>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">Automation blueprint</div>
+    <h1>Medical Appointment Bot — Omnichannel AI Receptionist</h1>
+    <p class="summary">Your clinic never misses a booking again. Patients text, WhatsApp, or send a voice note on Telegram — the AI understands intent, books, reschedules, or cancels the appointment, drops it into Google Calendar and Sheets, and sends reminders 24h and 1h before the visit. Channels toggle on/off per client from a single config sheet.</p>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"14px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart TD
+  INBOUND["📲 Inbound Channels<br/>Webhook · Telegram · WhatsApp"]:::trigger --> HUB
+  KB(["📚 Client Config<br/>Services · hours · doctors"]):::util --> HUB
+  HUB["🧠 AI Receptionist<br/>OpenAI · intent · voice-to-text"]:::ai --> SHEETS
+  SHEETS(["🗄️ Google Sheets<br/>Bookings database"]):::util --> REMIND
+  HUB --> CAL(["📅 Google Calendar<br/>Book · reschedule · cancel"]):::out
+  HUB --> REMIND(["🔔 Reply & Remind<br/>SMS · Email · Telegram · WA"]):::out
+  HUB --> ADMIN(["🚨 Admin Alerts<br/>Errors · edge cases"]):::out
+
+  classDef trigger fill:#111110,stroke:#111110,color:#ffffff
+  classDef ai fill:#5b50d6,stroke:#4a40c0,color:#ffffff
+  classDef util fill:#e2e8f0,stroke:#94a3b8,color:#334155
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#111110"></div>Inbound</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#5b50d6"></div>AI Engine</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>Data Layer</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0d9467"></div>Actions</div>
+  </div>
+
+  <div class="steps-label">How it works</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-badge">1</div>
+      <div>
+        <div class="step-title">Receive on any channel the client wants</div>
+        <div class="step-desc">Generic webhook, Telegram (text + voice notes), WhatsApp Business (text + voice). Each channel toggles on/off per client in a single config row — turn off what they don't need, no code changes.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">2</div>
+      <div>
+        <div class="step-title">Understand with AI (voice + text)</div>
+        <div class="step-desc">Voice notes transcribe via Whisper, then OpenAI reads intent against the client's config — book, reschedule, cancel, or general question — and replies in a warm, human tone matching the clinic's language.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">3</div>
+      <div>
+        <div class="step-title">Book, change, or cancel in one shot</div>
+        <div class="step-desc">Appointment logs to the Google Sheets database as the source of truth and syncs to Google Calendar so the clinic's existing workflow is untouched. Changes and cancellations update both in lockstep.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">4</div>
+      <div>
+        <div class="step-title">Automatic reminders — 24h and same-day</div>
+        <div class="step-desc">A scheduled job scans the Sheet each hour and fires reminders via the patient's original channel (SMS, email, Telegram, or WhatsApp) at 24h before and ~1h before the visit. No-shows drop significantly.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">5</div>
+      <div>
+        <div class="step-title">Admin stays in the loop on errors only</div>
+        <div class="step-desc">Every error, timeout, or ambiguous request that the AI can't safely resolve triggers an instant notification to the admin — so 99% of bookings run hands-off, and the 1% edge cases get human eyes fast.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Built with Claude Code + n8n &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 24, htmlLabels: false }
+});
+
+const tooltips = {
+  "Inbound Channels": "Three entry points, all optional per client:\n• Generic webhook (any SMS provider)\n• Telegram bot (text + voice notes)\n• WhatsApp Business (text + voice)\nToggle each on/off in config row.",
+  "Client Config": "Single Google Sheet per client:\nservices, hours, doctors, holidays,\nchannel toggles, reminder timing,\nadmin phone/email. Zero redeploys.",
+  "AI Receptionist": "OpenAI (GPT-4o + Whisper) reads\nmessage + config, classifies intent,\ntranscribes voice, picks a slot,\nwrites a warm human-tone reply.",
+  "Google Sheets": "Source of truth for bookings.\nOne row per appointment with\nstatus, channel, patient, doctor.\nClient can edit directly.",
+  "Google Calendar": "Two-way sync. Doctors see\nappointments in the calendar\nthey already use. Cancel in\ncalendar → bot updates patient.",
+  "Reply & Remind": "Replies go out on the patient's\noriginal channel. Reminders:\n24h before + same-day (~1h).\nConfigurable timing per client.",
+  "Admin Alerts": "Only fires on failures:\n• AI unsure → human escalation\n• Channel error (API down)\n• Double-booking attempt\n• Voice transcription failed"
+};
+
+const tipEl = document.getElementById('tooltip');
+
+function wireTooltips() {
+  document.querySelectorAll('.node').forEach(node => {
+    const label = (node.querySelector('text, .nodeLabel, .label') || {}).textContent || '';
+    const key = Object.keys(tooltips).find(k => label.includes(k.split(' ')[0]));
+    if (!key) return;
+    node.addEventListener('mouseenter', () => { tipEl.textContent = tooltips[key]; tipEl.classList.add('visible'); });
+    node.addEventListener('mousemove', e => { tipEl.style.left = (e.clientX + 14) + 'px'; tipEl.style.top = (e.clientY - 8) + 'px'; });
+    node.addEventListener('mouseleave', () => tipEl.classList.remove('visible'));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => setTimeout(wireTooltips, 900));
+window.addEventListener('load', () => setTimeout(wireTooltips, 500));
+</script>
+</body>
+</html>
