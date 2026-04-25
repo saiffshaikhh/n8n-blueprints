@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B2B Partnership Outreach — Research to Booked Calls</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 960px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 16px; color: var(--c-muted); line-height: 1.6; max-width: 720px; }
+  .stats-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .stat { background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; padding: 16px 18px; }
+  .stat-num { font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--c-text); }
+  .stat-label { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 40px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+  .diagram-card svg .node rect,
+  .diagram-card svg .node circle,
+  .diagram-card svg .node polygon {
+    cursor: pointer;
+    transition: filter .15s;
+  }
+  .diagram-card svg .node:hover rect,
+  .diagram-card svg .node:hover circle,
+  .diagram-card svg .node:hover polygon { filter: brightness(1.14); }
+  .diagram-card svg .edgePath path {
+    stroke-dasharray: 6 3;
+    animation: flowDash 1.4s linear infinite;
+  }
+  @keyframes flowDash { to { stroke-dashoffset: -36; } }
+  #tooltip {
+    position: fixed;
+    background: #1a1a18;
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    max-width: 280px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 9999;
+    white-space: pre-line;
+  }
+  #tooltip.visible { opacity: 1; }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .steps-label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: -8px; }
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .step:hover { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(91,80,214,.08); }
+  .step-badge {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--c-text); color: #fff;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .step-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .step-desc { color: var(--c-muted); font-size: 14px; line-height: 1.55; }
+  .step-desc code { background: #f0f0ee; padding: 1px 5px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+
+  .sample-card {
+    background: #fbfaf6;
+    border: 1px solid var(--c-border);
+    border-left: 3px solid var(--c-accent);
+    border-radius: 10px;
+    padding: 22px 24px;
+  }
+  .sample-card .label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-accent); margin-bottom: 10px; }
+  .sample-card .msg { font-size: 14.5px; line-height: 1.65; color: var(--c-text); font-family: "Charter", "Iowan Old Style", Georgia, serif; }
+  .sample-card .msg strong { color: var(--c-text); font-weight: 600; }
+
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+  @media (max-width: 640px) {
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div id="tooltip"></div>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">Pipeline blueprint</div>
+    <h1>B2B Partnership Outreach — Research to Booked Calls</h1>
+    <p class="summary">Partnership pipelines aren't built by scraping LinkedIn and blasting templates. They start with a sharp definition of which businesses share your client base, escalate to verified decision-makers, and convert through messaging that respects the recipient's time. This is how I run it.</p>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">5,000+</div><div class="stat-label">leads researched / week</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">client success rate</div></div>
+    <div class="stat"><div class="stat-num">US · EU · Asia</div><div class="stat-label">global coverage</div></div>
+    <div class="stat"><div class="stat-num">Email + LI</div><div class="stat-label">multi-channel outreach</div></div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"13px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart LR
+  ICP(["🎯 Partner ICP<br/>shared client base · fit"]):::trigger --> RES
+  RES["🔍 Research<br/>Apollo · LI Sales Nav · Apify"]:::ai --> DM
+  DM["👤 Decision-Makers<br/>owners · directors · partners"]:::util --> ENRICH
+  ENRICH["📇 Verified Contacts<br/>email · LinkedIn · website"]:::util --> OUT
+  OUT["✉️ Multi-Touch Outreach<br/>email + LinkedIn cadence"]:::util --> CRM
+  CRM(["📊 Pipeline + Follow-up<br/>Google Sheets / CRM"]):::out --> CALL
+  CALL(["📞 Partnership Calls<br/>booked + tracked"]):::out
+
+  classDef trigger fill:#111110,stroke:#111110,color:#ffffff
+  classDef ai fill:#5b50d6,stroke:#4a40c0,color:#ffffff
+  classDef util fill:#e2e8f0,stroke:#94a3b8,color:#334155
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#111110"></div>Strategy</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#5b50d6"></div>Sourcing</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>Enrichment & Outreach</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0d9467"></div>Pipeline & Calls</div>
+  </div>
+
+  <div class="steps-label">How I run partnership outreach</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-badge">1</div>
+      <div>
+        <div class="step-title">Define the partner ICP first</div>
+        <div class="step-desc">Before any list-building, I lock the partner profile: which industries serve a similar client base, what company size band, what geographies, and what signal indicates an active partnership program. Wrong ICP = wasted outreach.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">2</div>
+      <div>
+        <div class="step-title">Research with the right stack per market</div>
+        <div class="step-desc">Apollo for volume + intent across US and EU, LinkedIn Sales Navigator for precision targeting and APAC coverage, Apify for custom scrapers when a niche source isn't on either platform. Tool choice is per-segment, not one-size-fits-all.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">3</div>
+      <div>
+        <div class="step-title">Identify the right decision-makers</div>
+        <div class="step-desc">Owners and founders for boutique agencies, Directors of Partnerships / BD for mid-market, Heads of Strategic Alliances for enterprise. I map the role to the company stage so the message lands with someone who can actually say yes.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">4</div>
+      <div>
+        <div class="step-title">Verify every contact before outreach</div>
+        <div class="step-desc">Every email runs through a verifier (Bouncer / MillionVerifier) before it goes near a sender. LinkedIn URLs and websites are spot-checked. Bounce rate stays under 2%, sender reputation stays clean, follow-ups don't get filtered.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">5</div>
+      <div>
+        <div class="step-title">Run a structured multi-touch cadence</div>
+        <div class="step-desc">Email + LinkedIn working together: short opening message, value-led follow-up at 3 days, soft break-up at 7 days, LinkedIn touch in parallel. Every touch logged in Google Sheets or the client's CRM with status, date, and next action.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">6</div>
+      <div>
+        <div class="step-title">Book the call, hand it off clean</div>
+        <div class="step-desc">When a partner replies positively, I qualify on a short async exchange, book the call directly into the client's calendar, and hand over a one-page brief — partner background, role, mutual fit hypothesis, suggested talking points. The client walks into the call ready.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-card">
+    <div class="label">Sample first-touch outreach</div>
+    <div class="msg">
+      Hi <strong>{{first_name}}</strong> — noticed <strong>{{company}}</strong> works with <strong>{{shared_client_segment}}</strong>, which overlaps closely with the clients we serve at <strong>{{my_company}}</strong>. We've been exploring partnerships with a small group of agencies serving the same audience — usually it looks like warm intros both ways, occasional co-promoted content, sometimes joint pitches when the fit is right.<br><br>
+      Open to a 15-minute call next week to see if there's a natural overlap? Happy to send over a one-pager first if useful.<br><br>
+      — Saif
+    </div>
+  </div>
+
+  <footer>Partnership pipeline engineering &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 20, htmlLabels: false }
+});
+
+const tooltips = {
+  "Partner ICP": "Defined per client:\n• Industry & sub-vertical\n• Company size band\n• Geography\n• Active partnership signal\nSkipped by most operators.",
+  "Research": "Stack per segment:\n• Apollo — US/EU volume\n• LinkedIn Sales Nav — precision\n• Apify — niche scrapers\n5,000+ leads/week sustained.",
+  "Decision-Makers": "Mapped to company stage:\n• Boutique → Owner / Founder\n• Mid-market → Director of BD\n• Enterprise → Head of Alliances",
+  "Verified Contacts": "Bouncer / MillionVerifier on every email.\nLinkedIn + website spot-checked.\nBounce rate stays under 2%.",
+  "Multi-Touch Outreach": "Email + LinkedIn in parallel:\n• Day 0 — first touch\n• Day 3 — value-led follow-up\n• Day 7 — soft break-up\nEvery message logged.",
+  "Pipeline": "Google Sheets or client CRM.\nStatus, date, next action per row.\nWeekly review with the client.",
+  "Partnership Calls": "Replies qualified async,\nbooked into calendar,\nhanded over with a 1-page brief\nso the client walks in ready."
+};
+
+const tipEl = document.getElementById('tooltip');
+
+function wireTooltips() {
+  document.querySelectorAll('.node').forEach(node => {
+    const label = (node.querySelector('text, .nodeLabel, .label') || {}).textContent || '';
+    const key = Object.keys(tooltips).find(k => label.includes(k.split(' ')[0]));
+    if (!key) return;
+    node.addEventListener('mouseenter', () => { tipEl.textContent = tooltips[key]; tipEl.classList.add('visible'); });
+    node.addEventListener('mousemove', e => { tipEl.style.left = (e.clientX + 14) + 'px'; tipEl.style.top = (e.clientY - 8) + 'px'; });
+    node.addEventListener('mouseleave', () => tipEl.classList.remove('visible'));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => setTimeout(wireTooltips, 900));
+window.addEventListener('load', () => setTimeout(wireTooltips, 500));
+</script>
+</body>
+</html>
