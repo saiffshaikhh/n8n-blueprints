@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cold Email Ops Lead — 3M+/mo Multi-Tenant Engine</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --c-danger: #c2410c;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 960px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 16px; color: var(--c-muted); line-height: 1.6; max-width: 720px; }
+  .stats-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .stat { background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; padding: 16px 18px; }
+  .stat-num { font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--c-text); }
+  .stat-label { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 40px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+  .diagram-card svg .node rect,
+  .diagram-card svg .node circle,
+  .diagram-card svg .node polygon { cursor: pointer; transition: filter .15s; }
+  .diagram-card svg .node:hover rect,
+  .diagram-card svg .node:hover circle,
+  .diagram-card svg .node:hover polygon { filter: brightness(1.14); }
+  .diagram-card svg .edgePath path { stroke-dasharray: 6 3; animation: flowDash 1.4s linear infinite; }
+  @keyframes flowDash { to { stroke-dashoffset: -36; } }
+  #tooltip {
+    position: fixed; background: #1a1a18; color: #fff;
+    font-size: 13px; line-height: 1.5; padding: 10px 14px;
+    border-radius: 8px; max-width: 280px; pointer-events: none;
+    opacity: 0; transition: opacity .15s; z-index: 9999; white-space: pre-line;
+  }
+  #tooltip.visible { opacity: 1; }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .steps-label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: -8px; }
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step {
+    background: var(--c-card); border: 1px solid var(--c-border);
+    border-radius: 10px; padding: 18px 20px;
+    display: flex; gap: 16px; cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .step:hover { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(91,80,214,.08); }
+  .step-badge {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--c-text); color: #fff;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .step-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .step-desc { color: var(--c-muted); font-size: 14px; line-height: 1.55; }
+  .step-desc code { background: #f0f0ee; padding: 1px 5px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+  .ownership-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .own-card { background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; padding: 16px 18px; }
+  .own-title { font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--c-text); }
+  .own-desc { color: var(--c-muted); font-size: 13px; line-height: 1.5; }
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+  @media (max-width: 640px) {
+    .stats-strip, .ownership-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div id="tooltip"></div>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">Operations blueprint</div>
+    <h1>Cold Email Ops Lead — 3M+/mo Multi-Tenant Engine</h1>
+    <p class="summary">Running 3–5M sends a month across 3–4 client offers isn't an Instantly campaign — it's a system. This is how I'd own the operation end-to-end: multi-tenant sending infrastructure, Clay-driven enrichment, Claude Code MCPs for personalization at scale, and a performance loop that kills losers and doubles down on winners weekly.</p>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">3–5M</div><div class="stat-label">emails/month managed</div></div>
+    <div class="stat"><div class="stat-num">3–4</div><div class="stat-label">client offers in parallel</div></div>
+    <div class="stat"><div class="stat-num">90%+</div><div class="stat-label">target inbox placement</div></div>
+    <div class="stat"><div class="stat-num">Weekly</div><div class="stat-label">test → scale → kill loop</div></div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"13px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart TD
+  OFFERS["💼 Client Offers<br/>3–4 financial services ICPs"]:::trigger --> CLAY
+  CLAY["🧪 Clay Enrichment<br/>signals · firmographics · waterfall"]:::util --> ENGINE
+  ENGINE["🧠 Claude Code + MCPs<br/>personalize · segment · route"]:::ai --> INSTANTLY
+  INSTANTLY["📨 Instantly Multi-Account<br/>15–30 mailboxes · warmup · rotation"]:::util --> INBOX
+  INBOX(["📥 Reply Handling<br/>positive · objection · OOO"]):::out --> CRM
+  CRM(["📊 CRM + Booked Calls<br/>handoff to closers"]):::out
+  INSTANTLY --> ANALYTICS
+  ANALYTICS(["📈 Performance Loop<br/>opens · replies · positive %"]):::danger --> ENGINE
+
+  classDef trigger fill:#111110,stroke:#111110,color:#ffffff
+  classDef ai fill:#5b50d6,stroke:#4a40c0,color:#ffffff
+  classDef util fill:#e2e8f0,stroke:#94a3b8,color:#334155
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+  classDef danger fill:#c2410c,stroke:#9a3412,color:#ffffff
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#111110"></div>Offer Layer</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#5b50d6"></div>AI / MCP Decisioning</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>Sending Infra</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0d9467"></div>Pipeline Output</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#c2410c"></div>Performance Loop</div>
+  </div>
+
+  <div class="steps-label">How I'd run the operation</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-badge">1</div>
+      <div>
+        <div class="step-title">Inhale every offer in week one</div>
+        <div class="step-desc">Sit down with each client offer — what they sell, who they sell to, the language buyers use, the objections, the proof. No outbound goes out until I can pitch each offer better than a junior closer. This is the gap that breaks most outsourced cold-email teams.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">2</div>
+      <div>
+        <div class="step-title">Stand up the multi-tenant sending stack</div>
+        <div class="step-desc">Per offer: dedicated domains, mailbox count sized to volume (typically 15–30 per offer at this scale), warmup-aware send caps, IP/domain rotation. Inbox placement audited weekly with seed tests — not vibes. Bounce rate held under 2%, spam under 0.1%.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">3</div>
+      <div>
+        <div class="step-title">Clay + Claude Code = personalization at volume</div>
+        <div class="step-desc">Clay handles the waterfall enrichment and signal hunting. Claude Code via MCPs reads the enriched row, picks the angle, writes the first line, and chooses which sequence variant to drop the lead into. Personalization stays human-grade at 100K+ sends/week without a copywriter touching every row.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">4</div>
+      <div>
+        <div class="step-title">A weekly test → scale → kill loop</div>
+        <div class="step-desc">Every Monday I review per-offer dashboards: open rate, reply rate, positive reply %, booked-call %, cost per booked call. Winners get more volume. Losers get a hypothesis-driven rewrite or get killed. Nothing keeps running on autopilot just because it's "fine" — that's how teams plateau.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">5</div>
+      <div>
+        <div class="step-title">Reply handling that doesn't drop balls</div>
+        <div class="step-desc">Positive replies route to the closer's CRM with full context inside 5 minutes. Objections get categorized and fed back into copy iteration. OOO/auto-replies get parked for re-engagement. Nothing rots in an inbox.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">6</div>
+      <div>
+        <div class="step-title">Build new things, not just run the existing</div>
+        <div class="step-desc">New angles, new ICP slices, new channels (LI primer, voicemail drop), MCP tooling that compresses what currently takes the team hours into minutes. The role isn't "operate the playbook" — it's "evolve the playbook every week."</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="steps-label">What I take ownership of on day 1</div>
+  <div class="ownership-grid">
+    <div class="own-card"><div class="own-title">Inbox health & deliverability</div><div class="own-desc">Domains, DNS (SPF/DKIM/DMARC), warmup, blacklist monitoring, send caps, weekly placement audits.</div></div>
+    <div class="own-card"><div class="own-title">List building & enrichment</div><div class="own-desc">Clay tables per offer, waterfall config, signal triggers, validation, suppression hygiene.</div></div>
+    <div class="own-card"><div class="own-title">Copy & sequence performance</div><div class="own-desc">A/B variants, weekly review, hypothesis-driven rewrites, kill criteria for losers.</div></div>
+    <div class="own-card"><div class="own-title">MCP & automation tooling</div><div class="own-desc">Claude Code routines that automate enrichment, reply triage, performance reporting, and copy generation.</div></div>
+    <div class="own-card"><div class="own-title">Reporting to leadership</div><div class="own-desc">Weekly digest per offer: volume sent, positive replies, booked calls, $/booked call, what we're testing next.</div></div>
+    <div class="own-card"><div class="own-title">Scaling decisions</div><div class="own-desc">When to add mailboxes, spin up new domains, expand to a new ICP slice, or pause volume to protect sender rep.</div></div>
+  </div>
+
+  <footer>Cold-email operations engineering &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 22, htmlLabels: false }
+});
+
+const tooltips = {
+  "Client Offers": "3–4 financial services offers running in parallel.\nEach with its own ICP, language, proof,\nobjections — owned and pitched fluently.",
+  "Clay Enrichment": "Waterfall enrichment per offer.\nFirmographics, tech stack, hiring,\nfunding, intent signals.\nValidated before send.",
+  "Claude Code": "MCP-driven decisioning:\n• Read enriched row\n• Pick angle\n• Write opener\n• Route to sequence variant\nHuman-grade copy at 100K+/week.",
+  "Instantly Multi-Account": "15–30 mailboxes per offer.\nWarmup-aware send caps,\ndomain rotation, weekly\nseed-test placement audits.",
+  "Reply Handling": "Positive → CRM in <5 min.\nObjection → categorized for copy loop.\nOOO → parked for re-engagement.\nNothing rots.",
+  "CRM": "Booked calls handed to closers\nwith enrichment + reply context\nso they don't walk in cold.",
+  "Performance Loop": "Weekly per-offer review:\nopens, replies, positive %,\nbooked-call %, $/booked call.\nWinners scale, losers die."
+};
+
+const tipEl = document.getElementById('tooltip');
+
+function wireTooltips() {
+  document.querySelectorAll('.node').forEach(node => {
+    const label = (node.querySelector('text, .nodeLabel, .label') || {}).textContent || '';
+    const key = Object.keys(tooltips).find(k => label.includes(k.split(' ')[0]));
+    if (!key) return;
+    node.addEventListener('mouseenter', () => { tipEl.textContent = tooltips[key]; tipEl.classList.add('visible'); });
+    node.addEventListener('mousemove', e => { tipEl.style.left = (e.clientX + 14) + 'px'; tipEl.style.top = (e.clientY - 8) + 'px'; });
+    node.addEventListener('mouseleave', () => tipEl.classList.remove('visible'));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => setTimeout(wireTooltips, 900));
+window.addEventListener('load', () => setTimeout(wireTooltips, 500));
+</script>
+</body>
+</html>
