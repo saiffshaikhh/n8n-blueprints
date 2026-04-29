@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clay → Instantly Campaign Build — Signal-Based Outbound</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --c-clay: #c2410c;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 980px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 16px; color: var(--c-muted); line-height: 1.6; max-width: 740px; }
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .stat-num { font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--c-text); }
+  .stat-label { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 40px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+  .diagram-card svg .node rect,
+  .diagram-card svg .node circle,
+  .diagram-card svg .node polygon {
+    cursor: pointer;
+    transition: filter .15s;
+  }
+  .diagram-card svg .node:hover rect,
+  .diagram-card svg .node:hover circle,
+  .diagram-card svg .node:hover polygon { filter: brightness(1.14); }
+  .diagram-card svg .edgePath path {
+    stroke-dasharray: 6 3;
+    animation: flowDash 1.4s linear infinite;
+  }
+  @keyframes flowDash { to { stroke-dashoffset: -36; } }
+  #tooltip {
+    position: fixed;
+    background: #1a1a18;
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    max-width: 300px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 9999;
+    white-space: pre-line;
+  }
+  #tooltip.visible { opacity: 1; }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  .waterfall-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 28px 30px;
+  }
+  .waterfall-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .waterfall-sub { font-size: 13px; color: var(--c-muted); margin-bottom: 20px; }
+  .waterfall {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .wf-row {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 14px;
+    background: #fef6f1;
+    border: 1px solid #f3d4bf;
+    border-left: 3px solid var(--c-clay);
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  .wf-row:nth-child(2) { margin-left: 14px; }
+  .wf-row:nth-child(3) { margin-left: 28px; }
+  .wf-row:nth-child(4) { margin-left: 42px; }
+  .wf-row:nth-child(5) { margin-left: 56px; }
+  .wf-row:nth-child(6) { margin-left: 70px; }
+  .wf-num { font-weight: 700; color: var(--c-clay); }
+  .wf-name { font-weight: 600; color: var(--c-text); }
+  .wf-desc { color: var(--c-muted); margin-left: 10px; font-size: 13px; }
+  .wf-pct { font-size: 12px; color: var(--c-muted); font-variant-numeric: tabular-nums; }
+  .wf-final {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: #f0f9f4;
+    border: 1px solid #b8e0c8;
+    border-left: 3px solid #0d9467;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #0a5c40;
+  }
+
+  .steps-label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: -8px; }
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .step:hover { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(91,80,214,.08); }
+  .step-badge {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--c-text); color: #fff;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .step-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .step-desc { color: var(--c-muted); font-size: 14px; line-height: 1.55; }
+  .step-desc code { background: #f0f0ee; padding: 1px 5px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+
+  .pricing-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 28px;
+  }
+  .pricing-title { font-size: 18px; font-weight: 700; margin-bottom: 18px; }
+  .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .price-tile {
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 16px;
+    background: #fafaf8;
+  }
+  .price-tile-label { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--c-muted); margin-bottom: 6px; }
+  .price-tile-num { font-size: 24px; font-weight: 700; letter-spacing: -.01em; }
+  .price-tile-sub { font-size: 12px; color: var(--c-muted); margin-top: 4px; line-height: 1.45; }
+
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+
+  @media (max-width: 720px) {
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .wf-row { grid-template-columns: 24px 1fr; }
+    .wf-pct { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="tooltip"></div>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">Clay build blueprint</div>
+    <h1>Clay → Instantly Campaign Build — Signal-Based Outbound</h1>
+    <p class="summary">You hand me the ICP, signals, and copy. I build the Clay table, wire the enrichment waterfall to 95%+ verified emails, layer the personalization fields, validate, and push the cleaned list to Instantly campaign-ready. 2-day turnaround per campaign.</p>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">2 days</div><div class="stat-label">per campaign build</div></div>
+    <div class="stat"><div class="stat-num">95%+</div><div class="stat-label">verified email rate</div></div>
+    <div class="stat"><div class="stat-num">5–7</div><div class="stat-label">waterfall providers</div></div>
+    <div class="stat"><div class="stat-num">Instantly-ready</div><div class="stat-label">CSV + warm push</div></div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"13px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart LR
+  ICP(["🎯 ICP Table<br/>People + Company finder"]):::trigger --> SIG
+  SIG["📡 Signal Layer<br/>Hiring · funding · tech · intent"]:::ai --> WF
+  WF["🌊 Enrichment Waterfall<br/>Apollo → Hunter → Snov → Clearbit"]:::clay --> PERS
+  PERS["✨ Personalization<br/>Site scrape · AI fields · openers"]:::ai --> VAL
+  VAL(["✅ Validation<br/>MX · catch-all · risk score"]):::util --> PUSH
+  PUSH(["📨 Push to Instantly<br/>Campaign-ready CSV + API"]):::out
+
+  classDef trigger fill:#111110,stroke:#111110,color:#ffffff
+  classDef ai fill:#5b50d6,stroke:#4a40c0,color:#ffffff
+  classDef clay fill:#c2410c,stroke:#9a3309,color:#ffffff
+  classDef util fill:#e2e8f0,stroke:#94a3b8,color:#334155
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#111110"></div>Input</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#5b50d6"></div>AI Layer</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#c2410c"></div>Clay Waterfall</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>Validation</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0d9467"></div>Output</div>
+  </div>
+
+  <div class="waterfall-card">
+    <div class="waterfall-title">The enrichment waterfall, in order</div>
+    <div class="waterfall-sub">Each provider runs only on rows the previous one missed. Cheapest accurate source first; expensive providers as fallback. End-to-end cost per verified lead lands $0.05–0.15.</div>
+    <div class="waterfall">
+      <div class="wf-row"><span class="wf-num">1</span><span><span class="wf-name">Apollo</span><span class="wf-desc">primary email + firmographics</span></span><span class="wf-pct">~60% match</span></div>
+      <div class="wf-row"><span class="wf-num">2</span><span><span class="wf-name">Hunter.io</span><span class="wf-desc">domain pattern + email finder</span></span><span class="wf-pct">+15%</span></div>
+      <div class="wf-row"><span class="wf-num">3</span><span><span class="wf-name">Snov.io</span><span class="wf-desc">profile-based email lookup</span></span><span class="wf-pct">+8%</span></div>
+      <div class="wf-row"><span class="wf-num">4</span><span><span class="wf-name">Clearbit / Datagma</span><span class="wf-desc">enterprise + EU/APAC coverage</span></span><span class="wf-pct">+6%</span></div>
+      <div class="wf-row"><span class="wf-num">5</span><span><span class="wf-name">Findymail / Prospeo</span><span class="wf-desc">last-mile finder for stragglers</span></span><span class="wf-pct">+4%</span></div>
+      <div class="wf-row"><span class="wf-num">6</span><span><span class="wf-name">ZeroBounce / NeverBounce</span><span class="wf-desc">final validation, drop catch-alls</span></span><span class="wf-pct">verify all</span></div>
+      <div class="wf-final">→ 90–95% verified, deliverable, deduped — ready for Instantly</div>
+    </div>
+  </div>
+
+  <div class="steps-label">How I run a campaign build</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-badge">1</div>
+      <div>
+        <div class="step-title">Ingest your ICP + signals into a Clay table</div>
+        <div class="step-desc">You give me the ICP doc and signal list. I translate them into Clay people/company finder filters — title regex, headcount bands, funding stage, geo, exclusions. Output: a clean source table sized to your weekly send target.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">2</div>
+      <div>
+        <div class="step-title">Layer the signal columns</div>
+        <div class="step-desc">Hiring signals (BuiltWith / job board scrape), funding (Crunchbase / news), tech stack (BuiltWith / Wappalyzer), intent (G2 / Bombora if available), recent triggers (LinkedIn posts, press). Each signal becomes a Clay column you can filter and rank on.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">3</div>
+      <div>
+        <div class="step-title">Wire the enrichment waterfall</div>
+        <div class="step-desc">Apollo → Hunter → Snov → Clearbit/Datagma → Findymail, then ZeroBounce on top. Conditional logic: each step only fires on rows still missing a verified email. Tuned for your geo mix (US-heavy stacks differ from EU-heavy).</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">4</div>
+      <div>
+        <div class="step-title">Build the personalization columns</div>
+        <div class="step-desc">Website scrape → AI summary, recent LinkedIn post → relevance line, signal-based opener, custom variables for your copy ({{first_line}}, {{trigger}}, {{ice_breaker}}). Tied to your existing copy template so I'm not rewriting your voice.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">5</div>
+      <div>
+        <div class="step-title">Validate, dedupe, push to Instantly</div>
+        <div class="step-desc">MX + catch-all check, risk score filter, dedupe across both campaigns + your historical sends, then push to Instantly via API or formatted CSV. Mailbox rotation + send-cap aware. You get a Loom walking through the table before launch.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">6</div>
+      <div>
+        <div class="step-title">Hand off + iterate</div>
+        <div class="step-desc">Documented Clay table (so anyone on your team can clone it), credit usage report, list of any rows that failed enrichment with reason, and a 1-pager on what to A/B for round 2. Ongoing builds drop to 1-day turnaround once your stack is templated.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pricing-card">
+    <div class="pricing-title">What this typically costs</div>
+    <div class="pricing-grid">
+      <div class="price-tile">
+        <div class="price-tile-label">Hourly</div>
+        <div class="price-tile-num">$75–95</div>
+        <div class="price-tile-sub">For ad-hoc Clay tweaks, debugging, or audit work.</div>
+      </div>
+      <div class="price-tile">
+        <div class="price-tile-label">Per campaign build</div>
+        <div class="price-tile-num">$650–1,200</div>
+        <div class="price-tile-sub">Flat. Covers ICP table, signal layer, waterfall, personalization, validation, Instantly push, and Loom walkthrough. Clay credits billed at cost.</div>
+      </div>
+      <div class="price-tile">
+        <div class="price-tile-label">Ongoing retainer</div>
+        <div class="price-tile-num">$1,800/mo</div>
+        <div class="price-tile-sub">2–3 campaign builds per month + maintenance, signal refresh, list top-ups. Drops to ~$600 effective per campaign.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Clay build blueprint &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 20, htmlLabels: false }
+});
+
+const tooltips = {
+  "ICP Table": "Clay people + company finder.\nTitle regex, headcount bands,\nfunding stage, geo, exclusions.\nSized to your weekly send target.",
+  "Signal Layer": "Each signal = its own Clay column:\n• Hiring (job boards, BuiltWith)\n• Funding (Crunchbase, news)\n• Tech stack (Wappalyzer)\n• Intent (G2, Bombora)\n• Recent triggers (LI, press)",
+  "Enrichment Waterfall": "Cascade in cost order:\nApollo → Hunter → Snov →\nClearbit/Datagma → Findymail.\nEach step only runs on misses.\nLands $0.05–0.15 per verified lead.",
+  "Personalization": "Site scrape → AI summary.\nRecent post → relevance line.\nSignal-based opener.\nCustom vars tied to YOUR copy.",
+  "Validation": "MX + catch-all check.\nRisk score filter.\nDedupe across campaigns +\nhistorical sends.",
+  "Push to Instantly": "API push or formatted CSV.\nMailbox rotation aware.\nSend-cap respected.\nLoom walkthrough before launch."
+};
+
+const tipEl = document.getElementById('tooltip');
+
+function wireTooltips() {
+  document.querySelectorAll('.node').forEach(node => {
+    const label = (node.querySelector('text, .nodeLabel, .label') || {}).textContent || '';
+    const key = Object.keys(tooltips).find(k => label.includes(k.split(' ')[0]));
+    if (!key) return;
+    node.addEventListener('mouseenter', () => { tipEl.textContent = tooltips[key]; tipEl.classList.add('visible'); });
+    node.addEventListener('mousemove', e => { tipEl.style.left = (e.clientX + 14) + 'px'; tipEl.style.top = (e.clientY - 8) + 'px'; });
+    node.addEventListener('mouseleave', () => tipEl.classList.remove('visible'));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => setTimeout(wireTooltips, 900));
+window.addEventListener('load', () => setTimeout(wireTooltips, 500));
+</script>
+</body>
+</html>
