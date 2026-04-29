@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Driven Market Intelligence and Outreach</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 980px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 16px; color: var(--c-muted); line-height: 1.6; max-width: 740px; }
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .stat-num { font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--c-text); }
+  .stat-label { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 40px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+  .diagram-card svg .node rect,
+  .diagram-card svg .node circle,
+  .diagram-card svg .node polygon {
+    cursor: pointer;
+    transition: filter .15s;
+  }
+  .diagram-card svg .node:hover rect,
+  .diagram-card svg .node:hover circle,
+  .diagram-card svg .node:hover polygon { filter: brightness(1.14); }
+  .diagram-card svg .edgePath path {
+    stroke-dasharray: 6 3;
+    animation: flowDash 1.4s linear infinite;
+  }
+  @keyframes flowDash { to { stroke-dashoffset: -36; } }
+  #tooltip {
+    position: fixed;
+    background: #1a1a18;
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    max-width: 300px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 9999;
+    white-space: pre-line;
+  }
+  #tooltip.visible { opacity: 1; }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  .twocol-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 28px 30px;
+  }
+  .twocol-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .twocol-sub { font-size: 13px; color: var(--c-muted); margin-bottom: 22px; }
+  .twocol-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+  .twocol-block { padding: 16px 18px; border: 1px solid var(--c-border); border-radius: 10px; background: #fafaf8; }
+  .twocol-block.intel { border-left: 3px solid #5b50d6; }
+  .twocol-block.reach { border-left: 3px solid #0d9467; }
+  .twocol-block h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .twocol-block .twocol-tag { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--c-muted); margin-bottom: 8px; }
+  .twocol-block ul { list-style: none; padding: 0; margin-top: 8px; }
+  .twocol-block li { font-size: 13px; color: var(--c-muted); padding: 4px 0; line-height: 1.5; }
+  .twocol-block li::before { content: "→ "; color: var(--c-text); font-weight: 700; }
+
+  .steps-label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: -8px; }
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .step:hover { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(91,80,214,.08); }
+  .step-badge {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--c-text); color: #fff;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .step-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .step-desc { color: var(--c-muted); font-size: 14px; line-height: 1.55; }
+
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+
+  @media (max-width: 720px) {
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .twocol-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="tooltip"></div>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">Part-time operator blueprint</div>
+    <h1>AI-Driven Market Intelligence and Outreach</h1>
+    <p class="summary">One operator, one AI brain, two outputs. I run the analysis side (decision papers, market sizing, competitor scans) and the execution side (Expandi LinkedIn sequences, Mailchimp email campaigns) through the same orchestration layer, so insights and outreach stay tightly coupled.</p>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">2 tracks</div><div class="stat-label">analysis + outreach, one operator</div></div>
+    <div class="stat"><div class="stat-num">Claude · GPT · Perplexity</div><div class="stat-label">core research stack</div></div>
+    <div class="stat"><div class="stat-num">Expandi · Mailchimp</div><div class="stat-label">execution stack</div></div>
+    <div class="stat"><div class="stat-num">Weekly</div><div class="stat-label">decision paper cadence</div></div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"13px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart TD
+  BRIEF["📋 Strategic Brief<br/>Question · ICP · hypothesis"]:::trigger --> HUB
+  KB(["📚 Knowledge Base<br/>Past papers · brand voice"]):::util --> HUB
+  HUB["🧠 AI Intelligence Hub<br/>Claude · Perplexity · ChatGPT"]:::ai --> PAPER
+  HUB --> CAMP
+  PAPER(["📄 Decision Paper<br/>Findings · risks · recommendation"]):::out
+  CAMP["🎯 Campaign Brief<br/>ICP · sequences · creative"]:::ai --> EXP
+  CAMP --> MAIL
+  EXP(["💼 Expandi<br/>LinkedIn sequences"]):::out --> RES
+  MAIL(["📨 Mailchimp<br/>Email campaigns"]):::out --> RES
+  RES(["📊 Performance Loop<br/>Conversion data feeds back"]):::util --> HUB
+
+  classDef trigger fill:#111110,stroke:#111110,color:#ffffff
+  classDef ai fill:#5b50d6,stroke:#4a40c0,color:#ffffff
+  classDef util fill:#e2e8f0,stroke:#94a3b8,color:#334155
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#111110"></div>Inputs</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#5b50d6"></div>AI Layer</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>Knowledge / Data</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0d9467"></div>Deliverables</div>
+  </div>
+
+  <div class="twocol-card">
+    <div class="twocol-title">What ships every week</div>
+    <div class="twocol-sub">The two tracks share one AI brain but produce different artifacts. Stakeholders see both flowing on a predictable cadence.</div>
+    <div class="twocol-grid">
+      <div class="twocol-block intel">
+        <div class="twocol-tag">Track A · Intelligence</div>
+        <h4>Decision papers and market scans</h4>
+        <ul>
+          <li>1 to 2 page decision paper per question, structured (situation, options, risk, recommendation)</li>
+          <li>Competitor pricing and positioning scans via Perplexity plus deep research with Claude</li>
+          <li>TAM, SAM, SOM sizing using public data plus AI-assisted triangulation</li>
+          <li>Feasibility memos for new ventures or product bets</li>
+          <li>Source-cited so stakeholders can audit any claim</li>
+        </ul>
+      </div>
+      <div class="twocol-block reach">
+        <div class="twocol-tag">Track B · Outreach</div>
+        <h4>Expandi LinkedIn and Mailchimp campaigns</h4>
+        <ul>
+          <li>Expandi sequences with safe daily limits, smart inbox, A/B variants per ICP segment</li>
+          <li>Mailchimp campaigns (broadcast plus drip) with segmented audiences and tagged conversions</li>
+          <li>Copy written tight to the segment, not generic templates</li>
+          <li>Weekly performance digest: open, reply, accept, click, conversion</li>
+          <li>Optimization loop, not set-and-forget</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="steps-label">How I run the role</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-badge">1</div>
+      <div>
+        <div class="step-title">Translate every brief into a structured AI workflow</div>
+        <div class="step-desc">A strategic question becomes a research plan with sources, a campaign request becomes an ICP and sequence brief. Same operating discipline, different artifacts. Nothing goes into the AI without a defined output and a quality bar.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">2</div>
+      <div>
+        <div class="step-title">Use the right AI for the right job</div>
+        <div class="step-desc">Perplexity for live web grounding and source-cited research. Claude for long-form synthesis, decision papers, and reasoning under ambiguity. ChatGPT for fast iteration on copy and creative variants. Outputs always cross-checked, never single-source.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">3</div>
+      <div>
+        <div class="step-title">Run Expandi within safe limits, optimize on real data</div>
+        <div class="step-desc">Conservative daily caps so no LinkedIn account flags. Connection messages, inMails, and follow-ups segmented per ICP. Weekly check on accept rate and reply rate. Variant that beats the control gets promoted, the loser gets killed.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">4</div>
+      <div>
+        <div class="step-title">Use Mailchimp for the lifecycle, not just blasts</div>
+        <div class="step-desc">Audience segmentation by source, lifecycle stage, and engagement level. Broadcast for announcements, automation flows for nurture and reactivation, transactional templates for onboarding. Conversion tracking back into the segment so reporting is honest.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">5</div>
+      <div>
+        <div class="step-title">Close the loop weekly</div>
+        <div class="step-desc">One Friday digest covers both tracks: decision papers shipped, campaigns running, top variants, conversion metrics, and a short list of what I would test or research next week. Stakeholders read one document, not five tools.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Part-time operator blueprint &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 20, htmlLabels: false }
+});
+
+const tooltips = {
+  "Strategic Brief": "One template for both tracks:\n• The question or ICP\n• Hypothesis or angle\n• Output format expected\n• Deadline + stakeholders",
+  "Knowledge Base": "Past decision papers,\nbrand voice doc, ICP library,\ncompetitor profiles, prior\ncampaign learnings.",
+  "AI Intelligence Hub": "Three-tool stack:\n• Perplexity for live grounding\n• Claude for long synthesis\n• ChatGPT for fast iteration\nCross-checked, never single source.",
+  "Decision Paper": "1 to 2 pages, structured:\nsituation, options, risks,\nrecommendation, sources.\nReady for a stakeholder read in 5 min.",
+  "Campaign Brief": "ICP, segments, sequence flow,\ncreative variants, targets.\nFeeds Expandi + Mailchimp.",
+  "Expandi": "LinkedIn sequences:\n• Safe daily limits (no flags)\n• Per-segment connection notes\n• InMail + follow-up cadence\n• A/B variants per ICP",
+  "Mailchimp": "Email lifecycle:\n• Audience segmentation\n• Broadcast + drip flows\n• Transactional templates\n• Conversion tracking",
+  "Performance Loop": "Open, reply, accept, click,\nbooked, closed. Weekly digest.\nWinners promoted, losers killed.\nFeeds back into the AI brain."
+};
+
+const tipEl = document.getElementById('tooltip');
+
+function wireTooltips() {
+  document.querySelectorAll('.node').forEach(node => {
+    const label = (node.querySelector('text, .nodeLabel, .label') || {}).textContent || '';
+    const key = Object.keys(tooltips).find(k => label.includes(k.split(' ')[0]));
+    if (!key) return;
+    node.addEventListener('mouseenter', () => { tipEl.textContent = tooltips[key]; tipEl.classList.add('visible'); });
+    node.addEventListener('mousemove', e => { tipEl.style.left = (e.clientX + 14) + 'px'; tipEl.style.top = (e.clientY - 8) + 'px'; });
+    node.addEventListener('mouseleave', () => tipEl.classList.remove('visible'));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => setTimeout(wireTooltips, 900));
+window.addEventListener('load', () => setTimeout(wireTooltips, 500));
+</script>
+</body>
+</html>
