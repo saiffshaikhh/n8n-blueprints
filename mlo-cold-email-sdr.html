@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MLO Cold Email + SDR Engine — Instantly to Booked Calls</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --c-instantly: #ea580c;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 980px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 16px; color: var(--c-muted); line-height: 1.6; max-width: 740px; }
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .stat-num { font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--c-text); }
+  .stat-label { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 40px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+  .diagram-card svg .node rect,
+  .diagram-card svg .node circle,
+  .diagram-card svg .node polygon {
+    cursor: pointer;
+    transition: filter .15s;
+  }
+  .diagram-card svg .node:hover rect,
+  .diagram-card svg .node:hover circle,
+  .diagram-card svg .node:hover polygon { filter: brightness(1.14); }
+  .diagram-card svg .edgePath path {
+    stroke-dasharray: 6 3;
+    animation: flowDash 1.4s linear infinite;
+  }
+  @keyframes flowDash { to { stroke-dashoffset: -36; } }
+  #tooltip {
+    position: fixed;
+    background: #1a1a18;
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    max-width: 300px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 9999;
+    white-space: pre-line;
+  }
+  #tooltip.visible { opacity: 1; }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  .funnel-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 28px 30px;
+  }
+  .funnel-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .funnel-sub { font-size: 13px; color: var(--c-muted); margin-bottom: 22px; }
+  .funnel-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .fnl-tile {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+  .fnl-num { font-size: 20px; font-weight: 700; color: var(--c-instantly); }
+  .fnl-label { font-size: 11px; color: var(--c-muted); margin-top: 2px; }
+  .fnl-pct { font-size: 11px; color: var(--c-muted); margin-top: 6px; font-style: italic; }
+
+  .steps-label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: -8px; }
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .step:hover { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(91,80,214,.08); }
+  .step-badge {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--c-text); color: #fff;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .step-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .step-desc { color: var(--c-muted); font-size: 14px; line-height: 1.55; }
+  .step-desc code { background: #f0f0ee; padding: 1px 5px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+
+  .sample-card {
+    background: #fff;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 32px;
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.65;
+    font-size: 15px;
+    color: #2a2a26;
+    white-space: pre-line;
+  }
+  .sample-label {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--c-muted); margin-bottom: 14px;
+  }
+  .sample-subj { font-weight: 700; color: var(--c-text); margin-bottom: 12px; font-size: 16px; }
+
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+
+  @media (max-width: 720px) {
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .funnel-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div id="tooltip"></div>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">SDR campaign blueprint</div>
+    <h1>MLO Cold Email + SDR Engine — Instantly to Booked Calls</h1>
+    <p class="summary">End-to-end MLO outbound: scrape verified MLO contacts from NMLS + LinkedIn, run sequenced Instantly campaigns with healthy deliverability, triage replies daily, call warm leads during US business hours, and book qualified MLOs directly into Calendly. Daily report goes out before EOD EST.</p>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">300K+</div><div class="stat-label">MLOs in NMLS database</div></div>
+    <div class="stat"><div class="stat-num">90%+</div><div class="stat-label">inbox placement target</div></div>
+    <div class="stat"><div class="stat-num">9-5 EST</div><div class="stat-label">live call window</div></div>
+    <div class="stat"><div class="stat-num">EOD daily</div><div class="stat-label">reporting cadence</div></div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"13px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart TD
+  LEAD["📥 MLO Lead Sourcing<br/>NMLS · LinkedIn · Apollo · Apify"]:::trigger --> HUB
+  KB(["📚 Client Knowledge<br/>Case studies · ICP · objections"]):::util --> HUB
+  HUB["🧠 Claude Code + n8n<br/>Verify · Personalize · Sequence"]:::ai --> INST
+  INST(["📨 Instantly.ai<br/>Mailbox rotation · 90%+ inbox"]):::instantly --> REPLY
+  REPLY["📡 Reply Triage<br/>Positive / objection / nurture"]:::ai --> CALL
+  CALL(["📞 US Business Hours Calling<br/>Pre-qualify · book"]):::out --> CAL
+  CAL(["📅 Calendly<br/>Qualified MLO → AE"]):::out
+  HUB --> REPORT(["📊 Daily Report<br/>Sent · replies · calls · booked"]):::out
+
+  classDef trigger fill:#111110,stroke:#111110,color:#ffffff
+  classDef ai fill:#5b50d6,stroke:#4a40c0,color:#ffffff
+  classDef instantly fill:#ea580c,stroke:#c2410c,color:#ffffff
+  classDef util fill:#e2e8f0,stroke:#94a3b8,color:#334155
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#111110"></div>Sourcing</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#5b50d6"></div>AI Layer</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ea580c"></div>Instantly</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>Knowledge</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0d9467"></div>Conversion + Reporting</div>
+  </div>
+
+  <div class="funnel-card">
+    <div class="funnel-title">Realistic Instantly funnel — what to expect per 1,000 sends</div>
+    <div class="funnel-sub">Numbers below are for a healthy stack on a B2B niche like MLOs (warmed mailboxes, verified list, niche-specific copy). Hit these and the math works.</div>
+    <div class="funnel-grid">
+      <div class="fnl-tile"><div class="fnl-num">1,000</div><div class="fnl-label">Emails sent</div><div class="fnl-pct">100%</div></div>
+      <div class="fnl-tile"><div class="fnl-num">500+</div><div class="fnl-label">Opens</div><div class="fnl-pct">50–60%</div></div>
+      <div class="fnl-tile"><div class="fnl-num">40–80</div><div class="fnl-label">Replies</div><div class="fnl-pct">4–8%</div></div>
+      <div class="fnl-tile"><div class="fnl-num">10–20</div><div class="fnl-label">Positive replies</div><div class="fnl-pct">1–2%</div></div>
+      <div class="fnl-tile"><div class="fnl-num">5–12</div><div class="fnl-label">Booked calls</div><div class="fnl-pct">0.5–1.2%</div></div>
+    </div>
+  </div>
+
+  <div class="steps-label">How I'd run the campaign</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-badge">1</div>
+      <div>
+        <div class="step-title">Build the MLO list properly — not just a scrape</div>
+        <div class="step-desc">NMLS Consumer Access for the verified license + brokerage data, LinkedIn Sales Nav filtered by "Mortgage Loan Officer" + active markets, Apollo cross-reference for emails, Apify scrapers for state-by-state broker directories. Filter by NMLS license active + recent activity. Verify every email through a waterfall (Hunter → Snov → Findymail → ZeroBounce) so bounce rate stays under 2%.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">2</div>
+      <div>
+        <div class="step-title">Set Instantly up for 90%+ inbox placement</div>
+        <div class="step-desc">8–12 sending mailboxes across 3+ root domains with separate aliases per mailbox. Full SPF / DKIM / DMARC setup, 2-week warmup before any cold sends, 25–35 daily sends per mailbox max. Smart sending on, mail merge fallback handling, time-zone matched send windows for US business hours. Verified list only — no catch-alls, no role-based.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">3</div>
+      <div>
+        <div class="step-title">Write copy that lands with MLOs specifically</div>
+        <div class="step-desc">MLOs care about: more closed loans, better lead quality, faster pre-qual times, beating rate competitors, and building a referral pipeline outside Realtor dependence. 4-step sequence: short value-prop opener → social proof from a comparable broker → soft CTA (case study link) → break-up email. No "I noticed you're a top MLO" garbage. Subject lines under 5 words.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">4</div>
+      <div>
+        <div class="step-title">Triage replies twice a day, call warm leads same-day</div>
+        <div class="step-desc">Morning + afternoon reply pass. Positive → call within 2 hours during 9-5 EST. Objection → handle inline + book if appropriate. Out of office → reschedule sequence. Wrong contact → ask for the right person. Calendly link only after a verbal yes on the call — booking-form qualification beats a cold link.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">5</div>
+      <div>
+        <div class="step-title">Daily report, EOD EST, no exceptions</div>
+        <div class="step-desc">Slack message before EOD EST: emails sent, replies (positive/neutral/negative), calls made, conversations had, meetings booked, list of booked MLOs with NMLS + brokerage + qualification notes. Weekly recap on Friday: what's working, what to test next week, mailbox health, deliverability flags.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">6</div>
+      <div>
+        <div class="step-title">Push to close — earn the Stage 2 jump fast</div>
+        <div class="step-desc">Trial week 1: focus on volume + booking discipline so you see the funnel works. Week 2: shadow your closer, learn the pitch, pre-qualify deeper so booked calls convert. Goal: by month 2, run discovery + close independently on 30% commission. Sales is the goal, not booking.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-card">
+    <div class="sample-label">Sample first-touch email — MLO outreach</div>
+    <div class="sample-subj">Subject: 3 closings/mo question</div>Hi {{first_name}},
+
+Saw {{brokerage}} is active in the {{state}} market — quick question.
+
+Most MLOs we work with were stuck at the same closings/month for 6+ months because their leads came from Realtor referrals or expensive Zillow shares.
+
+We just helped {{comparable_mlo}} add 4 closings in 60 days through paid ads built around their NMLS profile + a pre-qual flow that filters out tire-kickers before they hit the calendar.
+
+Worth a 15-min look?
+
+— {{sender}}</div>
+
+  <footer>SDR campaign blueprint &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 20, htmlLabels: false }
+});
+
+const tooltips = {
+  "MLO Lead Sourcing": "MLO-specific stack:\n• NMLS Consumer Access — license data\n• LinkedIn Sales Nav — by state\n• Apollo — email cross-ref\n• Apify — state broker directories\nFiltered by active license + recent activity.",
+  "Client Knowledge": "Case studies, ICP definition,\ntop 10 objections + responses,\ncomparable MLO references,\nbrand voice, qualification rubric.",
+  "Claude Code + n8n": "Verifies emails, deduplicates,\npersonalizes openers from NMLS data,\nsequences in Instantly, routes replies,\ndrafts daily report.",
+  "Instantly.ai": "8–12 mailboxes, 3+ root domains.\nFull SPF/DKIM/DMARC setup.\n25–35 sends per mailbox/day.\n2-week warmup before cold.\nSmart sending on.",
+  "Reply Triage": "Twice-daily pass:\n• Positive → call within 2h\n• Objection → handle + book\n• OOO → reschedule\n• Wrong contact → ask for right one",
+  "US Business Hours Calling": "9-5 EST live calls only.\nDiscovery framework:\nbusiness situation, lead source mix,\ncloses/mo target, pain. Book\nqualified leads into AE Calendly.",
+  "Calendly": "Booking link sent ONLY after\nverbal yes on call. Pre-qual\nfields enforced on booking form.\nReminders 24h + 1h before.",
+  "Daily Report": "EOD EST Slack message:\n• Emails sent\n• Replies (pos/neu/neg)\n• Calls made\n• Conversations\n• Booked MLOs + notes\nWeekly recap Friday."
+};
+
+const tipEl = document.getElementById('tooltip');
+
+function wireTooltips() {
+  document.querySelectorAll('.node').forEach(node => {
+    const label = (node.querySelector('text, .nodeLabel, .label') || {}).textContent || '';
+    const key = Object.keys(tooltips).find(k => label.includes(k.split(' ')[0]));
+    if (!key) return;
+    node.addEventListener('mouseenter', () => { tipEl.textContent = tooltips[key]; tipEl.classList.add('visible'); });
+    node.addEventListener('mousemove', e => { tipEl.style.left = (e.clientX + 14) + 'px'; tipEl.style.top = (e.clientY - 8) + 'px'; });
+    node.addEventListener('mouseleave', () => tipEl.classList.remove('visible'));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => setTimeout(wireTooltips, 900));
+window.addEventListener('load', () => setTimeout(wireTooltips, 500));
+</script>
+</body>
+</html>
