@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cold Email + Lead Gen + CRM Engine for Asim</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 980px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 16px; color: var(--c-muted); line-height: 1.6; max-width: 740px; }
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .stat-num { font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--c-text); }
+  .stat-label { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 40px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+  .diagram-card svg .node rect,
+  .diagram-card svg .node circle,
+  .diagram-card svg .node polygon {
+    cursor: pointer;
+    transition: filter .15s;
+  }
+  .diagram-card svg .node:hover rect,
+  .diagram-card svg .node:hover circle,
+  .diagram-card svg .node:hover polygon { filter: brightness(1.14); }
+  .diagram-card svg .edgePath path {
+    stroke-dasharray: 6 3;
+    animation: flowDash 1.4s linear infinite;
+  }
+  @keyframes flowDash { to { stroke-dashoffset: -36; } }
+  #tooltip {
+    position: fixed;
+    background: #1a1a18;
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    max-width: 300px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 9999;
+    white-space: pre-line;
+  }
+  #tooltip.visible { opacity: 1; }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  .steps-label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: -8px; }
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .step:hover { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(91,80,214,.08); }
+  .step-badge {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--c-text); color: #fff;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .step-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .step-desc { color: var(--c-muted); font-size: 14px; line-height: 1.55; }
+
+  .cta-card {
+    background: linear-gradient(135deg, #111110 0%, #2a2a26 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 36px 36px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .cta-eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+    color: rgba(255,255,255,.6);
+  }
+  .cta-headline { font-size: 22px; font-weight: 700; line-height: 1.3; letter-spacing: -.01em; }
+  .cta-body { font-size: 15px; line-height: 1.6; color: rgba(255,255,255,.78); max-width: 700px; }
+  .cta-pill {
+    display: inline-block;
+    align-self: flex-start;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+
+  @media (max-width: 720px) {
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div id="tooltip"></div>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">Built for Asim, London</div>
+    <h1>Cold Email + Lead Gen + CRM Engine</h1>
+    <p class="summary">Hey Asim, this is the operating shape I'd run for your outbound: targeted UK and EU list build, verified to 98%+, sequenced through cold email with healthy deliverability, replies triaged daily, conversions tracked back into your CRM. One operator, one closed loop, GMT aligned.</p>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">5,000+</div><div class="stat-label">leads sourced per week</div></div>
+    <div class="stat"><div class="stat-num">98%+</div><div class="stat-label">email validity</div></div>
+    <div class="stat"><div class="stat-num">90%+</div><div class="stat-label">inbox placement</div></div>
+    <div class="stat"><div class="stat-num">GMT aligned</div><div class="stat-label">London hours, no lag</div></div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"13px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart TD
+  LEAD["📥 Initial Lead Flow<br/>Apollo · LinkedIn SN · Apify"]:::trigger --> HUB
+  KB(["📚 Knowledge Base<br/>ICP · offer · objection map"]):::util --> HUB
+  HUB["🧠 Claude Code + n8n<br/>Verify · Personalize · Sequence"]:::ai --> DB
+  DB(["🗄️ Database<br/>Verified, deduped leads"]):::util --> SEND
+  HUB --> SEND(["📨 Cold Email Sequences<br/>Smartlead · Instantly · Reply.io"]):::out
+  SEND --> CRM(["🗂️ CRM<br/>HubSpot · Pipedrive · Close"]):::out
+  CRM --> HUB
+  CRM --> METRICS(["📊 Conversion Tracking<br/>Open · reply · booked · closed"]):::out
+
+  classDef trigger fill:#111110,stroke:#111110,color:#ffffff
+  classDef ai fill:#5b50d6,stroke:#4a40c0,color:#ffffff
+  classDef util fill:#e2e8f0,stroke:#94a3b8,color:#334155
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#111110"></div>Sourcing</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#5b50d6"></div>AI Layer</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>Knowledge / Data</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0d9467"></div>Outreach + CRM</div>
+  </div>
+
+  <div class="steps-label">How I'd run it for you</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-badge">1</div>
+      <div>
+        <div class="step-title">Build the targeted list, not just scrape</div>
+        <div class="step-desc">Apollo for UK and EU firmographic filters, LinkedIn Sales Nav for decision-maker precision, Apify for any directory or niche source without an API. Filters tuned to your ICP, exclusions enforced (no competitors, no bad-fit segments, no people you've already pitched).</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">2</div>
+      <div>
+        <div class="step-title">Verify every email through a 4-step waterfall</div>
+        <div class="step-desc">Hunter, Snov, Findymail, ZeroBounce in cascade. Catch-all and role-based addresses dropped. Bounce rate stays under 2%, which keeps the sender domain healthy and inbox placement above 90%.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">3</div>
+      <div>
+        <div class="step-title">Write copy that earns the reply</div>
+        <div class="step-desc">Tight subject lines under 5 words. P2P opener, one specific value prop with a number, soft CTA built around a 15 minute call. Sequences split A and B from day one so we know within 500 sends which variant wins.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">4</div>
+      <div>
+        <div class="step-title">Run a healthy sending stack</div>
+        <div class="step-desc">8 to 12 mailboxes across 3+ root domains. Full SPF, DKIM, DMARC. Two-week warmup before any cold sends. 25 to 35 sends per mailbox per day max. Smart sending on. Time zone matched to UK and US prospect inboxes.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">5</div>
+      <div>
+        <div class="step-title">Wire the CRM as a single source of truth</div>
+        <div class="step-desc">HubSpot, Pipedrive, or Close (whichever you run) gets every reply, every booked call, every stage change synced via API. Custom properties for source, sequence, and signal so attribution stays clean. You see one timeline, not five tools.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">6</div>
+      <div>
+        <div class="step-title">Report Friday, optimize Monday</div>
+        <div class="step-desc">Friday digest: emails sent, opens, replies (positive, neutral, negative), calls booked, deals progressed, top-performing variant, what to test next. No mystery, no vanity metrics, just the funnel math you can act on.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-card">
+    <div class="cta-eyebrow">Next step, Asim</div>
+    <div class="cta-headline">Let's get on a 15 minute call and walk through the first 50 leads live.</div>
+    <div class="cta-body">Send me the ICP brief (titles, seniority, geos, industry, company size, exclusions). I'll pull a sample of 50 verified UK and EU contacts and walk you through them on a screen share. You judge the quality before any commitment, and we scope from there.</div>
+    <div class="cta-pill">15 minute call · first 50 leads reviewed live</div>
+  </div>
+
+  <footer>Built for Asim, London &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 20, htmlLabels: false }
+});
+
+const tooltips = {
+  "Initial Lead Flow": "Three sources, one pipeline:\n• Apollo for UK + EU firmographics\n• LinkedIn Sales Nav for precision\n• Apify scrapers for niche directories\nFilters and exclusions enforced.",
+  "Knowledge Base": "Per-client context:\n• ICP definition + exclusions\n• Offer + risk reversal\n• Objection map\n• Brand voice for copy",
+  "Claude Code + n8n": "Verifies, deduplicates, personalizes,\nsequences in cold email,\nroutes replies, syncs CRM,\nfires daily and weekly reports.",
+  "Database": "Source of truth for leads.\nDeduped across all sources +\nhistorical sends. Feeds\nthe email layer cleanly.",
+  "Cold Email Sequences": "Smartlead, Instantly, or Reply.io\n(whichever you prefer).\n8 to 12 mailboxes, 3+ domains,\n2-week warmup, smart sending,\n25 to 35 sends per mailbox per day.",
+  "CRM": "HubSpot, Pipedrive, or Close.\nEvery reply, booked call, and\nstage change syncs via API.\nClean attribution by source\nand sequence.",
+  "Conversion Tracking": "The funnel math, weekly:\nopens, replies, positive,\ncalls booked, deals progressed,\nrevenue. No vanity metrics."
+};
+
+const tipEl = document.getElementById('tooltip');
+
+function wireTooltips() {
+  document.querySelectorAll('.node').forEach(node => {
+    const label = (node.querySelector('text, .nodeLabel, .label') || {}).textContent || '';
+    const key = Object.keys(tooltips).find(k => label.includes(k.split(' ')[0]));
+    if (!key) return;
+    node.addEventListener('mouseenter', () => { tipEl.textContent = tooltips[key]; tipEl.classList.add('visible'); });
+    node.addEventListener('mousemove', e => { tipEl.style.left = (e.clientX + 14) + 'px'; tipEl.style.top = (e.clientY - 8) + 'px'; });
+    node.addEventListener('mouseleave', () => tipEl.classList.remove('visible'));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => setTimeout(wireTooltips, 900));
+window.addEventListener('load', () => setTimeout(wireTooltips, 500));
+</script>
+</body>
+</html>
