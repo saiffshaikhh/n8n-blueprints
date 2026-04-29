@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Channel Outreach Specialist — Apollo · HubSpot · Smartlead · Reply.io · WhatsApp</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 980px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 16px; color: var(--c-muted); line-height: 1.6; max-width: 740px; }
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .stat-num { font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--c-text); }
+  .stat-label { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 40px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+  .diagram-card svg .node rect,
+  .diagram-card svg .node circle,
+  .diagram-card svg .node polygon {
+    cursor: pointer;
+    transition: filter .15s;
+  }
+  .diagram-card svg .node:hover rect,
+  .diagram-card svg .node:hover circle,
+  .diagram-card svg .node:hover polygon { filter: brightness(1.14); }
+  .diagram-card svg .edgePath path {
+    stroke-dasharray: 6 3;
+    animation: flowDash 1.4s linear infinite;
+  }
+  @keyframes flowDash { to { stroke-dashoffset: -36; } }
+  #tooltip {
+    position: fixed;
+    background: #1a1a18;
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 10px 14px;
+    border-radius: 8px;
+    max-width: 300px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 9999;
+    white-space: pre-line;
+  }
+  #tooltip.visible { opacity: 1; }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  .stack-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 28px 30px;
+  }
+  .stack-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .stack-sub { font-size: 13px; color: var(--c-muted); margin-bottom: 22px; }
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .stack-col h4 {
+    font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--c-muted); margin-bottom: 10px;
+  }
+  .stack-row {
+    display: flex; gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: #fafaf8;
+    font-size: 13px;
+  }
+  .stack-row.core { border-left: 3px solid #5b50d6; background: #f5f3ff; }
+  .stack-name { font-weight: 600; min-width: 110px; color: var(--c-text); }
+  .stack-desc { color: var(--c-muted); }
+
+  .steps-label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: -8px; }
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .step:hover { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(91,80,214,.08); }
+  .step-badge {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--c-text); color: #fff;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .step-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .step-desc { color: var(--c-muted); font-size: 14px; line-height: 1.55; }
+  .step-desc code { background: #f0f0ee; padding: 1px 5px; border-radius: 4px; font-size: 12px; font-family: monospace; }
+
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+
+  @media (max-width: 720px) {
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .stack-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="tooltip"></div>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">Outreach blueprint</div>
+    <h1>Multi-Channel Outreach Specialist — Apollo · HubSpot · Smartlead · Reply.io · WhatsApp</h1>
+    <p class="summary">Advisory + execution layer for your outbound. I design the channel-message-cadence stack across email, LinkedIn, WhatsApp, and SMS, wire it into your CRM as one closed loop, and pick the right tool for the job — not just the one you already pay for.</p>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">5,000+</div><div class="stat-label">leads sourced / week</div></div>
+    <div class="stat"><div class="stat-num">4 channels</div><div class="stat-label">email · LI · WhatsApp · SMS</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">client success rate</div></div>
+    <div class="stat"><div class="stat-num">Stack-agnostic</div><div class="stat-label">advisor + builder</div></div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"13px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart TD
+  LEAD["📥 Initial Lead Flow<br/>Apollo · LinkedIn SN · scrapers"]:::trigger --> HUB
+  KB(["📚 Knowledge Base<br/>ICP · sequences · playbooks"]):::util --> HUB
+  HUB["🧠 Claude Code + n8n<br/>Qualify · Enrich · Route · Personalize"]:::ai --> DB
+  DB(["🗄️ Database<br/>Clean enriched leads"]):::util --> REACH
+  HUB --> REACH(["🔔 Reachout & Followup<br/>Smartlead · Reply.io · WhatsApp · SMS"]):::out
+  REACH --> CRM(["🗂️ HubSpot CRM<br/>Pipeline · stages · attribution"]):::out
+  CRM --> HUB
+
+  classDef trigger fill:#111110,stroke:#111110,color:#ffffff
+  classDef ai fill:#5b50d6,stroke:#4a40c0,color:#ffffff
+  classDef util fill:#e2e8f0,stroke:#94a3b8,color:#334155
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#111110"></div>Sourcing</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#5b50d6"></div>Orchestration</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>Knowledge / Data</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0d9467"></div>Channels & CRM</div>
+  </div>
+
+  <div class="stack-card">
+    <div class="stack-title">Tool stack — core + the alternatives I'd recommend per use case</div>
+    <div class="stack-sub">Stack choice should follow ICP and channel mix, not vendor loyalty. Here's how I think about each layer.</div>
+    <div class="stack-grid">
+      <div class="stack-col">
+        <h4>Sourcing & enrichment</h4>
+        <div class="stack-row core"><span class="stack-name">Apollo</span><span class="stack-desc">Core. Volume + intent filters.</span></div>
+        <div class="stack-row"><span class="stack-name">LinkedIn SN</span><span class="stack-desc">Decision-maker precision.</span></div>
+        <div class="stack-row"><span class="stack-name">Apify</span><span class="stack-desc">Custom scrapers when no API.</span></div>
+        <div class="stack-row"><span class="stack-name">Clay</span><span class="stack-desc">Waterfall + signal-layering.</span></div>
+        <div class="stack-row"><span class="stack-name">ZoomInfo / Cognism</span><span class="stack-desc">Enterprise + EU mobile coverage.</span></div>
+
+        <h4 style="margin-top:18px">CRM</h4>
+        <div class="stack-row core"><span class="stack-name">HubSpot</span><span class="stack-desc">Core. Pipeline + reporting.</span></div>
+        <div class="stack-row"><span class="stack-name">Salesforce</span><span class="stack-desc">For larger sales orgs / complex deal flow.</span></div>
+        <div class="stack-row"><span class="stack-name">Pipedrive / Close</span><span class="stack-desc">Lighter SDR-led teams.</span></div>
+      </div>
+      <div class="stack-col">
+        <h4>Email outbound</h4>
+        <div class="stack-row core"><span class="stack-name">Smartlead</span><span class="stack-desc">Core. Mailbox rotation, warmup, deliverability.</span></div>
+        <div class="stack-row core"><span class="stack-name">Reply.io</span><span class="stack-desc">Core. Multi-step sequencing + AI replies.</span></div>
+        <div class="stack-row"><span class="stack-name">Instantly</span><span class="stack-desc">Volume sends, similar to Smartlead.</span></div>
+        <div class="stack-row"><span class="stack-name">Lemlist</span><span class="stack-desc">When personalization-heavy + video.</span></div>
+
+        <h4 style="margin-top:18px">Messaging channels</h4>
+        <div class="stack-row core"><span class="stack-name">WhatsApp</span><span class="stack-desc">Core. Wati / 360dialog for compliance.</span></div>
+        <div class="stack-row"><span class="stack-name">LinkedIn DM</span><span class="stack-desc">HeyReach / Expandi for sequencing.</span></div>
+        <div class="stack-row"><span class="stack-name">SMS</span><span class="stack-desc">Twilio / Salesmsg for high-intent follow-up.</span></div>
+        <div class="stack-row"><span class="stack-name">Orchestration</span><span class="stack-desc">n8n / Make to glue everything.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="steps-label">How I run the engagement</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-badge">1</div>
+      <div>
+        <div class="step-title">Audit the current stack and pipeline</div>
+        <div class="step-desc">First week: I review your Apollo filters, Smartlead/Reply.io sequences, HubSpot pipeline structure, channel mix, and reply rates. Output is a 1-pager — what's working, what's leaking, what to kill, what to add. No tool changes until we agree on the diagnosis.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">2</div>
+      <div>
+        <div class="step-title">Match channel-message-cadence to each ICP segment</div>
+        <div class="step-desc">Founders respond to LinkedIn DMs. Ops managers respond to email. SaaS revenue leaders respond to WhatsApp follow-ups. I map the channel + opener style + cadence per segment, not a single sequence for everyone. This is where most outbound fails — generic cadence on the wrong channel.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">3</div>
+      <div>
+        <div class="step-title">Build sequences with deliverability as a hard constraint</div>
+        <div class="step-desc">Smartlead + Reply.io for email — mailbox rotation, warmup respected, send caps tuned to your domain age, spam-trigger words filtered. WhatsApp via compliant BSP (Wati / 360dialog). LinkedIn at safe daily limits. Deliverability is a KPI, not an assumption.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">4</div>
+      <div>
+        <div class="step-title">Wire HubSpot as the single source of truth</div>
+        <div class="step-desc">Every reply, meeting booked, no-show, and stage change writes back to HubSpot via API. Custom properties for source channel, sequence touchpoint, signal that triggered outreach. Sales sees one timeline; you see attribution clean enough to know what to scale.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">5</div>
+      <div>
+        <div class="step-title">Automate the boring parts, leave humans for the close</div>
+        <div class="step-desc">Reply triage, lead qualification, calendar booking, no-show recovery, dormant-account reactivation — all automated via n8n + Claude. AEs see only conversations worth their time. Saves 10–15 hours/week per rep.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">6</div>
+      <div>
+        <div class="step-title">Weekly reporting + strategic recommendations</div>
+        <div class="step-desc">Friday digest: what shipped, what each channel produced, top-performing variants, what I'd test next week. I don't just operate — I advise on stack, sequence experiments, and channel mix as the program scales.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Outreach blueprint &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 20, htmlLabels: false }
+});
+
+const tooltips = {
+  "Initial Lead Flow": "Sourcing layer:\n• Apollo — volume + intent filters\n• LinkedIn Sales Nav — precision\n• Custom scrapers (Apify) for\n  sources without APIs\n5,000+ qualified leads / week",
+  "Knowledge Base": "Per-client context Claude reads:\n• ICP definition + exclusions\n• Sequence playbooks per segment\n• Brand voice / objection map\n• Compliance rules per channel",
+  "Claude Code + n8n": "Orchestration brain:\n• Qualifies + scores each lead\n• Picks channel + sequence\n• Personalizes opener\n• Routes replies, books calls\n• Triggers CRM updates",
+  "Database": "Clean source-of-truth table.\nDeduped across all sources +\nhistorical sends.\nFeeds Reachout layer.",
+  "Reachout & Followup": "Multi-channel execution:\n• Smartlead — high-volume email\n• Reply.io — sequenced + AI replies\n• WhatsApp — compliant BSP\n• SMS — high-intent follow-up\nCadence matched per segment.",
+  "HubSpot CRM": "Single source of truth.\nEvery touchpoint, reply, and\nbooked call syncs back via API.\nCustom properties for source\nchannel + signal attribution."
+};
+
+const tipEl = document.getElementById('tooltip');
+
+function wireTooltips() {
+  document.querySelectorAll('.node').forEach(node => {
+    const label = (node.querySelector('text, .nodeLabel, .label') || {}).textContent || '';
+    const key = Object.keys(tooltips).find(k => label.includes(k.split(' ')[0]));
+    if (!key) return;
+    node.addEventListener('mouseenter', () => { tipEl.textContent = tooltips[key]; tipEl.classList.add('visible'); });
+    node.addEventListener('mousemove', e => { tipEl.style.left = (e.clientX + 14) + 'px'; tipEl.style.top = (e.clientY - 8) + 'px'; });
+    node.addEventListener('mouseleave', () => tipEl.classList.remove('visible'));
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => setTimeout(wireTooltips, 900));
+window.addEventListener('load', () => setTimeout(wireTooltips, 500));
+</script>
+</body>
+</html>
