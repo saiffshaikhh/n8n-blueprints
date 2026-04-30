@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics-Driven Lead Gen System for NinjaDev</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --c-good: #0d9467;
+    --c-luxury: #b08740;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 1040px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 16px; color: var(--c-muted); line-height: 1.6; max-width: 760px; }
+
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .stat-num { font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--c-text); }
+  .stat-label { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 36px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+  .diagram-card svg .edgePath path {
+    stroke-dasharray: 6 3;
+    animation: flowDash 1.4s linear infinite;
+  }
+  @keyframes flowDash { to { stroke-dashoffset: -36; } }
+
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  .stack-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 28px 30px;
+  }
+  .stack-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .stack-sub { font-size: 13px; color: var(--c-muted); margin-bottom: 20px; }
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .stack-col h4 { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: 10px; }
+  .stack-row {
+    padding: 8px 12px;
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    margin-bottom: 6px;
+    background: #fafaf8;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .stack-row.core { border-left: 3px solid var(--c-accent); background: #f5f3ff; }
+  .stack-row.luxury { border-left: 3px solid var(--c-luxury); background: #fdf9f2; }
+  .stack-name { font-weight: 600; }
+  .stack-tag { font-size: 11px; color: var(--c-muted); font-weight: 500; }
+
+  .dashboard-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 28px 30px;
+  }
+  .dashboard-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .dashboard-sub { font-size: 13px; color: var(--c-muted); margin-bottom: 22px; }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+  .kpi {
+    padding: 14px 16px;
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    background: #fafaf8;
+  }
+  .kpi-label { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--c-muted); }
+  .kpi-value { font-size: 22px; font-weight: 700; margin-top: 4px; letter-spacing: -.01em; }
+  .kpi-trend { font-size: 11px; color: var(--c-good); margin-top: 4px; font-variant-numeric: tabular-nums; }
+
+  .panel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .panel {
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    background: #fafaf8;
+    padding: 16px 18px;
+  }
+  .panel h4 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    margin-bottom: 12px;
+  }
+  .bar-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; padding: 6px 0; font-size: 13px; }
+  .bar-row .name { color: var(--c-text); font-weight: 600; }
+  .bar-row .count { color: var(--c-muted); font-variant-numeric: tabular-nums; }
+  .bar-track { grid-column: 1 / 3; height: 6px; background: #ececec; border-radius: 3px; overflow: hidden; margin-top: 2px; margin-bottom: 4px; }
+  .bar-fill { height: 100%; background: var(--c-accent); border-radius: 3px; }
+  .bar-fill.lux { background: var(--c-luxury); }
+  .bar-fill.green { background: var(--c-good); }
+
+  .funnel { display: flex; flex-direction: column; gap: 8px; }
+  .fnl-bar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    background: #5b50d6;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .fnl-bar .pct { opacity: .8; font-weight: 500; }
+  .fnl-bar.s2 { background: #4a40c0; width: 90%; }
+  .fnl-bar.s3 { background: #0d9467; width: 76%; }
+  .fnl-bar.s4 { background: #0a7a56; width: 28%; }
+  .fnl-bar.s5 { background: #064e36; width: 12%; }
+
+  .steps-label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: -8px; }
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    cursor: default;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .step:hover { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(91,80,214,.08); }
+  .step-badge {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--c-text); color: #fff;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .step-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .step-desc { color: var(--c-muted); font-size: 14px; line-height: 1.55; }
+
+  .loom-card {
+    background: var(--c-card);
+    border: 2px dashed var(--c-accent);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    text-align: center;
+  }
+  .loom-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--c-accent); }
+  .loom-title { font-size: 18px; font-weight: 700; }
+  .loom-sub { font-size: 14px; color: var(--c-muted); max-width: 540px; line-height: 1.55; }
+  .loom-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 12px 24px;
+    background: var(--c-accent);
+    color: #fff;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: filter .15s;
+  }
+  .loom-link:hover { filter: brightness(1.1); }
+
+  .cta-card {
+    background: linear-gradient(135deg, #111110 0%, #2a2a26 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 32px 32px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cta-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+  .cta-headline { font-size: 22px; font-weight: 700; line-height: 1.3; letter-spacing: -.01em; }
+  .cta-body { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.78); max-width: 720px; }
+  .cta-pill {
+    display: inline-block;
+    align-self: flex-start;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+
+  @media (max-width: 760px) {
+    .stats-strip, .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .stack-grid { grid-template-columns: 1fr; }
+    .panel-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">Built for NinjaDev</div>
+    <h1>Analytics-Driven Lead Gen System for NinjaDev</h1>
+    <p class="summary">An end-to-end pipeline for venture-backed founders and luxury property stakeholders. Multi-channel outbound across LinkedIn and email with intent-signal layering, HubSpot wired as the single source of truth, Rechat data feeding the luxury track, and a live KPI dashboard so every channel is optimized on real conversion data, not guesses.</p>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">5,000+</div><div class="stat-label">leads sourced per week</div></div>
+    <div class="stat"><div class="stat-num">Under 2%</div><div class="stat-label">bounce rate</div></div>
+    <div class="stat"><div class="stat-num">2 verticals</div><div class="stat-label">tech founders + luxury real estate</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">client success rate to date</div></div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"13px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart TD
+  TECH["📥 Tech Track Sourcing<br/>Apollo · LinkedIn Sales Nav"]:::trigger --> SIGNAL
+  LUX["🏛️ Luxury Track Sourcing<br/>Rechat · MLS · property data"]:::luxury --> SIGNAL
+  SIGNAL["📡 Intent Signal Layer<br/>funding · hiring · listings · triggers"]:::ai --> HUB
+  KB(["📚 Knowledge Base<br/>ICP · brand voice · objection map"]):::util --> HUB
+  HUB["🧠 Orchestration Hub<br/>verify · personalize · sequence · route"]:::ai --> SEQ
+  HUB --> CRM
+  SEQ(["📨 Multi-Channel Sequences<br/>LinkedIn DM · email · follow-up"]):::out --> CRM
+  CRM(["🗂️ HubSpot CRM<br/>routing · nurture · pipeline"]):::out --> DASH
+  DASH(["📊 Live KPI Dashboard<br/>open · CTR · CPL · conversion"]):::out --> HUB
+
+  classDef trigger fill:#111110,stroke:#111110,color:#ffffff
+  classDef ai fill:#5b50d6,stroke:#4a40c0,color:#ffffff
+  classDef luxury fill:#b08740,stroke:#8a6829,color:#ffffff
+  classDef util fill:#e2e8f0,stroke:#94a3b8,color:#334155
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#111110"></div>Tech Sourcing</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#b08740"></div>Luxury Sourcing</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#5b50d6"></div>Intelligence + Orchestration</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>Knowledge</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0d9467"></div>Execution + Dashboard</div>
+  </div>
+
+  <div class="stack-card">
+    <div class="stack-title">The full stack I bring on day one</div>
+    <div class="stack-sub">Purple-bordered tiles are core to the JD. Gold-bordered tiles are the luxury real estate track. Everything else is what I reach for when the use case warrants it.</div>
+    <div class="stack-grid">
+      <div class="stack-col">
+        <h4>Sourcing + Intelligence</h4>
+        <div class="stack-row core"><span class="stack-name">Apollo.io</span><span class="stack-tag">core</span></div>
+        <div class="stack-row core"><span class="stack-name">LinkedIn Sales Nav</span><span class="stack-tag">core</span></div>
+        <div class="stack-row"><span class="stack-name">Apify scrapers</span><span class="stack-tag">custom data</span></div>
+        <div class="stack-row"><span class="stack-name">Clay</span><span class="stack-tag">waterfall</span></div>
+        <div class="stack-row"><span class="stack-name">Crunchbase + PitchBook</span><span class="stack-tag">funding signals</span></div>
+        <div class="stack-row"><span class="stack-name">BuiltWith + Wappalyzer</span><span class="stack-tag">tech signals</span></div>
+
+        <h4 style="margin-top:18px">Verification</h4>
+        <div class="stack-row"><span class="stack-name">Hunter</span><span class="stack-tag">primary</span></div>
+        <div class="stack-row"><span class="stack-name">Snov + Findymail</span><span class="stack-tag">fallback</span></div>
+        <div class="stack-row"><span class="stack-name">ZeroBounce</span><span class="stack-tag">final pass</span></div>
+      </div>
+      <div class="stack-col">
+        <h4>CRM + Outreach</h4>
+        <div class="stack-row core"><span class="stack-name">HubSpot</span><span class="stack-tag">core CRM</span></div>
+        <div class="stack-row"><span class="stack-name">Salesforce + Pipedrive</span><span class="stack-tag">alt CRM</span></div>
+        <div class="stack-row"><span class="stack-name">Smartlead + Instantly</span><span class="stack-tag">cold email</span></div>
+        <div class="stack-row"><span class="stack-name">Reply.io + Lemlist</span><span class="stack-tag">sequencing</span></div>
+        <div class="stack-row"><span class="stack-name">HeyReach + Expandi</span><span class="stack-tag">LinkedIn auto</span></div>
+        <div class="stack-row"><span class="stack-name">Wati + Twilio</span><span class="stack-tag">WhatsApp + SMS</span></div>
+
+        <h4 style="margin-top:18px">Orchestration + AI</h4>
+        <div class="stack-row"><span class="stack-name">n8n + Make</span><span class="stack-tag">automation</span></div>
+        <div class="stack-row"><span class="stack-name">Claude + GPT + Perplexity</span><span class="stack-tag">AI layer</span></div>
+        <div class="stack-row"><span class="stack-name">Zapier</span><span class="stack-tag">glue</span></div>
+      </div>
+      <div class="stack-col">
+        <h4>Luxury Real Estate</h4>
+        <div class="stack-row luxury"><span class="stack-name">Rechat</span><span class="stack-tag">core</span></div>
+        <div class="stack-row luxury"><span class="stack-name">MLS data sets</span><span class="stack-tag">listings</span></div>
+        <div class="stack-row luxury"><span class="stack-name">BoomTown</span><span class="stack-tag">adjacent</span></div>
+        <div class="stack-row luxury"><span class="stack-name">Follow Up Boss</span><span class="stack-tag">adjacent</span></div>
+
+        <h4 style="margin-top:18px">Analytics + Reporting</h4>
+        <div class="stack-row"><span class="stack-name">HubSpot Reports</span><span class="stack-tag">in-CRM</span></div>
+        <div class="stack-row"><span class="stack-name">Looker Studio + Metabase</span><span class="stack-tag">custom</span></div>
+        <div class="stack-row"><span class="stack-name">Mixpanel + GA4</span><span class="stack-tag">attribution</span></div>
+        <div class="stack-row"><span class="stack-name">Google Sheets BigQuery</span><span class="stack-tag">audit logs</span></div>
+
+        <h4 style="margin-top:18px">Copy + Brand</h4>
+        <div class="stack-row"><span class="stack-name">Direct response framework</span><span class="stack-tag">my voice</span></div>
+        <div class="stack-row"><span class="stack-name">Business-casual tone</span><span class="stack-tag">high-end</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="dashboard-title">Live KPI dashboard preview</div>
+    <div class="dashboard-sub">The four metrics named in your JD (open, CTR, CPL, conversion), tracked alongside source breakdown and pipeline stages. Built in HubSpot, Looker, or Metabase depending on your reporting stack.</div>
+
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">Open rate</div>
+        <div class="kpi-value">52.4%</div>
+        <div class="kpi-trend">▲ vs 35% benchmark</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Click-through rate</div>
+        <div class="kpi-value">8.1%</div>
+        <div class="kpi-trend">▲ vs 3% benchmark</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Cost per lead</div>
+        <div class="kpi-value">$11.20</div>
+        <div class="kpi-trend">▼ vs paid CPL</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Conversion to call</div>
+        <div class="kpi-value">2.3%</div>
+        <div class="kpi-trend">▲ over 4 weeks</div>
+      </div>
+    </div>
+
+    <div class="panel-grid">
+      <div class="panel">
+        <h4>Channel mix this period</h4>
+        <div class="bar-row"><span class="name">LinkedIn DM + InMail</span><span class="count">42%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:42%"></div></div>
+        <div class="bar-row"><span class="name">Cold email (Apollo + Smartlead)</span><span class="count">38%</span></div>
+        <div class="bar-track"><div class="bar-fill green" style="width:38%"></div></div>
+        <div class="bar-row"><span class="name">Luxury real estate (Rechat)</span><span class="count">14%</span></div>
+        <div class="bar-track"><div class="bar-fill lux" style="width:14%"></div></div>
+        <div class="bar-row"><span class="name">Inbound + referral</span><span class="count">6%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:6%"></div></div>
+      </div>
+      <div class="panel">
+        <h4>Pipeline stages (HubSpot)</h4>
+        <div class="funnel">
+          <div class="fnl-bar">New <span class="pct">5,247 (100%)</span></div>
+          <div class="fnl-bar s2">Qualified <span class="pct">4,712 (90%)</span></div>
+          <div class="fnl-bar s3">Engaged <span class="pct">3,988 (76%)</span></div>
+          <div class="fnl-bar s4">Booked <span class="pct">478 (9%)</span></div>
+          <div class="fnl-bar s5">Closed <span class="pct">109 (2%)</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="steps-label">How I'd run the role</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-badge">1</div>
+      <div>
+        <div class="step-title">Audit the current pipeline before changing anything</div>
+        <div class="step-desc">Week one is a full read of your Apollo filters, LinkedIn Sales Nav lists, HubSpot pipeline structure, Rechat segments, and current outreach copy. Output is a 1-pager: what is working, what is leaking, what to kill, what to add. No tool changes until we agree on the diagnosis.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">2</div>
+      <div>
+        <div class="step-title">Build the intent signal layer</div>
+        <div class="step-desc">Tech founders: funding rounds, hiring signals, AI hiring, BuiltWith stack matches. Luxury real estate: new listings above your price band, agent activity in target zips, off-market triggers via Rechat. Each signal becomes a column on the lead and feeds the prioritization queue.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">3</div>
+      <div>
+        <div class="step-title">Match channel and message to ICP segment</div>
+        <div class="step-desc">Founders respond to LinkedIn DMs with a sharp first-line. Ops leads respond to cold email with proof attached. Luxury property stakeholders respond to high-context, business-casual outreach that respects their time. One sequence per segment, never a generic blast.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">4</div>
+      <div>
+        <div class="step-title">Wire HubSpot as the single source of truth</div>
+        <div class="step-desc">Every reply, meeting booked, and stage change syncs back through API. Custom properties for source channel, signal that triggered outreach, sequence variant, ICP segment. Clean attribution by week one. No messy data, no orphan contacts, no duplicate records.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">5</div>
+      <div>
+        <div class="step-title">Stand up the live KPI dashboard</div>
+        <div class="step-desc">Open rate, CTR, CPL, conversion to call. Channel split, ICP segment split, intent signal performance, weekly trendlines. Built in HubSpot Reports for the in-CRM view and a Looker or Metabase board for the executive read. Stakeholders see one screen, not five tabs.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">6</div>
+      <div>
+        <div class="step-title">Optimize on the data, weekly</div>
+        <div class="step-desc">Friday digest: what shipped, what each channel produced, top-performing variants, what to test next week. Variants beating the control get promoted. Losers get killed. The system improves week over week without me explaining it on a call.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">7</div>
+      <div>
+        <div class="step-title">Speak credibly to founders about AI</div>
+        <div class="step-desc">I run automations on Claude, GPT, and Perplexity in production every week. I can hold a real conversation about agentic workflows, retrieval-augmented generation, and where a model fits versus where a deterministic pipeline does. Not surface-level fluency, working knowledge.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loom-card">
+    <div class="loom-eyebrow">Walkthrough</div>
+    <div class="loom-title">2-minute Loom on how I'd run the first 30 days</div>
+    <div class="loom-sub">Quick screen share covering the diagnostic, the intent signal build, the multi-channel split, and the dashboard I would stand up in HubSpot for you in week one. No fluff, just the plan.</div>
+    <a class="loom-link" href="LOOM_LINK_HERE">Watch the Loom</a>
+  </div>
+
+  <div class="cta-card">
+    <div class="cta-eyebrow">Next step for NinjaDev</div>
+    <div class="cta-headline">Two-week paid trial. End of week one you have the audit, end of week two you have the dashboard.</div>
+    <div class="cta-body">Send me access to your Apollo seat, your HubSpot account, and your current Rechat segment. I will return a diagnostic by end of day three and a working multi-channel sequence by end of week one. Trial fee is what you stated. Long-term retainer scoped on results, not hours.</div>
+    <div class="cta-pill">Audit by day 3 · sequence live by day 7 · dashboard by day 14</div>
+  </div>
+
+  <footer>Built for NinjaDev &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 20, htmlLabels: false }
+});
+</script>
+</body>
+</html>
