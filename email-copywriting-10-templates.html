@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 Email Templates Designed to Convert</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --c-good: #0d9467;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 980px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 16px; color: var(--c-muted); line-height: 1.6; max-width: 740px; }
+
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .stat-num { font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--c-text); }
+  .stat-label { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 32px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+
+  .framework-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 28px 30px;
+  }
+  .framework-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .framework-sub { font-size: 13px; color: var(--c-muted); margin-bottom: 22px; }
+  .framework-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .fw-tile { padding: 14px 16px; background: #fafaf8; border: 1px solid var(--c-border); border-radius: 10px; }
+  .fw-num { font-size: 12px; font-weight: 700; color: var(--c-accent); margin-bottom: 4px; }
+  .fw-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .fw-desc { font-size: 13px; color: var(--c-muted); line-height: 1.5; }
+
+  .templates-section { margin-top: 4px; }
+  .templates-label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: 14px; }
+  .templates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .template-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    transition: border-color .15s, box-shadow .15s;
+    cursor: default;
+  }
+  .template-card:hover { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(91,80,214,.08); }
+  .tpl-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .tpl-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--c-text); color: #fff;
+    font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .tpl-name { font-weight: 700; font-size: 14px; }
+  .tpl-stage { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--c-good); margin-bottom: 4px; }
+  .tpl-desc { font-size: 13px; color: var(--c-muted); line-height: 1.55; }
+
+  .deliverable-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 28px;
+  }
+  .deliverable-title { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+  .deliverable-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+  .deliverable-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #f0f9f4;
+    border: 1px solid #b8e0c8;
+    border-left: 3px solid var(--c-good);
+    border-radius: 8px;
+    font-size: 14px;
+    color: #0a5c40;
+    line-height: 1.5;
+  }
+  .deliverable-item b { font-weight: 700; }
+
+  .cta-card {
+    background: linear-gradient(135deg, #111110 0%, #2a2a26 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 32px 32px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cta-eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+    color: rgba(255,255,255,.6);
+  }
+  .cta-headline { font-size: 22px; font-weight: 700; line-height: 1.3; letter-spacing: -.01em; }
+  .cta-body { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.78); max-width: 700px; }
+
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+
+  @media (max-width: 720px) {
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .framework-grid { grid-template-columns: 1fr; }
+    .templates-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">Email copywriting deliverable</div>
+    <h1>10 Email Templates Designed to Convert</h1>
+    <p class="summary">Ten editorial, conversion-tested email templates covering the full lifecycle from cold outbound to retention. Direct response copy, mobile-first layouts, single CTA per send, and a written framework guide so your team can keep producing on the same standard after the project ships.</p>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">5,000+</div><div class="stat-label">quality leads generated</div></div>
+    <div class="stat"><div class="stat-num">$400K+ ARR</div><div class="stat-label">clients written for</div></div>
+    <div class="stat"><div class="stat-num">500+ hrs</div><div class="stat-label">copywriting time logged</div></div>
+    <div class="stat"><div class="stat-num">Multi-million</div><div class="stat-label">dollar systems deployed</div></div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"13px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart LR
+  COLD["❄️ Cold<br/>Templates 1-2"]:::trigger --> WARM
+  WARM["🔥 Warm<br/>Templates 3-5"]:::ai --> CONV
+  CONV["💰 Convert<br/>Templates 6-7"]:::ai --> RET
+  RET(["🔁 Retain<br/>Templates 8-10"]):::out
+
+  classDef trigger fill:#111110,stroke:#111110,color:#ffffff
+  classDef ai fill:#5b50d6,stroke:#4a40c0,color:#ffffff
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+    </div>
+  </div>
+
+  <div class="framework-card">
+    <div class="framework-title">The framework I write to</div>
+    <div class="framework-sub">Eight rules borrowed from direct response. Every one of the 10 templates passes this checklist before it ships.</div>
+    <div class="framework-grid">
+      <div class="fw-tile">
+        <div class="fw-num">RULE 01</div>
+        <div class="fw-name">Subject under 5 words</div>
+        <div class="fw-desc">Lowercase, casual, never ALL CAPS or question-marky. Reads like a real person sent it, not a marketing department.</div>
+      </div>
+      <div class="fw-tile">
+        <div class="fw-num">RULE 02</div>
+        <div class="fw-name">P2P "I" voice</div>
+        <div class="fw-desc">First person singular, never "we". A real human writing to a real human, not a brand broadcasting to a list.</div>
+      </div>
+      <div class="fw-tile">
+        <div class="fw-num">RULE 03</div>
+        <div class="fw-name">One specific value prop with a number</div>
+        <div class="fw-desc">"2,000 verified contacts in 72 hours" beats "we deliver high quality leads". Numbers anchor belief, vague language kills it.</div>
+      </div>
+      <div class="fw-tile">
+        <div class="fw-num">RULE 04</div>
+        <div class="fw-name">Risk reversal in every offer</div>
+        <div class="fw-desc">Refund clause, money-back guarantee, free trial, or "if X doesn't happen, you don't pay". Makes "no" harder than "yes".</div>
+      </div>
+      <div class="fw-tile">
+        <div class="fw-num">RULE 05</div>
+        <div class="fw-name">One CTA, one ask</div>
+        <div class="fw-desc">Never "book a call AND download AND reply". One clear next step per email, with a specific time anchor where possible.</div>
+      </div>
+      <div class="fw-tile">
+        <div class="fw-num">RULE 06</div>
+        <div class="fw-name">Body under 80 words for cold, under 150 for warm</div>
+        <div class="fw-desc">Mobile-first reading. If it doesn't fit on a phone screen without scrolling, it gets cut.</div>
+      </div>
+      <div class="fw-tile">
+        <div class="fw-num">RULE 07</div>
+        <div class="fw-name">No corporate filler</div>
+        <div class="fw-desc">No "leverage", no "seamlessly", no "world class", no "I hope this finds you well". Reads like a peer, not a vendor.</div>
+      </div>
+      <div class="fw-tile">
+        <div class="fw-num">RULE 08</div>
+        <div class="fw-name">Reading level grade 6 to 8</div>
+        <div class="fw-desc">Short sentences, plain words, scannable on a phone in 8 seconds. Complexity loses opens, not converts.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="templates-section">
+    <div class="templates-label">The 10 templates you'll receive</div>
+    <div class="templates-grid">
+
+      <div class="template-card">
+        <div class="tpl-head"><div class="tpl-num">1</div><div class="tpl-name">First-touch cold email</div></div>
+        <div class="tpl-stage">Cold</div>
+        <div class="tpl-desc">P2P opener, one specific value prop tied to a number, soft CTA anchored to a time. Two subject line variants for A/B from day one.</div>
+      </div>
+
+      <div class="template-card">
+        <div class="tpl-head"><div class="tpl-num">2</div><div class="tpl-name">Cold follow-up sequence</div></div>
+        <div class="tpl-stage">Cold</div>
+        <div class="tpl-desc">Three-step follow-up: nudge, social proof drop, break-up. Each shorter than the last. No "checking in just in case" filler.</div>
+      </div>
+
+      <div class="template-card">
+        <div class="tpl-head"><div class="tpl-num">3</div><div class="tpl-name">Welcome and onboarding</div></div>
+        <div class="tpl-stage">Warm</div>
+        <div class="tpl-desc">First email after sign-up or download. Sets expectations, delivers a quick win, points to one next step. No "thanks for joining our community" filler.</div>
+      </div>
+
+      <div class="template-card">
+        <div class="tpl-head"><div class="tpl-num">4</div><div class="tpl-name">Educational nurture</div></div>
+        <div class="tpl-stage">Warm</div>
+        <div class="tpl-desc">Teach one specific thing your reader struggles with. Story or framework, not a feature list. Builds trust without selling.</div>
+      </div>
+
+      <div class="template-card">
+        <div class="tpl-head"><div class="tpl-num">5</div><div class="tpl-name">Case study drop</div></div>
+        <div class="tpl-stage">Warm</div>
+        <div class="tpl-desc">A real customer story with named numbers. Before, what changed, after. Anchors the reader's belief that the outcome is real for someone like them.</div>
+      </div>
+
+      <div class="template-card">
+        <div class="tpl-head"><div class="tpl-num">6</div><div class="tpl-name">Direct offer email</div></div>
+        <div class="tpl-stage">Convert</div>
+        <div class="tpl-desc">The pitch. Problem, solution, proof, risk reversal, CTA. Built to convert warm readers without burning trust.</div>
+      </div>
+
+      <div class="template-card">
+        <div class="tpl-head"><div class="tpl-num">7</div><div class="tpl-name">Urgency or last-call email</div></div>
+        <div class="tpl-stage">Convert</div>
+        <div class="tpl-desc">Real urgency, not invented urgency. Closing date, last seats, price change. Honest scarcity converts. Fake scarcity erodes the list.</div>
+      </div>
+
+      <div class="template-card">
+        <div class="tpl-head"><div class="tpl-num">8</div><div class="tpl-name">Re-engagement and win-back</div></div>
+        <div class="tpl-stage">Retain</div>
+        <div class="tpl-desc">Sent to dormant subscribers. One sentence acknowledging the gap, one new specific value prop, one soft CTA. No begging.</div>
+      </div>
+
+      <div class="template-card">
+        <div class="tpl-head"><div class="tpl-num">9</div><div class="tpl-name">Newsletter or update</div></div>
+        <div class="tpl-stage">Retain</div>
+        <div class="tpl-desc">A repeatable format your team can fill in weekly or monthly. One headline insight, one resource, one ask. Designed for skim reading on a phone.</div>
+      </div>
+
+      <div class="template-card">
+        <div class="tpl-head"><div class="tpl-num">10</div><div class="tpl-name">Referral or advocacy ask</div></div>
+        <div class="tpl-stage">Retain</div>
+        <div class="tpl-desc">Sent to happy customers. Specific ask, low friction, makes the customer the hero. The cheapest source of new revenue your business has.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="deliverable-card">
+    <div class="deliverable-title">What ships with each template</div>
+    <ul class="deliverable-list">
+      <li class="deliverable-item"><div><b>2 subject line variants</b> per template, primed for A/B testing from launch</div></li>
+      <li class="deliverable-item"><div><b>Preview text</b> written specifically (not auto-pulled from the body)</div></li>
+      <li class="deliverable-item"><div><b>Body copy</b> written to the framework above, mobile-first layout, single CTA</div></li>
+      <li class="deliverable-item"><div><b>One follow-up email</b> per template where the lifecycle stage justifies it</div></li>
+      <li class="deliverable-item"><div><b>Plain text version</b> alongside the HTML for deliverability and accessibility</div></li>
+      <li class="deliverable-item"><div><b>A short framework note</b> at the top of each template explaining why it's structured the way it is, so your team can replicate the standard</div></li>
+    </ul>
+  </div>
+
+  <div class="cta-card">
+    <div class="cta-eyebrow">Next step</div>
+    <div class="cta-headline">Send me your audience, your offer, and one example of email copy you've sent recently.</div>
+    <div class="cta-body">From there I can return a sample template within 48 hours so you see the voice, the structure, and the conversion logic before scoping the full 10. No commitment until you see the sample.</div>
+  </div>
+
+  <footer>Email copywriting deliverable &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 20, htmlLabels: false }
+});
+</script>
+</body>
+</html>
