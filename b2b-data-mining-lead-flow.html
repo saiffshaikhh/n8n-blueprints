@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B2B Data Mining + Lead Flow Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --c-good: #0d9467;
+    --c-warn: #c2410c;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 980px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 16px; color: var(--c-muted); line-height: 1.6; max-width: 740px; }
+
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .stat-num { font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--c-text); }
+  .stat-label { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 36px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+  .diagram-card svg .edgePath path {
+    stroke-dasharray: 6 3;
+    animation: flowDash 1.4s linear infinite;
+  }
+  @keyframes flowDash { to { stroke-dashoffset: -36; } }
+
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  .dashboard-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 28px 30px;
+  }
+  .dashboard-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .dashboard-sub { font-size: 13px; color: var(--c-muted); margin-bottom: 22px; }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+  .kpi {
+    padding: 14px 16px;
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    background: #fafaf8;
+  }
+  .kpi-label { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--c-muted); }
+  .kpi-value { font-size: 22px; font-weight: 700; margin-top: 4px; letter-spacing: -.01em; }
+  .kpi-trend { font-size: 11px; color: var(--c-good); margin-top: 4px; font-variant-numeric: tabular-nums; }
+
+  .panel-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  .panel {
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    background: #fafaf8;
+    padding: 16px 18px;
+  }
+  .panel h4 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    margin-bottom: 12px;
+  }
+  .bar-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+    padding: 6px 0;
+    font-size: 13px;
+  }
+  .bar-row .name { color: var(--c-text); font-weight: 600; }
+  .bar-row .count { color: var(--c-muted); font-variant-numeric: tabular-nums; }
+  .bar-track {
+    grid-column: 1 / 3;
+    height: 6px;
+    background: #ececec;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 2px;
+    margin-bottom: 4px;
+  }
+  .bar-fill {
+    height: 100%;
+    background: var(--c-accent);
+    border-radius: 3px;
+  }
+
+  .funnel { display: flex; flex-direction: column; gap: 8px; }
+  .fnl-bar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    background: #5b50d6;
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .fnl-bar .pct { opacity: .8; font-weight: 500; }
+  .fnl-bar.s2 { background: #4a40c0; width: 90%; }
+  .fnl-bar.s3 { background: #0d9467; width: 76%; }
+  .fnl-bar.s4 { background: #0a7a56; width: 28%; }
+  .fnl-bar.s5 { background: #064e36; width: 12%; }
+
+  .steps-label { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: -8px; }
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    gap: 16px;
+    transition: border-color .15s, box-shadow .15s;
+    cursor: default;
+  }
+  .step:hover { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(91,80,214,.08); }
+  .step-badge {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--c-text); color: #fff;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .step-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
+  .step-desc { color: var(--c-muted); font-size: 14px; line-height: 1.55; }
+
+  .cta-card {
+    background: linear-gradient(135deg, #111110 0%, #2a2a26 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 32px 32px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cta-eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+    color: rgba(255,255,255,.6);
+  }
+  .cta-headline { font-size: 22px; font-weight: 700; line-height: 1.3; letter-spacing: -.01em; }
+  .cta-body { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.78); max-width: 700px; }
+  .cta-pill {
+    display: inline-block;
+    align-self: flex-start;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+
+  @media (max-width: 720px) {
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .panel-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">B2B data mining + lead flow system</div>
+    <h1>Lead Flow Dashboard, Wired Into Your CRM</h1>
+    <p class="summary">Targeted B2B leads sourced, verified, deduped, and synced into your CRM with a live dashboard on top so you see source, status, and conversion in one view. Build the list, ship the system, light the dashboard.</p>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">5,000+</div><div class="stat-label">verified leads delivered</div></div>
+    <div class="stat"><div class="stat-num">Under 2%</div><div class="stat-label">bounce rate</div></div>
+    <div class="stat"><div class="stat-num">Under 4 days</div><div class="stat-label">end-to-end build</div></div>
+    <div class="stat"><div class="stat-num">24 hours</div><div class="stat-label">first 50 sample on your desk</div></div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"13px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart LR
+  ICP(["🎯 ICP Brief<br/>titles · geos · industry · exclusions"]):::trigger --> SRC
+  SRC["🔍 Sourcing Engine<br/>multi-source data mining"]:::ai --> VER
+  VER["✅ Verification Waterfall<br/>4-step pass · under 2% bounce"]:::ai --> DB
+  DB(["🗄️ Verified Database<br/>deduped · enriched · ready"]):::util --> CRM
+  CRM(["🗂️ Your CRM<br/>synced via API"]):::out --> DASH
+  DASH(["📊 Live Dashboard<br/>source · status · conversion"]):::out
+
+  classDef trigger fill:#111110,stroke:#111110,color:#ffffff
+  classDef ai fill:#5b50d6,stroke:#4a40c0,color:#ffffff
+  classDef util fill:#e2e8f0,stroke:#94a3b8,color:#334155
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#111110"></div>Input</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#5b50d6"></div>Mining + Verification</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>Database</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0d9467"></div>CRM + Dashboard</div>
+  </div>
+
+  <div class="dashboard-card">
+    <div class="dashboard-title">Live dashboard preview</div>
+    <div class="dashboard-sub">Sample of what your team sees once the lead flow is wired up. Numbers below are illustrative of a typical week's run.</div>
+
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">Total leads</div>
+        <div class="kpi-value">5,247</div>
+        <div class="kpi-trend">▲ added this week</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Verified rate</div>
+        <div class="kpi-value">98.4%</div>
+        <div class="kpi-trend">bounce under 2%</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Synced to CRM</div>
+        <div class="kpi-value">5,166</div>
+        <div class="kpi-trend">live, not stale</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Conversion to call</div>
+        <div class="kpi-value">2.1%</div>
+        <div class="kpi-trend">▲ vs benchmark</div>
+      </div>
+    </div>
+
+    <div class="panel-grid">
+      <div class="panel">
+        <h4>Leads by source</h4>
+        <div class="bar-row"><span class="name">Verified directories</span><span class="count">2,140</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:82%"></div></div>
+        <div class="bar-row"><span class="name">Professional networks</span><span class="count">1,612</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:62%"></div></div>
+        <div class="bar-row"><span class="name">Industry registries</span><span class="count">895</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:34%"></div></div>
+        <div class="bar-row"><span class="name">Custom scrapes</span><span class="count">600</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:23%"></div></div>
+      </div>
+      <div class="panel">
+        <h4>Pipeline stages</h4>
+        <div class="funnel">
+          <div class="fnl-bar">New <span class="pct">5,247 (100%)</span></div>
+          <div class="fnl-bar s2">Verified <span class="pct">5,166 (98%)</span></div>
+          <div class="fnl-bar s3">Contacted <span class="pct">4,012 (76%)</span></div>
+          <div class="fnl-bar s4">Replied <span class="pct">478 (9%)</span></div>
+          <div class="fnl-bar s5">Booked <span class="pct">109 (2%)</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="steps-label">How the build runs end to end</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-badge">1</div>
+      <div>
+        <div class="step-title">Translate the ICP into mining filters</div>
+        <div class="step-desc">Titles, seniority, geos, company size, industry, tech triggers, exclusions. Built off your brief, not a generic template. The cleaner the filters, the higher the match rate downstream.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">2</div>
+      <div>
+        <div class="step-title">Mine across multiple sources, not one</div>
+        <div class="step-desc">Verified directories, professional networks, industry registries, and custom scrapes for any source without an open API. Multi-source coverage is the only way to hit volume without sacrificing precision.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">3</div>
+      <div>
+        <div class="step-title">Verify every record through a 4-step waterfall</div>
+        <div class="step-desc">Each step only runs on rows the previous one missed. Catch-alls and role-based addresses dropped, duplicates removed across all sources and historical sends. Bounce rate stays under 2%, end of story.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">4</div>
+      <div>
+        <div class="step-title">Sync into your CRM, not into a dead spreadsheet</div>
+        <div class="step-desc">Every verified lead lands in your CRM with source, signal, stage, and any custom properties you need for attribution. No imports to chase, no stale lists, no copy-paste handoffs.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">5</div>
+      <div>
+        <div class="step-title">Light up the dashboard so the data is usable</div>
+        <div class="step-desc">A single dashboard view: total leads, verified rate, synced count, source breakdown, pipeline stage funnel, conversion to booked calls. Stakeholders see one screen, not five tabs. Updated live as the CRM updates.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-badge">6</div>
+      <div>
+        <div class="step-title">Hand off the system, not just the list</div>
+        <div class="step-desc">Documented filters, the verification logic, the CRM mapping, the dashboard configuration. Your team can run the same system on the next ICP without me. The deliverable is the system, not a one-time data dump.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-card">
+    <div class="cta-eyebrow">Next step</div>
+    <div class="cta-headline">Send the ICP brief and the CRM you run.</div>
+    <div class="cta-body">First 50 verified leads on your desk for review within 24 hours so you can judge quality before any commitment. From there we scope the full build, the CRM sync, and the dashboard.</div>
+    <div class="cta-pill">First 50 leads in 24 hours · review before commit</div>
+  </div>
+
+  <footer>B2B data mining + lead flow system &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 20, htmlLabels: false }
+});
+</script>
+</body>
+</html>
