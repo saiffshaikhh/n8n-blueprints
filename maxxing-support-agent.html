@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Support Agent for MAXXING</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --c-good: #0d9467;
+    --c-warn: #c2410c;
+    --c-danger: #b82828;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 1040px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 16px; color: var(--c-muted); line-height: 1.6; max-width: 760px; }
+
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .stat-num { font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--c-text); }
+  .stat-label { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 36px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+  .diagram-card svg .edgePath path {
+    stroke-dasharray: 6 3;
+    animation: flowDash 1.4s linear infinite;
+  }
+  @keyframes flowDash { to { stroke-dashoffset: -36; } }
+
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  .section-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 28px 30px;
+  }
+  .section-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .section-sub { font-size: 13px; color: var(--c-muted); margin-bottom: 22px; }
+
+  .intent-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .intent-tile {
+    padding: 14px 16px;
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    background: #fafaf8;
+  }
+  .intent-tile.escalate { background: #fef6f1; border-left: 3px solid var(--c-warn); }
+  .intent-tile.auto { background: #f0f9f4; border-left: 3px solid var(--c-good); }
+  .intent-tile.danger { background: #fdecec; border-left: 3px solid var(--c-danger); }
+  .intent-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .intent-desc { font-size: 12px; color: var(--c-muted); line-height: 1.5; }
+  .intent-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--c-muted); margin-bottom: 6px; }
+  .intent-tag.auto { color: var(--c-good); }
+  .intent-tag.escalate { color: var(--c-warn); }
+  .intent-tag.danger { color: var(--c-danger); }
+
+  .guardrail-list { list-style: none; padding: 0; display: grid; gap: 8px; }
+  .guardrail-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #fdecec;
+    border: 1px solid #f3c5c5;
+    border-left: 3px solid var(--c-danger);
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .guardrail-item b { color: var(--c-danger); font-weight: 700; }
+  .guardrail-x {
+    flex-shrink: 0;
+    width: 18px; height: 18px;
+    border-radius: 4px;
+    background: var(--c-danger);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 1px;
+  }
+
+  .slack-mock {
+    background: #1a1d29;
+    border-radius: 10px;
+    padding: 18px 20px;
+    color: #d1d4de;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .slack-mock .who { color: #4f8cff; font-weight: 700; }
+  .slack-mock .meta { color: #7a7f8e; font-size: 11px; }
+  .slack-mock .body { color: #d1d4de; margin-top: 4px; margin-bottom: 8px; }
+  .slack-mock .draft { background: #232734; padding: 10px 12px; border-radius: 6px; margin: 6px 0; color: #b9c1d4; font-size: 12px; }
+  .slack-mock .buttons { display: flex; gap: 8px; margin-top: 8px; }
+  .slack-mock .btn { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; font-family: -apple-system, sans-serif; }
+  .slack-mock .btn.approve { background: #2eb86b; color: #fff; }
+  .slack-mock .btn.reject { background: #b82828; color: #fff; }
+  .slack-mock .btn.edit { background: #404657; color: #fff; }
+  .slack-mock .meta-bar { color: #7a7f8e; font-size: 11px; margin-top: 6px; }
+
+  .digest-card {
+    background: #1a1d29;
+    border-radius: 10px;
+    padding: 18px 20px;
+    color: #d1d4de;
+    font-family: -apple-system, sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .digest-card .who { color: #4f8cff; font-weight: 700; }
+  .digest-card .meta { color: #7a7f8e; font-size: 11px; }
+  .digest-card .row { display: grid; grid-template-columns: 1fr auto; padding: 4px 0; }
+  .digest-card .label { color: #d1d4de; }
+  .digest-card .val { color: #fff; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .digest-card .divider { border-top: 1px solid #2c3140; margin: 8px 0; }
+
+  .builds-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .build-tile {
+    padding: 16px 18px;
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    background: #fafaf8;
+    text-decoration: none;
+    color: var(--c-text);
+    transition: border-color .15s, box-shadow .15s;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .build-tile:hover { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(91,80,214,.08); }
+  .build-tag { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--c-accent); }
+  .build-name { font-weight: 700; font-size: 14px; }
+  .build-desc { font-size: 13px; color: var(--c-muted); line-height: 1.5; }
+
+  .timeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .phase {
+    padding: 16px 16px;
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    background: #fafaf8;
+  }
+  .phase-tag { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--c-accent); }
+  .phase-name { font-weight: 700; font-size: 15px; margin-top: 4px; margin-bottom: 6px; }
+  .phase-desc { font-size: 12px; color: var(--c-muted); line-height: 1.5; }
+  .phase-target { font-size: 11px; color: var(--c-good); margin-top: 8px; font-weight: 600; }
+
+  .question-card {
+    background: #f5f3ff;
+    border: 1px solid #d8d2f7;
+    border-left: 3px solid var(--c-accent);
+    border-radius: 10px;
+    padding: 22px 24px;
+  }
+  .question-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--c-accent); margin-bottom: 8px; }
+  .question-text { font-size: 15px; color: var(--c-text); line-height: 1.6; font-weight: 500; }
+
+  .loom-card {
+    background: var(--c-card);
+    border: 2px dashed var(--c-accent);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    text-align: center;
+  }
+  .loom-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--c-accent); }
+  .loom-title { font-size: 18px; font-weight: 700; }
+  .loom-sub { font-size: 14px; color: var(--c-muted); max-width: 540px; line-height: 1.55; }
+  .loom-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 12px 24px;
+    background: var(--c-accent);
+    color: #fff;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: filter .15s;
+  }
+  .loom-link:hover { filter: brightness(1.1); }
+
+  .cta-card {
+    background: linear-gradient(135deg, #111110 0%, #2a2a26 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 32px 32px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cta-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+  .cta-headline { font-size: 22px; font-weight: 700; line-height: 1.3; letter-spacing: -.01em; }
+  .cta-body { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.78); max-width: 720px; }
+  .cta-pill {
+    display: inline-block;
+    align-self: flex-start;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+
+  @media (max-width: 760px) {
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .intent-grid, .builds-grid, .timeline { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">Built for MAXXING, NYC</div>
+    <h1>Customer Support Agent for MAXXING</h1>
+    <p class="summary">An agentic system, not a chatbot widget. Triage, classify, lookup live Shopify data, draft in your voice, gate every reply through a safety check, escalate the risky ones to Slack with Approve, Reject, or Edit. Built so the same five questions stop eating your CX hours and the looksmaxxing tone never slips into corporate apology copy.</p>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">60%+</div><div class="stat-label">tickets auto-resolved at launch</div></div>
+    <div class="stat"><div class="stat-num">Under 30s</div><div class="stat-label">first response, auto-handled</div></div>
+    <div class="stat"><div class="stat-num">Zero</div><div class="stat-label">hallucinated orders, refunds, restocks</div></div>
+    <div class="stat"><div class="stat-num">200+</div><div class="stat-label">historical ticket dry-run before launch</div></div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"13px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart TD
+  IN["📥 Inbound<br/>Gmail · shared inbox · Gorgias-ready"]:::trigger --> TRIAGE
+  TRIAGE["🧭 Triage Classifier<br/>WISMO · returns · refunds · product · address · subs · complaints"]:::ai --> SHOPIFY
+  TRIAGE --> KB
+  SHOPIFY["🛒 Shopify Admin API<br/>orders · fulfillment · tracking"]:::util --> DRAFT
+  KB(["📚 Brand Knowledge Base<br/>Supabase · FAQ · routine · ingredients"]):::util --> DRAFT
+  DRAFT["✍️ Brand-Voice Drafter<br/>Claude + GPT · contractions · direct"]:::ai --> SAFETY
+  SAFETY["🔒 Safety + Confidence Gate<br/>no hallucinated facts · refund threshold · VIP flag"]:::danger --> AUTO
+  SAFETY --> ESC
+  AUTO(["⚡ Auto-Send<br/>under 30s reply"]):::out
+  ESC(["💬 Slack Escalation<br/>Approve · Reject · Edit"]):::out --> AUTO
+  AUTO --> DIGEST(["📊 Daily Digest<br/>volume · auto-resolve · top intents"]):::out
+
+  classDef trigger fill:#111110,stroke:#111110,color:#ffffff
+  classDef ai fill:#5b50d6,stroke:#4a40c0,color:#ffffff
+  classDef util fill:#e2e8f0,stroke:#94a3b8,color:#334155
+  classDef danger fill:#b82828,stroke:#8a1a1a,color:#ffffff
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#111110"></div>Inbound</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#5b50d6"></div>AI Layer</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#94a3b8"></div>Live Data</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#b82828"></div>Safety Gate</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0d9467"></div>Output</div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">7 intent classes, mapped to their resolution path</div>
+    <div class="section-sub">Auto means safe to auto-send when confidence clears the threshold. Escalate means a human always touches it before send. Danger means instant Slack ping regardless of confidence.</div>
+    <div class="intent-grid">
+      <div class="intent-tile auto">
+        <div class="intent-tag auto">Auto-resolve</div>
+        <div class="intent-name">WISMO (Where's my order)</div>
+        <div class="intent-desc">Pulls live tracking link from Shopify. No inferred status, only what the API returns.</div>
+      </div>
+      <div class="intent-tile auto">
+        <div class="intent-tag auto">Auto-resolve</div>
+        <div class="intent-name">Product questions</div>
+        <div class="intent-desc">Routine, ingredients, stack pairing, dosage. Drawn from your KB, never invented.</div>
+      </div>
+      <div class="intent-tile auto">
+        <div class="intent-tag auto">Auto-resolve</div>
+        <div class="intent-name">Subscription queries</div>
+        <div class="intent-desc">Pause, skip, change frequency. Read-only first, write actions go through Slack approval.</div>
+      </div>
+      <div class="intent-tile escalate">
+        <div class="intent-tag escalate">Escalate</div>
+        <div class="intent-name">Returns</div>
+        <div class="intent-desc">Drafts the reply with policy referenced, but human approves before any RMA goes out.</div>
+      </div>
+      <div class="intent-tile escalate">
+        <div class="intent-tag escalate">Escalate</div>
+        <div class="intent-name">Refunds (over threshold)</div>
+        <div class="intent-desc">Below your set $ threshold, auto. Above, drafted but escalated to Slack with order context.</div>
+      </div>
+      <div class="intent-tile escalate">
+        <div class="intent-tag escalate">Escalate</div>
+        <div class="intent-name">Address change post-fulfillment</div>
+        <div class="intent-desc">Pre-fulfillment, auto-update via Shopify. Post-fulfillment, human-only with carrier intercept guidance.</div>
+      </div>
+      <div class="intent-tile danger">
+        <div class="intent-tag danger">Danger</div>
+        <div class="intent-name">Complaints + lawyer mentions</div>
+        <div class="intent-desc">Keyword interceptor for "lawyer", "chargeback", "BBB", "FDA". Instant Slack ping, zero auto-send.</div>
+      </div>
+      <div class="intent-tile danger">
+        <div class="intent-tag danger">Danger</div>
+        <div class="intent-name">Restock or launch promises</div>
+        <div class="intent-desc">Agent never commits a restock date. Defers to "I'll check with the team" and pings you in Slack.</div>
+      </div>
+      <div class="intent-tile danger">
+        <div class="intent-tag danger">Danger</div>
+        <div class="intent-name">VIP customers</div>
+        <div class="intent-desc">Flagged accounts route to human-only no matter the intent. Customer never sees a draft response.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">Hallucination guardrails (your non-negotiable)</div>
+    <div class="section-sub">The rules below are enforced at the system level, not at the prompt level. Prompt rules drift. System rules don't.</div>
+    <ul class="guardrail-list">
+      <li class="guardrail-item"><div class="guardrail-x">✕</div><div><b>No order number, tracking link, or carrier name</b> appears in any reply unless it came from a successful Shopify Admin API call in the same request.</div></li>
+      <li class="guardrail-item"><div class="guardrail-x">✕</div><div><b>No refund amount</b> auto-sends without passing the $ threshold gate. Above threshold drafts go to Slack with order data attached.</div></li>
+      <li class="guardrail-item"><div class="guardrail-x">✕</div><div><b>No restock date or product launch date</b> ever appears in agent output. The drafter is system-prompted to defer and the post-processor strips date patterns matching restock context.</div></li>
+      <li class="guardrail-item"><div class="guardrail-x">✕</div><div><b>No promises of expedited shipping, free product, or compensation</b> without a human approve in Slack first.</div></li>
+      <li class="guardrail-item"><div class="guardrail-x">✕</div><div><b>No reply touches a customer</b> if the confidence score from the safety gate is below the threshold you set. It routes to Slack instead, every time.</div></li>
+      <li class="guardrail-item"><div class="guardrail-x">✕</div><div><b>No keyword in the danger list</b> ("lawyer", "chargeback", "FDA", "BBB", "sue", "refund my entire order", "press") gets auto-handled. Hard intercept, instant Slack ping.</div></li>
+    </ul>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">Slack escalation, what it actually looks like</div>
+    <div class="section-sub">Mock of the message your CX team sees. Order data is pulled live, draft is in your voice, three buttons handle the action.</div>
+    <div class="slack-mock">
+      <div><span class="who">MAXXING Support Agent</span> <span class="meta">APP &nbsp; 11:42 AM</span></div>
+      <div class="body">⚠️ Refund request, $128.00 (above auto-threshold)</div>
+      <div class="meta">Customer: jordan.k@gmail.com · Order #MX-19842 · Glow Copper Peptide Serum 30ml · delivered 4 days ago · 1st refund request from this customer</div>
+      <div class="draft">"Hey Jordan, totally fair. Sorry the Copper Peptide didn't sit right with you. I've started the refund on order #MX-19842 ($128.00) back to your original card, you'll see it in 5 to 7 business days. Keep the bottle, no need to ship it back. If you ever want to try the routine in a lighter rotation, just reply to this and I'll line you up. — MAXXING CX"</div>
+      <div class="meta">Confidence: 94% · Tone match: 9.1/10 · Intent: refund · Threshold flag: ABOVE</div>
+      <div class="buttons">
+        <span class="btn approve">Approve and send</span>
+        <span class="btn edit">Edit</span>
+        <span class="btn reject">Reject</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">Daily Slack digest, sample</div>
+    <div class="section-sub">Posted to your CX channel every weekday at 9 AM ET. Volume, top intents, accuracy flags, escalations cleared, anything that needs human eyes that day.</div>
+    <div class="digest-card">
+      <div><span class="who">MAXXING Support Agent</span> <span class="meta">APP &nbsp; 9:00 AM</span></div>
+      <div class="body" style="margin-top:8px;font-weight:700">Yesterday's recap · April 29</div>
+      <div class="row"><span class="label">Total tickets</span><span class="val">142</span></div>
+      <div class="row"><span class="label">Auto-resolved</span><span class="val">94 (66%)</span></div>
+      <div class="row"><span class="label">Escalated to Slack</span><span class="val">38</span></div>
+      <div class="row"><span class="label">Cleared by team</span><span class="val">36</span></div>
+      <div class="row"><span class="label">Pending review</span><span class="val">2</span></div>
+      <div class="divider"></div>
+      <div class="body" style="font-weight:700">Top intents</div>
+      <div class="row"><span class="label">WISMO</span><span class="val">61</span></div>
+      <div class="row"><span class="label">Product questions</span><span class="val">28</span></div>
+      <div class="row"><span class="label">Refund requests</span><span class="val">19</span></div>
+      <div class="row"><span class="label">Returns</span><span class="val">14</span></div>
+      <div class="row"><span class="label">Address changes</span><span class="val">12</span></div>
+      <div class="row"><span class="label">Subscription</span><span class="val">8</span></div>
+      <div class="divider"></div>
+      <div class="row"><span class="label">Average confidence</span><span class="val">91%</span></div>
+      <div class="row"><span class="label">Tone match score</span><span class="val">8.7 / 10</span></div>
+      <div class="row"><span class="label">Avg first response (auto)</span><span class="val">11s</span></div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">Past systems I've shipped (the relevant ones)</div>
+    <div class="section-sub">Click through to the live blueprint of each. Same architectural pattern, different vertical.</div>
+    <div class="builds-grid">
+      <a class="build-tile" href="./medical-appointment-bot.html">
+        <div class="build-tag">Omnichannel agent · physical service</div>
+        <div class="build-name">Medical Appointment Bot</div>
+        <div class="build-desc">Intent classifier across WhatsApp, Telegram, and email, voice transcription, Google Sheets + Calendar source of truth, admin Slack on edge cases. Same triage-then-execute-then-escalate pattern as MAXXING.</div>
+      </a>
+      <a class="build-tile" href="./claude-code-saas-backend.html">
+        <div class="build-tag">Multi-platform orchestration · digital</div>
+        <div class="build-name">Claude Code SaaS Backend</div>
+        <div class="build-desc">One Claude engine listening to GHL, Stripe, WhatsApp, Google. Per-tenant routine registry, hardened API layer with retries and idempotency, structured logs, admin alerts. Production infrastructure, not glue.</div>
+      </a>
+      <a class="build-tile" href="./b2b-data-mining-lead-flow.html">
+        <div class="build-tag">CRM + dashboard · digital service</div>
+        <div class="build-name">B2B Data Mining + Lead Flow</div>
+        <div class="build-desc">Multi-source lead build, 4-step verification waterfall, CRM sync, live KPI dashboard with source breakdown and stage funnel. The dashboard architecture you'd see on your daily MAXXING digest.</div>
+      </a>
+      <a class="build-tile" href="./full-pipeline-lead-gen.html">
+        <div class="build-tag">End-to-end pipeline · digital + physical</div>
+        <div class="build-name">Full-Pipeline Lead Gen</div>
+        <div class="build-desc">ICP analysis, sourcing, multi-touch nurture, booking, sales call, onboarding, retention. Same closed-loop pattern this MAXXING build uses, just different inputs and outputs.</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">30 / 60 / 90 day plan</div>
+    <div class="section-sub">Phased so the agent never touches a real MAXXING customer until it has earned the right to. Dry-run first, shadow second, graduated auto-send third.</div>
+    <div class="timeline">
+      <div class="phase">
+        <div class="phase-tag">Day 0 to 14</div>
+        <div class="phase-name">Build + dry-run</div>
+        <div class="phase-desc">Shopify wiring, KB ingestion, brand voice tuning, Slack flow, safety gate. Run against your last 200+ tickets, side-by-side diff.</div>
+        <div class="phase-target">Target: 60%+ pass rate</div>
+      </div>
+      <div class="phase">
+        <div class="phase-tag">Day 15 to 30</div>
+        <div class="phase-name">Shadow mode</div>
+        <div class="phase-desc">Drafts go to Slack only, not customers. CX team reviews and edits. Edits feed back into the KB as training data.</div>
+        <div class="phase-target">Target: 80%+ tone match</div>
+      </div>
+      <div class="phase">
+        <div class="phase-tag">Day 31 to 60</div>
+        <div class="phase-name">Graduated auto-send</div>
+        <div class="phase-desc">WISMO live first (lowest risk), then product Qs, then subscription reads. Returns and refunds stay escalated.</div>
+        <div class="phase-target">Target: 60% auto-resolve</div>
+      </div>
+      <div class="phase">
+        <div class="phase-tag">Day 61 to 90</div>
+        <div class="phase-name">Optimize + handoff</div>
+        <div class="phase-desc">Tune toward 70 to 75% auto-resolve. Documentation handoff so your team owns the KB and prompt edits.</div>
+        <div class="phase-target">Target: 70%+ auto-resolve</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="loom-card">
+    <div class="loom-eyebrow">Walkthrough</div>
+    <div class="loom-title">2 to 3 minute Loom of a real agent build</div>
+    <div class="loom-sub">Working agent I built for a real client (not a tutorial), showing the triage classifier, live API lookup, brand-voice drafter, safety gate, and the Slack Approve / Reject / Edit flow firing on a real ticket.</div>
+    <a class="loom-link" href="LOOM_LINK_HERE">Watch the Loom</a>
+  </div>
+
+  <div class="question-card">
+    <div class="question-eyebrow">My specific question for the team</div>
+    <div class="question-text">For the 200+ historical ticket dry-run, do you want the agent's drafts graded blind by your CX folks against the actual historical resolutions, or do you want a side-by-side diff so reviewers can see both at once and label tone matches versus tone misses separately from factual matches versus factual misses? The blind grade gives a cleaner pass / fail number, the diff gives you faster tuning signal. I lean toward the diff for the first 100 and a blind grade on the next 100, but I want to ship to your preference.</div>
+  </div>
+
+  <div class="cta-card">
+    <div class="cta-eyebrow">Next step</div>
+    <div class="cta-headline">Typical scope $6,500 to $9,500. Retainer $1,500 to $2,500 per month after handoff.</div>
+    <div class="cta-body">Build covers everything in this dashboard plus documentation and a recorded internal walkthrough. Retainer covers KB updates, prompt tuning, intent expansion, monthly accuracy report. Can start within 2 weeks, working hours overlap 4+ ET, no payment-platform sanctions in my region. Send Shopify access and 200 historical tickets and I'll have the dry-run results back in 14 days.</div>
+    <div class="cta-pill">Start in 2 weeks · dry-run results by day 14 · live by day 30</div>
+  </div>
+
+  <footer>Built for MAXXING &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 20, htmlLabels: false }
+});
+</script>
+</body>
+</html>
