@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instantly Pre-Launch Checklist</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --c-instantly: #ea580c;
+    --c-good: #0d9467;
+    --c-warn: #c2410c;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 940px; width: 100%; display: flex; flex-direction: column; gap: 26px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 30px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 15px; color: var(--c-muted); line-height: 1.6; max-width: 720px; }
+
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .stat-num { font-size: 20px; font-weight: 700; letter-spacing: -.01em; color: var(--c-text); }
+  .stat-label { font-size: 11px; color: var(--c-muted); margin-top: 2px; }
+
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+
+  .check-section {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 22px 24px;
+  }
+  .check-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .check-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--c-instantly);
+    color: #fff;
+    font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .check-title { font-weight: 700; font-size: 16px; }
+  .check-sub { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+
+  .check-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .check-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #fafaf8;
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .check-mark {
+    flex-shrink: 0;
+    width: 18px; height: 18px;
+    border-radius: 4px;
+    border: 1.5px solid var(--c-good);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--c-good);
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 1px;
+  }
+  .check-text { color: var(--c-text); }
+  .check-text b { font-weight: 600; }
+  .check-text .meta { color: var(--c-muted); font-size: 13px; }
+
+  .red-flag-box {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: #fef6f1;
+    border: 1px solid #f3d4bf;
+    border-left: 3px solid var(--c-warn);
+    border-radius: 8px;
+    font-size: 13px;
+    color: #7a3f0f;
+  }
+  .red-flag-box b { color: var(--c-warn); }
+
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+
+  @media (max-width: 720px) {
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <div class="eyebrow">Pre-launch checklist</div>
+    <h1>Instantly Pre-Launch Review</h1>
+    <p class="summary">The exact 5-step pass I run on any Instantly campaign before launch. List, mapping, settings, copy, sanity check. Catches the basic mistakes that quietly kill domain reputation in the first 48 hours.</p>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">5 steps</div><div class="stat-label">full pre-launch pass</div></div>
+    <div class="stat"><div class="stat-num">30 min</div><div class="stat-label">typical setup time</div></div>
+    <div class="stat"><div class="stat-num">25 to 35</div><div class="stat-label">safe sends per mailbox</div></div>
+    <div class="stat"><div class="stat-num">14 days</div><div class="stat-label">minimum warmup before cold</div></div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"13px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart LR
+  A["📥 List Upload"]:::trigger --> B["🔗 Field Mapping"]:::ai
+  B --> C["⚙️ Sending Settings"]:::ai
+  C --> D["✍️ Copy Review"]:::ai
+  D --> E(["🚀 Launch"]):::out
+
+  classDef trigger fill:#111110,stroke:#111110,color:#ffffff
+  classDef ai fill:#ea580c,stroke:#c2410c,color:#ffffff
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+    </div>
+  </div>
+
+  <div class="check-section">
+    <div class="check-header">
+      <div class="check-num">1</div>
+      <div>
+        <div class="check-title">List upload</div>
+        <div class="check-sub">Get the leads in cleanly, no garbage rows, no duplicates.</div>
+      </div>
+    </div>
+    <ul class="check-list">
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">CSV is UTF-8 encoded so accented characters don't break (<span class="meta">resave as UTF-8 from Sheets if needed</span>)</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Required columns present: <b>email, first_name</b>, plus any custom variables your copy uses</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Email column has been verified (<span class="meta">target under 2% bounce rate, run through ZeroBounce or Bouncer if not done</span>)</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Duplicates removed across email, including across past Instantly campaigns to avoid re-pitching the same person</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Role-based addresses (info@, support@, hello@) and catch-alls stripped before upload</div></li>
+    </ul>
+    <div class="red-flag-box"><b>Red flag.</b> If bounce rate is over 5% in the first 200 sends, pause the campaign and re-verify the list. Domain reputation drops fast and recovers slowly.</div>
+  </div>
+
+  <div class="check-section">
+    <div class="check-header">
+      <div class="check-num">2</div>
+      <div>
+        <div class="check-title">Field mapping</div>
+        <div class="check-sub">Every variable in the email must map to a real column.</div>
+      </div>
+    </div>
+    <ul class="check-list">
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Every <code>{{variable}}</code> in your sequence has a column mapped on upload</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">First name is title-cased (<span class="meta">"john" auto-corrects to "John" so it doesn't look like a bot</span>)</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Fallback values set on optional variables (<span class="meta">if a row is missing personalisation, fallback prevents an empty paragraph</span>)</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">No typos in variable names (<span class="meta">e.g. <code>{{firstname}}</code> vs <code>{{first_name}}</code> is the most common cause of merge tag failures</span>)</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Test row sent to your own inbox renders all variables correctly</div></li>
+    </ul>
+  </div>
+
+  <div class="check-section">
+    <div class="check-header">
+      <div class="check-num">3</div>
+      <div>
+        <div class="check-title">Sending settings</div>
+        <div class="check-sub">Configured to keep the inbox placement above 90% and stay out of spam.</div>
+      </div>
+    </div>
+    <ul class="check-list">
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text"><b>Mailboxes warmed for 14 days minimum</b> before any cold sends (<span class="meta">Instantly warmup tool, daily ramp-up</span>)</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">SPF, DKIM, and DMARC verified on every sending domain (<span class="meta">use MXToolbox to confirm</span>)</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Daily send limit set to <b>25 to 35 emails per mailbox</b>, not 100+</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Send window aligned to your prospect's time zone, not yours (<span class="meta">9 AM to 5 PM local for the recipient</span>)</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Smart sending toggle ON so duplicates and re-engaged contacts are skipped</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Mailbox rotation enabled across all campaign mailboxes</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Tracking pixel either OFF or domain-aliased (<span class="meta">default Instantly pixel is a known spam signal in 2026</span>)</div></li>
+    </ul>
+    <div class="red-flag-box"><b>Red flag.</b> Sending more than 50 emails per mailbox per day is the single fastest way to get flagged. Stay under 35 even if Instantly lets you go higher.</div>
+  </div>
+
+  <div class="check-section">
+    <div class="check-header">
+      <div class="check-num">4</div>
+      <div>
+        <div class="check-title">Copy review</div>
+        <div class="check-sub">Quick pass on what you wrote, looking for the things that quietly destroy reply rate.</div>
+      </div>
+    </div>
+    <ul class="check-list">
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Subject line under 5 words and lowercase, no spam-trigger words (free, guaranteed, $$$)</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Email body under 80 words for the first touch</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">One clear CTA only (<span class="meta">no "book a call AND download AND reply"</span>)</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">No images, no logos, no fancy HTML signatures (<span class="meta">plain text reads as personal, not bulk</span>)</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Unsubscribe option present on follow-up emails (<span class="meta">soft "let me know if not relevant" line is enough for cold sends</span>)</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Personalisation variable actually personalises (<span class="meta">"hope you're doing well" doesn't count</span>)</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Spam-tested through Mail-Tester, score 9 out of 10 minimum</div></li>
+    </ul>
+  </div>
+
+  <div class="check-section">
+    <div class="check-header">
+      <div class="check-num">5</div>
+      <div>
+        <div class="check-title">Launch sanity check</div>
+        <div class="check-sub">Last 5 minutes before you press go.</div>
+      </div>
+    </div>
+    <ul class="check-list">
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Test email sent to your own inbox, all variables render, links work, signature is clean</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Test email also opens correctly on mobile (<span class="meta">most prospects open on phones first</span>)</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Reply-to address goes to a real inbox you actually monitor</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Out-of-office and auto-replies routed away from your main inbox</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">First send batch capped to 50 to 100 emails so you can pause if anything looks off</div></li>
+      <li class="check-item"><div class="check-mark">✓</div><div class="check-text">Calendar block set for 24 hours after launch to monitor opens, replies, bounces</div></li>
+    </ul>
+  </div>
+
+  <footer>Instantly pre-launch checklist &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 20, htmlLabels: false }
+});
+</script>
+</body>
+</html>
