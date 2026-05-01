@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nehro AI · Outbound Game Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #0d0d0c;
+    --c-bg-2: #15151a;
+    --c-card: #18181c;
+    --c-card-2: #1e1e23;
+    --c-border: #2a2a30;
+    --c-border-2: #383840;
+    --c-text: #f4f1ea;
+    --c-text-soft: #d8d4c8;
+    --c-muted: #908a7a;
+    --c-gold: #c9a467;
+    --c-gold-soft: #d9b87f;
+    --c-emerald: #5fb88a;
+    --c-amber: #d4924a;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 0;
+    line-height: 1.6;
+    font-feature-settings: "ss01", "cv01", "cv11";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .hero {
+    background: radial-gradient(ellipse at top right, rgba(201,164,103,0.08) 0%, transparent 55%),
+                radial-gradient(ellipse at bottom left, rgba(95,184,138,0.04) 0%, transparent 50%),
+                var(--c-bg);
+    border-bottom: 1px solid var(--c-border);
+    padding: 80px 32px 88px;
+  }
+  .hero-inner { max-width: 1080px; margin: 0 auto; }
+  .brand {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 56px;
+  }
+  .brand-mark {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--c-gold) 0%, #8a6e3d 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: #1a1612; font-weight: 800; font-size: 14px;
+    font-family: "Fraunces", serif;
+  }
+  .brand-name { font-weight: 700; font-size: 14px; letter-spacing: .04em; }
+  .brand-divider { color: var(--c-muted); font-size: 14px; }
+  .brand-tag { color: var(--c-muted); font-size: 13px; letter-spacing: .04em; }
+
+  .eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--c-gold);
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500;
+    font-size: clamp(40px, 6vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -.02em;
+    color: var(--c-text);
+    max-width: 880px;
+    margin-bottom: 24px;
+  }
+  h1 em { font-style: italic; color: var(--c-gold); font-weight: 500; }
+  .subtitle {
+    font-size: 18px;
+    color: var(--c-text-soft);
+    max-width: 720px;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+  .meta-strip {
+    margin-top: 48px;
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+    padding-top: 28px;
+    border-top: 1px solid var(--c-border);
+  }
+  .meta-item .meta-label { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--c-muted); }
+  .meta-item .meta-value { font-size: 15px; color: var(--c-text); margin-top: 4px; font-weight: 500; }
+
+  .container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 80px 32px;
+  }
+
+  .section { margin-bottom: 88px; }
+  .section:last-child { margin-bottom: 0; }
+
+  .section-head {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 24px;
+    align-items: baseline;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .section-num {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic;
+    font-size: 28px;
+    color: var(--c-gold);
+    font-weight: 400;
+  }
+  .section-title {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 32px;
+    font-weight: 500;
+    letter-spacing: -.01em;
+    color: var(--c-text);
+    line-height: 1.2;
+  }
+
+  .body-grid {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 24px;
+  }
+  .body-grid > .empty { }
+  .body-grid > .content { color: var(--c-text-soft); font-size: 16px; line-height: 1.7; }
+  .body-grid > .content p + p { margin-top: 14px; }
+  .body-grid > .content b { color: var(--c-text); font-weight: 600; }
+
+  .pill-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+  .pill {
+    padding: 8px 14px;
+    border: 1px solid var(--c-border-2);
+    border-radius: 999px;
+    font-size: 13px;
+    color: var(--c-text-soft);
+    background: var(--c-card);
+  }
+  .pill.gold { border-color: var(--c-gold); color: var(--c-gold); }
+  .pill.emerald { border-color: var(--c-emerald); color: var(--c-emerald); }
+
+  .channel-table {
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--c-card);
+  }
+  .channel-row {
+    display: grid;
+    grid-template-columns: 1.2fr 2fr 1fr;
+    padding: 18px 24px;
+    border-bottom: 1px solid var(--c-border);
+    align-items: center;
+    gap: 16px;
+  }
+  .channel-row:last-child { border-bottom: none; }
+  .channel-row.head {
+    background: var(--c-card-2);
+    font-size: 11px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    font-weight: 600;
+  }
+  .channel-name { font-weight: 600; color: var(--c-text); }
+  .channel-role { color: var(--c-text-soft); font-size: 14px; }
+  .channel-status {
+    font-size: 12px;
+    color: var(--c-gold);
+    font-weight: 500;
+  }
+  .channel-status.tbd { color: var(--c-amber); }
+
+  .source-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-top: 4px;
+  }
+  .source-tile {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+  }
+  .source-tile h4 {
+    font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--c-gold);
+    margin-bottom: 10px;
+  }
+  .source-tile p { color: var(--c-text-soft); font-size: 15px; line-height: 1.6; }
+  .source-tile p b { color: var(--c-text); font-weight: 600; }
+
+  .email-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .email-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 28px 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .email-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: linear-gradient(180deg, var(--c-gold) 0%, transparent 100%);
+  }
+  .email-tag { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--c-gold); margin-bottom: 8px; }
+  .email-title {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--c-text);
+    margin-bottom: 12px;
+  }
+  .email-body { color: var(--c-text-soft); font-size: 14px; line-height: 1.65; margin-bottom: 16px; }
+  .email-cta {
+    background: var(--c-bg-2);
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--c-text-soft);
+    font-style: italic;
+    line-height: 1.55;
+  }
+  .email-cta b { color: var(--c-text); font-style: normal; font-weight: 600; }
+
+  .sequence-note {
+    margin-top: 18px;
+    color: var(--c-muted);
+    font-size: 14px;
+    font-style: italic;
+    text-align: center;
+  }
+
+  .yes-flow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .yes-step {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 22px 22px;
+    position: relative;
+  }
+  .yes-step::after {
+    content: '→';
+    position: absolute;
+    right: -14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--c-gold);
+    font-size: 18px;
+    z-index: 2;
+  }
+  .yes-step:last-child::after { display: none; }
+  .yes-num {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic;
+    font-size: 26px;
+    color: var(--c-gold);
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+  .yes-name { font-weight: 600; color: var(--c-text); font-size: 14px; margin-bottom: 6px; }
+  .yes-desc { font-size: 13px; color: var(--c-muted); line-height: 1.55; }
+
+  .conversations-note {
+    margin-top: 18px;
+    padding: 16px 20px;
+    border: 1px solid var(--c-border);
+    border-left: 3px solid var(--c-gold);
+    border-radius: 8px;
+    background: var(--c-card);
+    color: var(--c-text-soft);
+    font-size: 14px;
+    line-height: 1.6;
+    font-style: italic;
+  }
+  .conversations-note b { color: var(--c-text); font-style: normal; font-weight: 600; }
+
+  .stage-flow {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 36px 24px 30px;
+    overflow-x: auto;
+  }
+  .stages {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .stage-chip {
+    padding: 12px 18px;
+    border: 1px solid var(--c-border-2);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--c-text-soft);
+    background: var(--c-bg-2);
+    white-space: nowrap;
+  }
+  .stage-chip.active { border-color: var(--c-gold); color: var(--c-gold); background: rgba(201,164,103,0.08); }
+  .stage-chip.final { border-color: var(--c-emerald); color: var(--c-emerald); background: rgba(95,184,138,0.08); }
+  .stage-arrow { color: var(--c-muted); font-size: 16px; }
+
+  .downsell-card {
+    background: linear-gradient(135deg, var(--c-card) 0%, var(--c-card-2) 100%);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .downsell-icon {
+    width: 56px; height: 56px; border-radius: 12px;
+    background: rgba(201,164,103,0.1);
+    border: 1px solid rgba(201,164,103,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+  .downsell-text { color: var(--c-text-soft); font-size: 15px; line-height: 1.65; }
+  .downsell-text b { color: var(--c-text); font-weight: 600; }
+
+  .journey-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 36px 32px;
+    text-align: center;
+  }
+  .journey-flow {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 19px;
+    line-height: 1.8;
+    color: var(--c-text-soft);
+    margin-bottom: 24px;
+    max-width: 880px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .journey-flow .arrow { color: var(--c-gold); margin: 0 8px; font-style: normal; }
+  .journey-flow b { color: var(--c-text); font-weight: 500; }
+  .journey-note {
+    color: var(--c-muted);
+    font-size: 13px;
+    font-style: italic;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .quality-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .quality-tile {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 24px 26px;
+    border-left: 3px solid var(--c-gold);
+  }
+  .quality-tile h4 {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--c-text);
+    margin-bottom: 8px;
+  }
+  .quality-tile p { color: var(--c-text-soft); font-size: 14px; line-height: 1.6; }
+
+  .reporting-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+  }
+  .reporting-card p { color: var(--c-text-soft); font-size: 16px; line-height: 1.7; }
+  .reporting-card p b { color: var(--c-text); font-weight: 600; }
+
+  .next-steps { display: flex; flex-direction: column; gap: 12px; }
+  .next-step {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 22px 26px;
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 20px;
+    align-items: start;
+    transition: border-color .2s, transform .2s;
+  }
+  .next-step:hover { border-color: var(--c-gold); }
+  .next-step .step-num {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic;
+    font-size: 26px;
+    color: var(--c-gold);
+    line-height: 1;
+  }
+  .next-step h4 {
+    color: var(--c-text);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .next-step p { color: var(--c-text-soft); font-size: 14px; line-height: 1.6; }
+  .next-step p b { color: var(--c-text); font-weight: 600; }
+
+  footer {
+    border-top: 1px solid var(--c-border);
+    padding: 32px;
+    text-align: center;
+    color: var(--c-muted);
+    font-size: 12px;
+    letter-spacing: .04em;
+  }
+
+  @media (max-width: 760px) {
+    .hero { padding: 56px 24px 64px; }
+    .container { padding: 56px 24px; }
+    .body-grid, .section-head { grid-template-columns: 1fr; gap: 12px; }
+    .source-grid, .email-grid, .quality-grid { grid-template-columns: 1fr; }
+    .yes-flow { grid-template-columns: 1fr 1fr; }
+    .yes-step::after { display: none; }
+    .channel-row { grid-template-columns: 1fr; gap: 6px; }
+    .channel-row.head { display: none; }
+    .meta-strip { gap: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="brand">
+      <div class="brand-mark">N</div>
+      <div class="brand-name">NEHRO AI</div>
+      <div class="brand-divider">/</div>
+      <div class="brand-tag">Outbound Game Plan</div>
+    </div>
+
+    <div class="eyebrow">Brainstorm Report</div>
+    <h1>Outbound Game Plan, <em>distilled</em> from one meeting into a system that ships.</h1>
+    <p class="subtitle">Convert a 15,000-lead database into closed customers for the trading algorithm license. Personalized AI cold email at scale, lukewarm leads routed to setters via a custom multi-pronged dialer, the full motion wired into the CRM.</p>
+
+    <div class="meta-strip">
+      <div class="meta-item">
+        <div class="meta-label">Database</div>
+        <div class="meta-value">15,000 leads</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Product</div>
+        <div class="meta-value">Trading algorithm license</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Primary touchpoint</div>
+        <div class="meta-value">Cold email</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Qualification</div>
+        <div class="meta-value">SignalWire dialer</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- Section 1 -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">01</div>
+      <div class="section-title">Objective</div>
+    </div>
+    <div class="body-grid">
+      <div class="empty"></div>
+      <div class="content">
+        <p>Convert a <b>15,000-lead database</b> into closed customers for our trading algorithm license by warming leads via personalized AI emails at scale, then routing interested leads to setters for qualification calls via our custom multi-pronged dialer.</p>
+        <div class="pill-row">
+          <div class="pill gold">Primary touchpoint · Cold email (personalized at scale with AI)</div>
+          <div class="pill gold">Qualification · Outbound dialer powered by SignalWire</div>
+          <div class="pill">Subsidiary touchpoint · SMS / iMessage (scope and weight TBD)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2 -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">02</div>
+      <div class="section-title">ICP and Product</div>
+    </div>
+    <div class="body-grid">
+      <div class="empty"></div>
+      <div class="content">
+        <p><b>Product.</b> Trading algorithm sold as a license.</p>
+        <p><b>ICP.</b> Multiple defined cohorts (existing, not re-scoped in this meeting).</p>
+        <p><b>Volume targets.</b> Deferred until budget and tooling allocation is finalized.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3 -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">03</div>
+      <div class="section-title">Channel Strategy</div>
+    </div>
+    <div class="body-grid">
+      <div class="empty"></div>
+      <div class="content">
+        <div class="channel-table">
+          <div class="channel-row head">
+            <div>Channel</div>
+            <div>Role</div>
+            <div>Status</div>
+          </div>
+          <div class="channel-row">
+            <div class="channel-name">Cold email</div>
+            <div class="channel-role">Primary, warm-up and interest capture</div>
+            <div class="channel-status">Core of the motion</div>
+          </div>
+          <div class="channel-row">
+            <div class="channel-name">Dialer (SignalWire)</div>
+            <div class="channel-role">Official qualification call by setters</div>
+            <div class="channel-status">Triggered only after lead opts in via email</div>
+          </div>
+          <div class="channel-row">
+            <div class="channel-name">SMS / iMessage</div>
+            <div class="channel-role">Subsidiary warm-up, same purpose as email, more personal feel</div>
+            <div class="channel-status tbd">Scope to be discussed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4 -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">04</div>
+      <div class="section-title">Lead Sourcing and Enrichment</div>
+    </div>
+    <div class="body-grid">
+      <div class="empty"></div>
+      <div class="content">
+        <div class="source-grid">
+          <div class="source-tile">
+            <h4>New leads</h4>
+            <p><b>Sales Navigator scraping</b> against ICP filters.</p>
+          </div>
+          <div class="source-tile">
+            <h4>Existing 15K database</h4>
+            <p><b>Clay waterfall enrichment</b> to fill data gaps, especially the fields personalization and dialing depend on.</p>
+          </div>
+          <div class="source-tile">
+            <h4>Outbound sender</h4>
+            <p><b>Instantly</b> for campaign execution, wrapped around the custom CRM as the system of record.</p>
+          </div>
+          <div class="source-tile">
+            <h4>Infrastructure</h4>
+            <p>Provision <b>additional domains and mailboxes</b> as needed and warm them up to protect deliverability and avoid spam tagging.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5 -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">05</div>
+      <div class="section-title">Sequence Design</div>
+    </div>
+    <div class="body-grid">
+      <div class="empty"></div>
+      <div class="content">
+        <p style="margin-bottom:24px;">A deliberately short cadence. The goal is to surface intent, not to nurture indefinitely.</p>
+        <div class="email-grid">
+          <div class="email-card">
+            <div class="email-tag">Email 1</div>
+            <div class="email-title">Personalized intro</div>
+            <div class="email-body">AI-personalized based on the data points we have on the lead. Pitches how the trading algorithm helps them specifically.</div>
+            <div class="email-cta"><b>CTA.</b> "If this sounds like something you'd be interested in, just say yes and we'll give you a ring at [phone]." Phone field pulled from the database where available.</div>
+          </div>
+          <div class="email-card">
+            <div class="email-tag">Email 2</div>
+            <div class="email-title">Value-prop follow-up</div>
+            <div class="email-body">Reinforces the value proposition for non-responders.</div>
+            <div class="email-cta">Closes the loop on the opt-in ask. No further chase steps in v1.</div>
+          </div>
+        </div>
+        <div class="sequence-note">That's the full sequence. No further chase steps in v1.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6 -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">06</div>
+      <div class="section-title">The "Yes" Trigger, CRM Workflow</div>
+    </div>
+    <div class="body-grid">
+      <div class="empty"></div>
+      <div class="content">
+        <p style="margin-bottom:22px;">When a lead replies with interest:</p>
+        <div class="yes-flow">
+          <div class="yes-step">
+            <div class="yes-num">i</div>
+            <div class="yes-name">Reply parsed</div>
+            <div class="yes-desc">Reply content is parsed by the CRM workflow.</div>
+          </div>
+          <div class="yes-step">
+            <div class="yes-num">ii</div>
+            <div class="yes-name">Setter notified</div>
+            <div class="yes-desc">Setter is notified inside the CRM.</div>
+          </div>
+          <div class="yes-step">
+            <div class="yes-num">iii</div>
+            <div class="yes-name">Hot Lead surfaced</div>
+            <div class="yes-desc">Lead queued in the Conversations page and surfaces in the Hot Lead view.</div>
+          </div>
+          <div class="yes-step">
+            <div class="yes-num">iv</div>
+            <div class="yes-name">Setter calls</div>
+            <div class="yes-desc">Setter calls via the dialer for the qualification conversation.</div>
+          </div>
+        </div>
+        <div class="conversations-note"><b>Instantly reply events</b> also flow into the Conversations section so the full thread is visible alongside any other channel touchpoints.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 7 -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">07</div>
+      <div class="section-title">Deal Stage Flow</div>
+    </div>
+    <div class="body-grid">
+      <div class="empty"></div>
+      <div class="content">
+        <p style="margin-bottom:24px;">Outbound activity drives Deal stage progression in the CRM.</p>
+        <div class="stage-flow">
+          <div class="stages">
+            <div class="stage-chip">Cold</div>
+            <div class="stage-arrow">→</div>
+            <div class="stage-chip">Emailed</div>
+            <div class="stage-arrow">→</div>
+            <div class="stage-chip">Engaged</div>
+            <div class="stage-arrow">→</div>
+            <div class="stage-chip active">Interested (Yes)</div>
+            <div class="stage-arrow">→</div>
+            <div class="stage-chip">Setter Called</div>
+            <div class="stage-arrow">→</div>
+            <div class="stage-chip active">Qualified</div>
+            <div class="stage-arrow">→</div>
+            <div class="stage-chip">Closer Booked</div>
+            <div class="stage-arrow">→</div>
+            <div class="stage-chip final">Closed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 8 -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">08</div>
+      <div class="section-title">Disqualified Leads, Downsell Workflow</div>
+    </div>
+    <div class="body-grid">
+      <div class="empty"></div>
+      <div class="content">
+        <div class="downsell-card">
+          <div class="downsell-icon">↻</div>
+          <div class="downsell-text">Disqualified leads are <b>not discarded</b>. A separate downsell email workflow will be built to offer a secondary product to leads who don't qualify for the primary algorithm license. Spec for this workflow is a follow-up item.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 9 -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">09</div>
+      <div class="section-title">Ideal Lead Journey</div>
+    </div>
+    <div class="body-grid">
+      <div class="empty"></div>
+      <div class="content">
+        <div class="journey-card">
+          <div class="journey-flow">
+            An <b>ICP lead</b> receives a personalized email <span class="arrow">→</span> expresses <b>interest</b> <span class="arrow">→</span> <b>setter</b> calls and qualifies <span class="arrow">→</span> lead <b>books</b> a call with a closer <span class="arrow">→</span> <b>closer closes</b> <span class="arrow">→</span> lead becomes a <b>customer</b>.
+          </div>
+          <div class="journey-note">Every design decision below should be evaluated against whether it improves the throughput or quality of this single path.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 10 -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">10</div>
+      <div class="section-title">Quality Targets</div>
+    </div>
+    <div class="body-grid">
+      <div class="empty"></div>
+      <div class="content">
+        <p style="margin-bottom:22px;">Guiding principles for the next phase. The motion must maximize:</p>
+        <div class="quality-grid">
+          <div class="quality-tile">
+            <h4>Lead quality</h4>
+            <p>Only ICP-fit leads enter the funnel.</p>
+          </div>
+          <div class="quality-tile">
+            <h4>Email deliverability</h4>
+            <p>Domain and mailbox infra and warming protect inboxing.</p>
+          </div>
+          <div class="quality-tile">
+            <h4>Email copy quality</h4>
+            <p>AI personalization is only as good as the data it's grounded in.</p>
+          </div>
+          <div class="quality-tile">
+            <h4>Phone-data quality</h4>
+            <p>Setters cannot waste cycles on bad numbers.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 11 -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">11</div>
+      <div class="section-title">Reporting</div>
+    </div>
+    <div class="body-grid">
+      <div class="empty"></div>
+      <div class="content">
+        <div class="reporting-card">
+          <p>Outbound funnel reporting will live in the <b>CRM Roster</b>, with a <b>dedicated outbound-email reporting view</b> to be built in a later phase.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 12 -->
+  <section class="section">
+    <div class="section-head">
+      <div class="section-num">12</div>
+      <div class="section-title">Next Steps, in order</div>
+    </div>
+    <div class="body-grid">
+      <div class="empty"></div>
+      <div class="content">
+        <div class="next-steps">
+          <div class="next-step">
+            <div class="step-num">i</div>
+            <div>
+              <h4>Lead-data audit on the 15K database</h4>
+              <p>What fields exist today, especially phone-number coverage. The <b>"we'll give you a ring at [phone]"</b> CTA depends on this.</p>
+            </div>
+          </div>
+          <div class="next-step">
+            <div class="step-num">ii</div>
+            <div>
+              <h4>Budget and tool allocation</h4>
+              <p>Domains, mailboxes, Sales Nav seats, Clay credits, Instantly tier, SignalWire spend. <b>This unlocks volume targets.</b></p>
+            </div>
+          </div>
+          <div class="next-step">
+            <div class="step-num">iii</div>
+            <div>
+              <h4>SMS / iMessage scope decision</h4>
+              <p>When in the sequence, to whom, and what weight relative to email.</p>
+            </div>
+          </div>
+          <div class="next-step">
+            <div class="step-num">iv</div>
+            <div>
+              <h4>Quality and guardrails spec</h4>
+              <p>Deliverability thresholds, suppression handling, phone validation, bounce / reply-rate kill switches.</p>
+            </div>
+          </div>
+          <div class="next-step">
+            <div class="step-num">v</div>
+            <div>
+              <h4>Downsell workflow spec</h4>
+              <p>Copy, sequence, secondary-product offer for disqualified leads.</p>
+            </div>
+          </div>
+          <div class="next-step">
+            <div class="step-num">vi</div>
+            <div>
+              <h4>Dedicated outbound-email reporting view</h4>
+              <p>Built into the CRM after the core motion is live.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>NEHRO AI &nbsp;·&nbsp; Outbound Game Plan &nbsp;·&nbsp; Brainstorm Report</footer>
+
+</body>
+</html>
