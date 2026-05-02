@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saif Shaikh — Direct Response Copywriter + B2B Sales Operator</title>
+<style>
+  :root {
+    --bg: #0a0a0c;
+    --bg-2: #111114;
+    --surface: #16161a;
+    --surface-2: #1c1c22;
+    --border: #26262d;
+    --border-2: #2f2f37;
+    --text: #f5f5f5;
+    --muted: #8b8b92;
+    --muted-2: #646469;
+    --accent: #b08740;
+    --accent-2: #e8c270;
+    --good: #4ade80;
+    --radius: 14px;
+    --max: 1080px;
+  }
+  [data-theme="light"] {
+    --bg: #f8f8f6;
+    --bg-2: #f0f0ed;
+    --surface: #ffffff;
+    --surface-2: #fafafa;
+    --border: #e5e5e0;
+    --border-2: #d8d8d2;
+    --text: #111110;
+    --muted: #585852;
+    --muted-2: #8a8a85;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "SF Pro Text", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--accent); color: #0a0a0c; }
+
+  /* Decorative gradient layer */
+  .ambient {
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+      radial-gradient(circle at 12% 18%, rgba(176,135,64,0.10) 0%, transparent 35%),
+      radial-gradient(circle at 88% 70%, rgba(176,135,64,0.06) 0%, transparent 40%);
+  }
+  [data-theme="light"] .ambient {
+    background:
+      radial-gradient(circle at 12% 18%, rgba(176,135,64,0.08) 0%, transparent 35%),
+      radial-gradient(circle at 88% 70%, rgba(176,135,64,0.04) 0%, transparent 40%);
+  }
+
+  /* Sticky nav */
+  nav.topnav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    background: rgba(10, 10, 12, 0.7);
+    border-bottom: 1px solid var(--border);
+    transition: background .25s;
+  }
+  [data-theme="light"] nav.topnav { background: rgba(248, 248, 246, 0.7); }
+  .nav-inner {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .nav-logo { font-weight: 700; letter-spacing: -0.01em; font-size: 14px; }
+  .nav-logo .dot { color: var(--accent); }
+  .nav-links { display: flex; gap: 4px; align-items: center; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: color .15s, background .15s;
+    position: relative;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active { color: var(--text); background: var(--surface-2); }
+  .theme-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: border-color .15s, background .15s;
+  }
+  .theme-btn:hover { border-color: var(--accent); }
+
+  main { max-width: var(--max); margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+  section { padding: 96px 0 32px; scroll-margin-top: 80px; }
+  section:first-of-type { padding-top: 140px; }
+
+  .eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 16px;
+  }
+  h1 { font-size: clamp(40px, 6vw, 64px); font-weight: 700; letter-spacing: -.03em; line-height: 1.05; }
+  h2 { font-size: 32px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 8px; }
+  h3 { font-size: 16px; font-weight: 700; letter-spacing: -.01em; }
+  .section-sub { font-size: 14px; color: var(--muted); margin-bottom: 32px; }
+
+  /* Hero */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 48px;
+    align-items: center;
+  }
+  .hero-text { max-width: 720px; }
+  .hero-headline { margin-bottom: 24px; }
+  .hero-headline .accent-text { color: var(--accent); }
+  .hero-tagline {
+    font-size: 18px; color: var(--muted);
+    line-height: 1.6; max-width: 600px;
+    margin-bottom: 28px;
+  }
+  .hero-meta {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 36px;
+  }
+  .pill {
+    font-size: 12px; font-weight: 500;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 12px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .pill .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--good);
+    display: inline-block;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(74,222,128,0.4); }
+    50% { opacity: .7; box-shadow: 0 0 0 6px rgba(74,222,128,0); }
+  }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 22px;
+    border-radius: 10px;
+    font-size: 14px; font-weight: 600;
+    text-decoration: none;
+    transition: transform .15s, background .15s, border-color .15s;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .btn-primary { background: var(--accent); color: #0a0a0c; }
+  .btn-primary:hover { transform: translateY(-1px); background: var(--accent-2); }
+  .btn-ghost { background: transparent; border-color: var(--border-2); color: var(--text); }
+  .btn-ghost:hover { border-color: var(--accent); }
+
+  .hero-photo {
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.4), 0 0 0 8px rgba(176,135,64,0.05);
+    flex-shrink: 0;
+  }
+  .hero-photo img {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block;
+  }
+  .hero-photo-fallback {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    color: #0a0a0c;
+    font-size: 80px; font-weight: 700;
+    letter-spacing: -.04em;
+  }
+
+  /* Stats */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 32px;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    transition: border-color .2s, transform .2s;
+  }
+  .stat:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .stat-num {
+    font-size: 24px; font-weight: 700;
+    color: var(--text);
+    letter-spacing: -.01em;
+  }
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* About */
+  .about-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px 40px;
+    line-height: 1.7;
+    font-size: 16px;
+    color: var(--text);
+  }
+  .about-card p { margin-bottom: 16px; color: var(--text); }
+  .about-card p:last-child { margin-bottom: 0; }
+  .about-card .highlight { color: var(--accent); font-weight: 600; }
+
+  /* Work tiles */
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .work-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 26px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color .2s, transform .2s, box-shadow .2s;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .work-tile::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 60%, rgba(176,135,64,0.05) 100%);
+    opacity: 0;
+    transition: opacity .25s;
+    pointer-events: none;
+  }
+  .work-tile:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,0.2); }
+  .work-tile:hover::after { opacity: 1; }
+  .work-tag {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .work-name { font-size: 16px; font-weight: 700; letter-spacing: -.01em; }
+  .work-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+  .work-arrow { color: var(--muted); align-self: flex-end; margin-top: 4px; transition: transform .2s, color .2s; }
+  .work-tile:hover .work-arrow { transform: translateX(4px); color: var(--accent); }
+
+  /* Experience timeline */
+  .exp-list { display: flex; flex-direction: column; gap: 14px; }
+  .exp-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 26px;
+    transition: border-color .2s;
+  }
+  .exp-item:hover { border-color: var(--accent); }
+  .exp-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 12px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .exp-role { font-size: 16px; font-weight: 700; }
+  .exp-org { color: var(--accent); font-weight: 600; }
+  .exp-date { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .exp-bullets {
+    list-style: none; padding: 0;
+    display: flex; flex-direction: column; gap: 8px;
+    font-size: 14px; color: var(--muted);
+  }
+  .exp-bullets li {
+    padding-left: 18px; position: relative;
+    line-height: 1.5;
+  }
+  .exp-bullets li::before {
+    content: '→'; position: absolute; left: 0;
+    color: var(--accent); font-weight: 700;
+  }
+
+  /* Skills + Stack grid */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .stack-col {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+  }
+  .stack-col h4 {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  .stack-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-size: 12px; font-weight: 500;
+    background: var(--surface-2);
+    border: 1px solid var(--border-2);
+    color: var(--text);
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: border-color .15s, transform .15s;
+  }
+  .tag:hover { border-color: var(--accent); transform: translateY(-1px); }
+  .tag.lead { background: var(--accent); color: #0a0a0c; border-color: var(--accent); }
+
+  /* Certifications */
+  .cert-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .cert-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    transition: border-color .2s, transform .2s;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .cert-tile:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .cert-name { font-size: 14px; font-weight: 700; line-height: 1.4; }
+  .cert-issuer { font-size: 12px; color: var(--accent); font-weight: 600; }
+  .cert-date { font-size: 11px; color: var(--muted); }
+
+  /* CTA */
+  .cta {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 48px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -10%;
+    width: 60%; height: 200%;
+    background: radial-gradient(circle, rgba(176,135,64,0.1), transparent 60%);
+    pointer-events: none;
+  }
+  .cta-text { position: relative; z-index: 1; }
+  .cta h2 { margin-bottom: 12px; }
+  .cta-body { font-size: 15px; color: var(--muted); margin-bottom: 24px; max-width: 540px; margin-left: auto; margin-right: auto; }
+  .cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; }
+
+  footer {
+    padding: 48px 0 64px;
+    text-align: center;
+    color: var(--muted-2);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 48px;
+  }
+
+  /* Reveal animation */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease-out, transform .6s ease-out; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* Responsive */
+  @media (max-width: 760px) {
+    main { padding: 0 20px; }
+    .nav-inner { padding: 12px 20px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; text-align: left; }
+    .hero-photo { width: 140px; height: 140px; order: -1; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .work-grid { grid-template-columns: 1fr; }
+    .stack-grid, .cert-grid { grid-template-columns: 1fr; }
+    .cta { padding: 32px 24px; }
+    section { padding: 64px 0 24px; }
+    section:first-of-type { padding-top: 100px; }
+  }
+</style>
+</head>
+<body>
+<div class="ambient"></div>
+
+<nav class="topnav">
+  <div class="nav-inner">
+    <div class="nav-logo">Saif Shaikh<span class="dot">.</span></div>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#work">Work</a>
+      <a href="#experience">Experience</a>
+      <a href="#stack">Stack</a>
+      <a href="#certifications">Certs</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">◑</button>
+  </div>
+</nav>
+
+<main>
+
+  <section id="hero" class="hero reveal">
+    <div class="hero-text">
+      <div class="eyebrow">Direct response copywriter + B2B sales operator</div>
+      <h1 class="hero-headline">I write copy that books meetings <span class="accent-text">and</span> run pipelines that close them.</h1>
+      <p class="hero-tagline">B2B Solutions Engineer working at the intersection of content and outbound sales. Email sequences for VC-funded SaaS, full pipeline ownership for licensing and import-export businesses, custom CRMs, and content that has done 780K+ IG impressions in a single campaign.</p>
+      <div class="hero-meta">
+        <span class="pill"><span class="dot"></span> Available now</span>
+        <span class="pill">📍 Mumbai, India</span>
+        <span class="pill">$24.56/hr</span>
+        <span class="pill">Open to contract to hire</span>
+      </div>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#contact">Hire me →</a>
+        <a class="btn btn-ghost" href="#work">See the work</a>
+      </div>
+    </div>
+    <div class="hero-photo">
+      <img src="./saif.png" alt="Saif Shaikh" onerror="this.style.display='none';this.parentNode.innerHTML='<div class=\'hero-photo-fallback\'>S</div>';">
+    </div>
+  </section>
+
+  <section id="stats" class="reveal">
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">500+ hrs</div>
+        <div class="stat-label">copywriting logged</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">780K+</div>
+        <div class="stat-label">IG impressions delivered</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">$1M+ ARR</div>
+        <div class="stat-label">pipelines owned</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">$1K+ /mo</div>
+        <div class="stat-label">software cost cut for clients</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="reveal">
+    <div class="eyebrow">About</div>
+    <h2>Operator first, writer second, both at full output.</h2>
+    <p class="section-sub">A short read on what I actually do for B2B clients.</p>
+    <div class="about-card">
+      <p>I'm a <span class="highlight">Google and Claude Certified AI Pro</span> running RevOps for B2B businesses from $100K ARR up to $1M+. The work splits cleanly into two halves and I run both in lockstep. On the content side I write the email sequences, the campaign copy, the long-form articles, and the social content that earns the click. On the sales side I build the lists, run the outbound systems, manage the pipelines, and stand up the CRMs that keep the funnel honest.</p>
+      <p>Recent work includes <span class="highlight">email copy and pipeline audits for VC-funded SaaS firms doing $400K+ ARR</span>, a <span class="highlight">CRM built from scratch for a $1M+ licensing business</span>, RevOps consulting for a $1M+ import-export manufacturer, and a custom CRM that <span class="highlight">cut over $1,000 per month</span> in software costs for an interior design company.</p>
+      <p>I write a lot. <span class="highlight">500+ hours logged</span> on emails, campaigns, articles, sports content, and outbound copy that I study and stress-test against my own client work. The voice is direct response. No corporate filler, no leverage solutions, no em-dashes.</p>
+    </div>
+  </section>
+
+  <section id="work" class="reveal">
+    <div class="eyebrow">Selected work</div>
+    <h2>Live blueprints from real client builds.</h2>
+    <p class="section-sub">Each tile opens a working dashboard or copy framework I've shipped.</p>
+    <div class="work-grid">
+
+      <a class="work-tile" href="./email-copywriting-10-templates.html">
+        <div class="work-tag">Copywriting · Direct response</div>
+        <div class="work-name">10 Email Templates Designed to Convert</div>
+        <div class="work-desc">A full lifecycle copy deliverable from cold to retention. Direct response framework, mobile-first, single CTA per email, framework note for the team.</div>
+        <span class="work-arrow">→</span>
+      </a>
+
+      <a class="work-tile" href="./full-pipeline-lead-gen.html">
+        <div class="work-tag">Sales · End-to-end pipeline</div>
+        <div class="work-name">Full-Pipeline Lead Gen</div>
+        <div class="work-desc">ICP analysis, sourcing, multi-touch nurture, booking, sales calls, onboarding, retention, reactivation. The full B2B sales motion in one diagram.</div>
+        <span class="work-arrow">→</span>
+      </a>
+
+      <a class="work-tile" href="./instantly-deliverability-audit.html">
+        <div class="work-tag">Cold email · Deliverability</div>
+        <div class="work-name">Instantly Deliverability Audit</div>
+        <div class="work-desc">11-point audit and 11-point healthy stack playbook. Domain, mailbox, warmup, copy, and deliverability discipline in one pass.</div>
+        <span class="work-arrow">→</span>
+      </a>
+
+      <a class="work-tile" href="./b2b-data-mining-lead-flow.html">
+        <div class="work-tag">Sales · CRM + Dashboard</div>
+        <div class="work-name">B2B Data Mining + Lead Flow</div>
+        <div class="work-desc">Targeted lead build, 4-step verification waterfall, CRM sync, live dashboard with source breakdown and stage funnel.</div>
+        <span class="work-arrow">→</span>
+      </a>
+
+      <a class="work-tile" href="./multi-channel-outreach-specialist.html">
+        <div class="work-tag">Sales · Multi-channel outbound</div>
+        <div class="work-name">Multi-Channel Outreach Specialist</div>
+        <div class="work-desc">Email, LinkedIn, WhatsApp, SMS wired into HubSpot as one closed loop. Advisory plus execution on the same engagement.</div>
+        <span class="work-arrow">→</span>
+      </a>
+
+      <a class="work-tile" href="./b2b-partnership-outreach.html">
+        <div class="work-tag">Sales · Partnership outreach</div>
+        <div class="work-name">B2B Partnership Outreach</div>
+        <div class="work-desc">Research, decision-maker identification, verified contacts, multi-touch outreach, partnership calls. End-to-end pipeline.</div>
+        <span class="work-arrow">→</span>
+      </a>
+
+      <a class="work-tile" href="./clay-instantly-campaign-build.html">
+        <div class="work-tag">Sales · Campaign build</div>
+        <div class="work-name">Clay → Instantly Campaign Build</div>
+        <div class="work-desc">Signal-based ICP table, enrichment waterfall to 95%+ verified emails, push to Instantly, 2-day campaign turnaround.</div>
+        <span class="work-arrow">→</span>
+      </a>
+
+      <a class="work-tile" href="./instantly-pre-launch-checklist.html">
+        <div class="work-tag">Cold email · Pre-launch</div>
+        <div class="work-name">Instantly Pre-Launch Checklist</div>
+        <div class="work-desc">5-step pass I run on every Instantly campaign before launch. List, mapping, settings, copy, sanity check.</div>
+        <span class="work-arrow">→</span>
+      </a>
+
+    </div>
+  </section>
+
+  <section id="experience" class="reveal">
+    <div class="eyebrow">Experience</div>
+    <h2>Operator roles, not just freelance gigs.</h2>
+    <p class="section-sub">Where the rep was earned.</p>
+    <div class="exp-list">
+
+      <div class="exp-item">
+        <div class="exp-head">
+          <div>
+            <div class="exp-role">Founder &amp; CEO</div>
+            <div class="exp-org">Neurothic Solutions</div>
+          </div>
+          <div class="exp-date">Jul 2025 — Present</div>
+        </div>
+        <ul class="exp-bullets">
+          <li>Founded Neurothic to ship AI-driven sales motions for B2B businesses across SaaS, recruitment, and licensing.</li>
+          <li>Lead flow audits, custom CRM builds, and outbound system design tied to measurable ROI.</li>
+          <li>Owned the writing, the systems, and the reporting end to end. No hand-offs.</li>
+        </ul>
+      </div>
+
+      <div class="exp-item">
+        <div class="exp-head">
+          <div>
+            <div class="exp-role">Chief Operating Officer</div>
+            <div class="exp-org">Interludee.in</div>
+          </div>
+          <div class="exp-date">Jan 2025 — Jun 2025</div>
+        </div>
+        <ul class="exp-bullets">
+          <li>Spearheaded operations for an e-commerce clothing brand, ad creative production through backend systems.</li>
+          <li>Managed on-site team execution and daily operating cadence.</li>
+          <li>Built growth strategy that scaled brand visibility in a saturated market.</li>
+        </ul>
+      </div>
+
+      <div class="exp-item">
+        <div class="exp-head">
+          <div>
+            <div class="exp-role">Copywriter (independent)</div>
+            <div class="exp-org">500+ hours of logged writing</div>
+          </div>
+          <div class="exp-date">Ongoing</div>
+        </div>
+        <ul class="exp-bullets">
+          <li>Email sequences, campaigns, articles, and outbound copy for B2B and sports brands.</li>
+          <li>Direct response framework. Tested live against client outbound to refine voice and conversion.</li>
+          <li>Studied weekly. Applied weekly. The reps compound.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="stack" class="reveal">
+    <div class="eyebrow">Stack</div>
+    <h2>The tools I reach for, grouped by what I'm building.</h2>
+    <p class="section-sub">Lead tools highlighted. The rest are what I add when the job asks for it.</p>
+    <div class="stack-grid">
+      <div class="stack-col">
+        <h4>Content + Copy</h4>
+        <div class="stack-tags">
+          <span class="tag lead">Direct response framework</span>
+          <span class="tag">Email sequences</span>
+          <span class="tag">Long-form articles</span>
+          <span class="tag">Landing pages</span>
+          <span class="tag">Social copy</span>
+          <span class="tag">Brand voice</span>
+        </div>
+      </div>
+      <div class="stack-col">
+        <h4>Sales + Outbound</h4>
+        <div class="stack-tags">
+          <span class="tag lead">Instantly</span>
+          <span class="tag lead">Clay</span>
+          <span class="tag">Apollo</span>
+          <span class="tag">Lead generation</span>
+          <span class="tag">List building</span>
+          <span class="tag">Appointment setting</span>
+          <span class="tag">Outbound sales</span>
+          <span class="tag">B2B lead generation</span>
+          <span class="tag">LinkedIn lead gen</span>
+        </div>
+      </div>
+      <div class="stack-col">
+        <h4>CRM + Systems</h4>
+        <div class="stack-tags">
+          <span class="tag lead">Claude Code</span>
+          <span class="tag">Cursor</span>
+          <span class="tag">Antigravity</span>
+          <span class="tag">GHL</span>
+          <span class="tag">Airtable</span>
+          <span class="tag">HubSpot</span>
+          <span class="tag">CRM development</span>
+          <span class="tag">Strategic audit</span>
+          <span class="tag">Market research</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="certifications" class="reveal">
+    <div class="eyebrow">Certifications</div>
+    <h2>Anthropic Certified Architect track + Google AI Pro.</h2>
+    <p class="section-sub">The 4 official Anthropic Academy courses that prepare for the Claude Certified Architect exam, plus Google's AI track.</p>
+    <div class="cert-grid">
+      <div class="cert-tile">
+        <div class="cert-issuer">Anthropic</div>
+        <div class="cert-name">Building with the Claude API</div>
+        <div class="cert-date">May 2026</div>
+      </div>
+      <div class="cert-tile">
+        <div class="cert-issuer">Anthropic</div>
+        <div class="cert-name">Claude Code in Action</div>
+        <div class="cert-date">May 2026</div>
+      </div>
+      <div class="cert-tile">
+        <div class="cert-issuer">Anthropic</div>
+        <div class="cert-name">Claude Model Context Protocol (MCP)</div>
+        <div class="cert-date">April 2026</div>
+      </div>
+      <div class="cert-tile">
+        <div class="cert-issuer">Anthropic</div>
+        <div class="cert-name">Claude Agentic Skills</div>
+        <div class="cert-date">April 2026</div>
+      </div>
+      <div class="cert-tile">
+        <div class="cert-issuer">Coursera · Google</div>
+        <div class="cert-name">Google AI Professional</div>
+        <div class="cert-date">April 2026</div>
+      </div>
+      <div class="cert-tile">
+        <div class="cert-issuer">BE10X</div>
+        <div class="cert-name">Artificial Intelligence Certified Professional</div>
+        <div class="cert-date">2025</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="reveal">
+    <div class="eyebrow">Get in touch</div>
+    <h2>Let's get on a 15 minute call.</h2>
+    <p class="section-sub">Send the brief. I'll bring a sample of the work back inside 48 hours.</p>
+    <div class="cta">
+      <div class="cta-text">
+        <h2>Ready to ship.</h2>
+        <p class="cta-body">If you need copy that converts or a pipeline that closes, send the ICP, the offer, and one example of recent outbound or content. I'll have a sample sequence and a build plan back within 48 hours, before any commitment.</p>
+        <div class="cta-actions">
+          <a class="btn btn-primary" href="https://www.upwork.com/freelancers/~saifsshaikh">Hire on Upwork →</a>
+          <a class="btn btn-ghost" href="mailto:saifssop77@gmail.com">Email me</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Built and maintained by Saif Shaikh · Mumbai, India · 2026
+</footer>
+
+<script>
+  // Theme toggle with localStorage
+  const root = document.documentElement;
+  const btn = document.getElementById('themeToggle');
+  const stored = localStorage.getItem('cv-theme');
+  if (stored === 'light') root.setAttribute('data-theme', 'light');
+  btn.addEventListener('click', () => {
+    const next = root.getAttribute('data-theme') === 'light' ? null : 'light';
+    if (next) { root.setAttribute('data-theme', next); localStorage.setItem('cv-theme', next); }
+    else { root.removeAttribute('data-theme'); localStorage.removeItem('cv-theme'); }
+  });
+
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // Active nav highlight on scroll
+  const sections = document.querySelectorAll('main section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const linkMap = {};
+  navLinks.forEach(a => { linkMap[a.getAttribute('href').slice(1)] = a; });
+  const navIO = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const id = e.target.getAttribute('id');
+        if (linkMap[id]) linkMap[id].classList.add('active');
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  sections.forEach(s => navIO.observe(s));
+
+  // Subtle hero photo parallax tilt
+  const photo = document.querySelector('.hero-photo');
+  if (photo && window.matchMedia('(hover: hover)').matches) {
+    photo.addEventListener('mousemove', (e) => {
+      const r = photo.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width - 0.5) * 8;
+      const y = ((e.clientY - r.top) / r.height - 0.5) * 8;
+      photo.style.transform = `perspective(800px) rotateY(${x}deg) rotateX(${-y}deg)`;
+    });
+    photo.addEventListener('mouseleave', () => { photo.style.transform = ''; });
+  }
+</script>
+</body>
+</html>
