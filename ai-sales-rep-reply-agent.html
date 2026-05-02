@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Sales Rep Reply + Follow-Up Agent</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --c-bg: #f8f8f6;
+    --c-card: #ffffff;
+    --c-border: #e8e8e4;
+    --c-text: #111110;
+    --c-muted: #6b6b66;
+    --c-accent: #5b50d6;
+    --c-good: #0d9467;
+    --c-warn: #c2410c;
+    --c-danger: #b82828;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    min-height: 100vh;
+    padding: 48px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .page { max-width: 1040px; width: 100%; display: flex; flex-direction: column; gap: 28px; }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); }
+  h1 { font-size: 32px; font-weight: 700; line-height: 1.2; letter-spacing: -.02em; }
+  .summary { font-size: 16px; color: var(--c-muted); line-height: 1.6; max-width: 760px; }
+
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .stat-num { font-size: 22px; font-weight: 700; letter-spacing: -.01em; color: var(--c-text); }
+  .stat-label { font-size: 12px; color: var(--c-muted); margin-top: 2px; }
+
+  .diagram-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 36px 24px;
+    overflow-x: auto;
+  }
+  .diagram-card .mermaid { display: flex; justify-content: center; }
+  .diagram-card svg .edgePath path {
+    stroke-dasharray: 6 3;
+    animation: flowDash 1.4s linear infinite;
+  }
+  @keyframes flowDash { to { stroke-dashoffset: -36; } }
+
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; padding: 16px 20px; background: var(--c-card); border: 1px solid var(--c-border); border-radius: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+  .section-card {
+    background: var(--c-card);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 28px 28px 30px;
+  }
+  .section-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .section-sub { font-size: 13px; color: var(--c-muted); margin-bottom: 22px; }
+
+  .intent-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .intent-tile {
+    padding: 14px 16px;
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    background: #fafaf8;
+  }
+  .intent-tile.auto { background: #f0f9f4; border-left: 3px solid var(--c-good); }
+  .intent-tile.escalate { background: #fef6f1; border-left: 3px solid var(--c-warn); }
+  .intent-tile.danger { background: #fdecec; border-left: 3px solid var(--c-danger); }
+  .intent-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .intent-desc { font-size: 12px; color: var(--c-muted); line-height: 1.5; }
+  .intent-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
+  .intent-tag.auto { color: var(--c-good); }
+  .intent-tag.escalate { color: var(--c-warn); }
+  .intent-tag.danger { color: var(--c-danger); }
+
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .stack-col h4 { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--c-muted); margin-bottom: 10px; }
+  .stack-row {
+    padding: 8px 12px;
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    margin-bottom: 6px;
+    background: #fafaf8;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .stack-row.core { border-left: 3px solid var(--c-accent); background: #f5f3ff; }
+  .stack-name { font-weight: 600; }
+  .stack-tag { font-size: 11px; color: var(--c-muted); font-weight: 500; }
+
+  .reply-mock {
+    background: #fafaf8;
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+  .reply-mock .meta { font-size: 11px; color: var(--c-muted); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 10px; }
+  .reply-mock .from { font-weight: 700; color: var(--c-text); margin-bottom: 4px; font-size: 13px; }
+  .reply-mock .quote {
+    border-left: 3px solid #cdd5e0;
+    padding-left: 12px;
+    color: var(--c-muted);
+    font-style: italic;
+    font-size: 13px;
+    margin-bottom: 14px;
+  }
+  .reply-mock .body { color: var(--c-text); }
+  .reply-mock .footer-meta { font-size: 11px; color: var(--c-muted); margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--c-border); }
+
+  .slack-mock {
+    background: #1a1d29;
+    border-radius: 10px;
+    padding: 18px 20px;
+    color: #d1d4de;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .slack-mock .who { color: #4f8cff; font-weight: 700; }
+  .slack-mock .meta { color: #7a7f8e; font-size: 11px; }
+  .slack-mock .body { color: #d1d4de; margin-top: 4px; margin-bottom: 8px; }
+  .slack-mock .draft { background: #232734; padding: 10px 12px; border-radius: 6px; margin: 6px 0; color: #b9c1d4; font-size: 12px; }
+  .slack-mock .buttons { display: flex; gap: 8px; margin-top: 8px; }
+  .slack-mock .btn { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; font-family: -apple-system, sans-serif; }
+  .slack-mock .btn.approve { background: #2eb86b; color: #fff; }
+  .slack-mock .btn.reject { background: #b82828; color: #fff; }
+  .slack-mock .btn.edit { background: #404657; color: #fff; }
+
+  .cadence-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .cadence-tile {
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 14px 12px;
+    background: #fafaf8;
+    text-align: center;
+  }
+  .cadence-day { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--c-accent); }
+  .cadence-name { font-size: 14px; font-weight: 700; margin: 4px 0; }
+  .cadence-desc { font-size: 11px; color: var(--c-muted); line-height: 1.45; }
+
+  .builds-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .build-tile {
+    padding: 16px 18px;
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    background: #fafaf8;
+    text-decoration: none;
+    color: var(--c-text);
+    transition: border-color .15s, box-shadow .15s;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .build-tile:hover { border-color: var(--c-accent); box-shadow: 0 0 0 3px rgba(91,80,214,.08); }
+  .build-tag { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--c-accent); }
+  .build-name { font-weight: 700; font-size: 14px; }
+  .build-desc { font-size: 13px; color: var(--c-muted); line-height: 1.5; }
+
+  .loom-card {
+    background: var(--c-card);
+    border: 2px dashed var(--c-accent);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+    text-align: center;
+  }
+  .loom-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--c-accent); }
+  .loom-title { font-size: 18px; font-weight: 700; }
+  .loom-sub { font-size: 14px; color: var(--c-muted); max-width: 540px; line-height: 1.55; }
+  .loom-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 12px 24px;
+    background: var(--c-accent);
+    color: #fff;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: filter .15s;
+  }
+  .loom-link:hover { filter: brightness(1.1); }
+
+  .cta-card {
+    background: linear-gradient(135deg, #111110 0%, #2a2a26 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 32px 32px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cta-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.6); }
+  .cta-headline { font-size: 22px; font-weight: 700; line-height: 1.3; letter-spacing: -.01em; }
+  .cta-body { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,.78); max-width: 720px; }
+  .cta-pill {
+    display: inline-block;
+    align-self: flex-start;
+    background: rgba(255,255,255,.1);
+    border: 1px solid rgba(255,255,255,.2);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+
+  footer { font-size: 12px; color: #aaa; text-align: center; padding-top: 8px; }
+
+  @media (max-width: 760px) {
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .intent-grid, .stack-grid, .builds-grid { grid-template-columns: 1fr; }
+    .cadence-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="eyebrow">AI-first cold email agency build</div>
+    <h1>AI Sales Rep Reply + Follow-Up Agent</h1>
+    <p class="summary">A multi-tenant agent that reads every inbound reply, classifies it, drafts a contextual response in the client's voice, books the meeting when the lead is hot, and runs the follow-up cadence on non-responders. Built on Claude Code, n8n, and Make so you can ship it across every agency client without rewriting the system each time.</p>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat"><div class="stat-num">70%+</div><div class="stat-label">replies auto-handled at maturity</div></div>
+    <div class="stat"><div class="stat-num">Under 60s</div><div class="stat-label">first-response time</div></div>
+    <div class="stat"><div class="stat-num">Multi-tenant</div><div class="stat-label">per-client voice + calendar + CRM</div></div>
+    <div class="stat"><div class="stat-num">5-touch</div><div class="stat-label">follow-up cadence on non-responders</div></div>
+  </div>
+
+  <div class="diagram-card">
+    <div class="mermaid">
+%%{init:{"theme":"base","themeVariables":{"primaryColor":"#111110","primaryTextColor":"#ffffff","primaryBorderColor":"#111110","lineColor":"#94a3b8","fontSize":"13px","fontFamily":"Inter, sans-serif"}}}%%
+flowchart TD
+  IN["📥 Reply Webhook<br/>Instantly · Smartlead · Reply.io"]:::trigger --> CLS
+  CLS["🧭 Reply Classifier<br/>positive · objection · OOO · wrong contact · soft no · hard no"]:::ai --> CTX
+  CTX["📚 Context Loader<br/>tenant config · lead data · original email · KB"]:::ai --> DRAFT
+  DRAFT["✍️ Brand-Voice Drafter<br/>Claude · per-tenant voice + offer"]:::ai --> SAFETY
+  SAFETY["🔒 Safety Gate<br/>no unauthorized commits · price · meeting"]:::danger --> AUTO
+  SAFETY --> ESC
+  AUTO(["⚡ Auto-Send + Book<br/>Calendly · CRM update"]):::out
+  ESC(["💬 Slack Escalation<br/>Approve · Edit · Reject"]):::out --> AUTO
+  CLS --> NORE
+  NORE["⏳ No-Reply Tracker<br/>5-touch cadence engine"]:::ai --> FOLLOW
+  FOLLOW(["🔁 Follow-Up Send<br/>Day 3 · 7 · 14 · 21 · 35"]):::out --> IN
+  AUTO --> CRM(["🗂️ CRM Sync<br/>HubSpot · Pipedrive · custom"]):::out
+  AUTO --> DIGEST(["📊 Daily Digest<br/>auto-handled · escalations · booked"]):::out
+
+  classDef trigger fill:#111110,stroke:#111110,color:#ffffff
+  classDef ai fill:#5b50d6,stroke:#4a40c0,color:#ffffff
+  classDef danger fill:#b82828,stroke:#8a1a1a,color:#ffffff
+  classDef out fill:#0d9467,stroke:#0a7a56,color:#ffffff
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#111110"></div>Inbound</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#5b50d6"></div>AI Layer</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#b82828"></div>Safety Gate</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#0d9467"></div>Output + CRM</div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">10 reply intents, mapped to handling path</div>
+    <div class="section-sub">Auto means safe to send when confidence clears the threshold. Escalate goes to Slack first. Danger ignores confidence and pings you directly, every time.</div>
+    <div class="intent-grid">
+      <div class="intent-tile auto"><div class="intent-tag auto">Auto</div><div class="intent-name">Positive interest</div><div class="intent-desc">"Yes tell me more" or similar. Drafter offers a 15 min slot, books on Calendly, syncs CRM.</div></div>
+      <div class="intent-tile auto"><div class="intent-tag auto">Auto</div><div class="intent-name">Information request</div><div class="intent-desc">"What does it cost / how does it work". Pulls answer from tenant KB, no fabrication.</div></div>
+      <div class="intent-tile auto"><div class="intent-tag auto">Auto</div><div class="intent-name">Time shift</div><div class="intent-desc">"Not now, ping me in Q3". Re-queues the lead for the date stated, polite acknowledgement.</div></div>
+      <div class="intent-tile auto"><div class="intent-tag auto">Auto</div><div class="intent-name">Out of office</div><div class="intent-desc">Parses return date, re-queues for that date plus 1, no follow-up wasted in the gap.</div></div>
+      <div class="intent-tile auto"><div class="intent-tag auto">Auto</div><div class="intent-name">Wrong contact</div><div class="intent-desc">"Talk to my COO". Asks politely for the name, scrapes a verified email, restarts sequence on the right person.</div></div>
+      <div class="intent-tile escalate"><div class="intent-tag escalate">Escalate</div><div class="intent-name">Soft objection</div><div class="intent-desc">"We already use X" or "We tried this before". Drafter writes a reframe, human approves before send.</div></div>
+      <div class="intent-tile escalate"><div class="intent-tag escalate">Escalate</div><div class="intent-name">Pricing pushback</div><div class="intent-desc">"Too expensive". Drafted reply uses social proof from KB. Human approves any number named.</div></div>
+      <div class="intent-tile escalate"><div class="intent-tag escalate">Escalate</div><div class="intent-name">Hard no</div><div class="intent-desc">"Not interested, remove me". Drafter generates a polite acknowledgement, tags lead as do-not-contact in CRM, escalates if any push.</div></div>
+      <div class="intent-tile danger"><div class="intent-tag danger">Danger</div><div class="intent-name">Unsubscribe + complaint</div><div class="intent-desc">"How did you get my email" or threats. Hard intercept, no auto-send. CRM marks suppressed, ping to founder Slack.</div></div>
+      <div class="intent-tile danger"><div class="intent-tag danger">Danger</div><div class="intent-name">Lawyer / regulator mention</div><div class="intent-desc">Keywords like "GDPR", "lawyer", "spam complaint". Instant escalation, zero auto-send, audit log preserved.</div></div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">Multi-tenant config (the agency advantage)</div>
+    <div class="section-sub">Each agency client gets their own row in the routine registry. Same engine, different brand voice, different offer, different calendar, different CRM. Onboard a new client in under an hour, not under a week.</div>
+    <div class="stack-grid">
+      <div class="stack-col">
+        <h4>Per tenant config</h4>
+        <div class="stack-row"><span class="stack-name">Brand voice prompt</span><span class="stack-tag">YAML</span></div>
+        <div class="stack-row"><span class="stack-name">Offer + risk reversal</span><span class="stack-tag">YAML</span></div>
+        <div class="stack-row"><span class="stack-name">KB + objection map</span><span class="stack-tag">Supabase</span></div>
+        <div class="stack-row"><span class="stack-name">Calendly link</span><span class="stack-tag">URL</span></div>
+        <div class="stack-row"><span class="stack-name">CRM endpoint</span><span class="stack-tag">API</span></div>
+        <div class="stack-row"><span class="stack-name">Escalation Slack channel</span><span class="stack-tag">webhook</span></div>
+      </div>
+      <div class="stack-col">
+        <h4>Per tenant guardrails</h4>
+        <div class="stack-row"><span class="stack-name">Pricing auto-send threshold</span><span class="stack-tag">$ value</span></div>
+        <div class="stack-row"><span class="stack-name">Meeting auto-book toggle</span><span class="stack-tag">on/off</span></div>
+        <div class="stack-row"><span class="stack-name">Confidence threshold</span><span class="stack-tag">0 to 1</span></div>
+        <div class="stack-row"><span class="stack-name">Danger keyword list</span><span class="stack-tag">array</span></div>
+        <div class="stack-row"><span class="stack-name">Working hours window</span><span class="stack-tag">timezone</span></div>
+        <div class="stack-row"><span class="stack-name">Daily reply cap</span><span class="stack-tag">int</span></div>
+      </div>
+      <div class="stack-col">
+        <h4>Per tenant reporting</h4>
+        <div class="stack-row"><span class="stack-name">Auto-resolve rate</span><span class="stack-tag">daily</span></div>
+        <div class="stack-row"><span class="stack-name">Tone match score</span><span class="stack-tag">daily</span></div>
+        <div class="stack-row"><span class="stack-name">Booked meetings</span><span class="stack-tag">daily</span></div>
+        <div class="stack-row"><span class="stack-name">Escalations cleared</span><span class="stack-tag">daily</span></div>
+        <div class="stack-row"><span class="stack-name">Top intent breakdown</span><span class="stack-tag">weekly</span></div>
+        <div class="stack-row"><span class="stack-name">Non-responder cohort</span><span class="stack-tag">weekly</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">Stack you asked for, plus what I'd reach for</div>
+    <div class="section-sub">Purple-bordered tiles are core to the JD. Everything else is what the build benefits from.</div>
+    <div class="stack-grid">
+      <div class="stack-col">
+        <h4>Orchestration</h4>
+        <div class="stack-row core"><span class="stack-name">Claude Code</span><span class="stack-tag">core agent</span></div>
+        <div class="stack-row core"><span class="stack-name">n8n (cloud or self-host)</span><span class="stack-tag">core flow</span></div>
+        <div class="stack-row core"><span class="stack-name">Make</span><span class="stack-tag">core glue</span></div>
+        <div class="stack-row"><span class="stack-name">Hetzner self-host</span><span class="stack-tag">infra</span></div>
+
+        <h4 style="margin-top:18px">Email source</h4>
+        <div class="stack-row"><span class="stack-name">Instantly</span><span class="stack-tag">webhook in</span></div>
+        <div class="stack-row"><span class="stack-name">Smartlead</span><span class="stack-tag">webhook in</span></div>
+        <div class="stack-row"><span class="stack-name">Reply.io</span><span class="stack-tag">webhook in</span></div>
+        <div class="stack-row"><span class="stack-name">Lemlist</span><span class="stack-tag">webhook in</span></div>
+      </div>
+      <div class="stack-col">
+        <h4>AI + Knowledge</h4>
+        <div class="stack-row"><span class="stack-name">Claude (Sonnet + Opus)</span><span class="stack-tag">drafter</span></div>
+        <div class="stack-row"><span class="stack-name">GPT-4o</span><span class="stack-tag">classifier</span></div>
+        <div class="stack-row"><span class="stack-name">Supabase</span><span class="stack-tag">tenant KB</span></div>
+        <div class="stack-row"><span class="stack-name">Pinecone</span><span class="stack-tag">objection vector</span></div>
+
+        <h4 style="margin-top:18px">CRM + booking</h4>
+        <div class="stack-row"><span class="stack-name">HubSpot + Pipedrive</span><span class="stack-tag">CRM sync</span></div>
+        <div class="stack-row"><span class="stack-name">Close + GHL</span><span class="stack-tag">alt CRM</span></div>
+        <div class="stack-row"><span class="stack-name">Calendly + Cal.com</span><span class="stack-tag">booking</span></div>
+      </div>
+      <div class="stack-col">
+        <h4>Human in the loop</h4>
+        <div class="stack-row"><span class="stack-name">Slack Bot</span><span class="stack-tag">approve flow</span></div>
+        <div class="stack-row"><span class="stack-name">Linear / Notion</span><span class="stack-tag">audit log</span></div>
+        <div class="stack-row"><span class="stack-name">Loom integration</span><span class="stack-tag">QA + handoff</span></div>
+
+        <h4 style="margin-top:18px">Reporting</h4>
+        <div class="stack-row"><span class="stack-name">Looker Studio</span><span class="stack-tag">tenant dash</span></div>
+        <div class="stack-row"><span class="stack-name">Metabase</span><span class="stack-tag">internal</span></div>
+        <div class="stack-row"><span class="stack-name">PostHog</span><span class="stack-tag">funnel</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">What the agent ships back, on a positive reply</div>
+    <div class="section-sub">A real reply drafted in the tenant's voice, single CTA, no corporate filler. Calendly link sent only after confirmation, never as a cold first move.</div>
+    <div class="reply-mock">
+      <div class="meta">Auto-sent · confidence 96% · tone match 9.2 / 10</div>
+      <div class="from">From: alex@tenantbrand.com</div>
+      <div class="quote">"Yeah I'm interested, send me more info."</div>
+      <div class="body">Hey Mike, glad you replied. Quick context. We work with founders running outbound at 5,000+ sends a week and hit a ceiling on reply triage. The agent handles 70%+ of replies the same way it would handle yours right now, and books in calendar before you'd have time to see the email.<br><br>Got 15 minutes Thursday at 10 AM ET? I'll send a calendar invite if so, or pick a slot here: cal.com/alex/15.<br><br>Alex<br>Sent from my iPhone</div>
+      <div class="footer-meta">CRM updated to "Engaged" · Calendly invite drafted · Tenant Slack notified for visibility</div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">What the agent does on a risky reply</div>
+    <div class="section-sub">Slack ping with full context, draft attached, three buttons. Edited replies feed back into the prompt as training so the agent improves week over week.</div>
+    <div class="slack-mock">
+      <div><span class="who">Sales Agent · Tenant: Tenant Brand</span> <span class="meta">APP &nbsp; 2:14 PM</span></div>
+      <div class="body">⚠️ Pricing pushback, draft requires approval</div>
+      <div class="meta">Lead: Mike R · Original: cold #4 · Sequence variant: B · Confidence: 78% · Threshold: ESCALATE</div>
+      <div class="draft">"Totally fair Mike, this isn't cheap. The agencies we work with see ROI inside 30 days because the agent replaces a $4K/mo SDR seat by month two. Want me to send the math on a 5-min Loom or just hop on a quick call so I can show you live?"</div>
+      <div class="meta">Tone match: 8.6 / 10 · Names $4K (under approval threshold) · CTA optional Loom or call</div>
+      <div class="buttons">
+        <span class="btn approve">Approve and send</span>
+        <span class="btn edit">Edit</span>
+        <span class="btn reject">Reject</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">Follow-up cadence on non-responders</div>
+    <div class="section-sub">Five-touch cadence after the original cold sequence. Each touch is shorter than the last and varies the angle so the agent never sounds like a single template on repeat.</div>
+    <div class="cadence-grid">
+      <div class="cadence-tile">
+        <div class="cadence-day">Day 3</div>
+        <div class="cadence-name">Bump</div>
+        <div class="cadence-desc">One-line nudge with the original CTA. No new pitch.</div>
+      </div>
+      <div class="cadence-tile">
+        <div class="cadence-day">Day 7</div>
+        <div class="cadence-name">Proof drop</div>
+        <div class="cadence-desc">A named result from a comparable lead. Numbers only.</div>
+      </div>
+      <div class="cadence-tile">
+        <div class="cadence-day">Day 14</div>
+        <div class="cadence-name">New angle</div>
+        <div class="cadence-desc">Reframe the offer around a different pain. Fresh hook.</div>
+      </div>
+      <div class="cadence-tile">
+        <div class="cadence-day">Day 21</div>
+        <div class="cadence-name">Loom or asset</div>
+        <div class="cadence-desc">Video walkthrough or one-pager. Earns the click.</div>
+      </div>
+      <div class="cadence-tile">
+        <div class="cadence-day">Day 35</div>
+        <div class="cadence-name">Break-up</div>
+        <div class="cadence-desc">Polite close. Often pulls a final reply by acknowledgment alone.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">Past systems I've shipped (the relevant ones)</div>
+    <div class="section-sub">Click through to the live blueprint of each. Same agent + orchestration pattern, different vertical.</div>
+    <div class="builds-grid">
+      <a class="build-tile" href="./claude-code-saas-backend.html">
+        <div class="build-tag">Multi-tenant orchestration</div>
+        <div class="build-name">Claude Code SaaS Backend</div>
+        <div class="build-desc">One Claude engine, many tenants, retries + idempotency + structured logs. Same multi-tenant routine registry pattern this build needs.</div>
+      </a>
+      <a class="build-tile" href="./maxxing-support-agent.html">
+        <div class="build-tag">Reply agent · safety gates</div>
+        <div class="build-name">MAXXING Support Agent</div>
+        <div class="build-desc">Triage, classify, draft in brand voice, safety gate before send, Slack approve flow. The architectural twin of this build, just inbound CX instead of outbound replies.</div>
+      </a>
+      <a class="build-tile" href="./full-pipeline-lead-gen.html">
+        <div class="build-tag">Outbound pipeline</div>
+        <div class="build-name">Full-Pipeline Lead Gen</div>
+        <div class="build-desc">ICP, sourcing, multi-touch nurture, booking, close, retain, reactivate. The outbound side this agent plugs into.</div>
+      </a>
+      <a class="build-tile" href="./instantly-deliverability-audit.html">
+        <div class="build-tag">Cold email infra</div>
+        <div class="build-name">Instantly Deliverability Audit</div>
+        <div class="build-desc">11-point audit + 11-point healthy stack. Proof I run cold email at the deliverability level needed before any agent touches replies.</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="loom-card">
+    <div class="loom-eyebrow">Walkthrough</div>
+    <div class="loom-title">3-minute Loom of the agent firing on a real reply</div>
+    <div class="loom-sub">Working build. Reply hits Instantly, classifier fires, drafter writes the response in tenant voice, safety gate passes, Calendly invite drops, CRM updates, daily digest line generated. End to end in under 60 seconds.</div>
+    <a class="loom-link" href="LOOM_LINK_HERE">Watch the Loom</a>
+  </div>
+
+  <div class="cta-card">
+    <div class="cta-eyebrow">Next step</div>
+    <div class="cta-headline">Ship the v1 agent for one tenant in 21 days. Multi-tenant by day 45.</div>
+    <div class="cta-body">Day 0 to 14: build the engine, wire one tenant end to end, dry-run on 200 historical replies. Day 15 to 21: shadow mode in Slack, no auto-send, tune voice and gates. Day 22 to 45: turn auto-send on by intent class, onboard tenant 2 and 3 to prove the multi-tenant config. Documentation handoff so your team owns prompts and KB after I leave. Send me access to one client's Instantly account and CRM and I'll have the build plan back inside 48 hours.</div>
+    <div class="cta-pill">v1 in 21 days · multi-tenant by day 45 · documented handoff</div>
+  </div>
+
+  <footer>AI sales rep agent build &nbsp;·&nbsp; April 2026</footer>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  securityLevel: 'loose',
+  flowchart: { curve: 'basis', padding: 20, htmlLabels: false }
+});
+</script>
+</body>
+</html>
