@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Acquisition + Lead Management System</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --card: #1a1a26;
+    --border: #2a2a3a;
+    --text: #e8e8f0;
+    --muted: #8888a0;
+    --accent: #6c5ce7;
+    --accent-glow: rgba(108,92,231,.15);
+    --green: #00d68f;
+    --green-glow: rgba(0,214,143,.12);
+    --amber: #f0a500;
+    --amber-glow: rgba(240,165,0,.12);
+    --red: #ff6b6b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; padding: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    position: relative; overflow: hidden;
+    padding: 80px 24px 60px; text-align: center;
+    background: linear-gradient(180deg, rgba(108,92,231,.08) 0%, transparent 60%);
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -120px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(108,92,231,.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 16px; position: relative;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 44px); font-weight: 800;
+    letter-spacing: -.03em; line-height: 1.15;
+    max-width: 700px; margin: 0 auto 18px; position: relative;
+  }
+  .hero-sub {
+    font-size: 17px; color: var(--muted); line-height: 1.6;
+    max-width: 560px; margin: 0 auto; position: relative;
+  }
+
+  /* ── Section wrapper ── */
+  .section {
+    max-width: 880px; margin: 0 auto;
+    padding: 60px 24px 0;
+  }
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+  }
+  .section-title {
+    font-size: 26px; font-weight: 700; letter-spacing: -.02em;
+    margin-bottom: 8px;
+  }
+  .section-desc {
+    font-size: 15px; color: var(--muted); line-height: 1.6;
+    margin-bottom: 32px; max-width: 600px;
+  }
+
+  /* ── KPI strip ── */
+  .kpi-strip {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px; margin-bottom: 40px;
+  }
+  .kpi-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px 20px; text-align: center;
+    transition: border-color .2s, transform .2s;
+  }
+  .kpi-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .kpi-value {
+    font-size: 32px; font-weight: 800; letter-spacing: -.02em;
+    background: linear-gradient(135deg, var(--accent), #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .kpi-value.green-val {
+    background: linear-gradient(135deg, var(--green), #34d399);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .kpi-value.amber-val {
+    background: linear-gradient(135deg, var(--amber), #fbbf24);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .kpi-label {
+    font-size: 12px; color: var(--muted); margin-top: 6px;
+    font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  }
+
+  /* ── Mermaid ── */
+  .mermaid-wrap {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 40px 24px; margin-bottom: 40px;
+    overflow-x: auto;
+  }
+  .mermaid { display: flex; justify-content: center; }
+
+  /* ── Pipeline stages ── */
+  .pipeline {
+    display: flex; gap: 0; margin-bottom: 40px; overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .pipe-stage {
+    flex: 1; min-width: 140px; padding: 20px 16px;
+    background: var(--card); border: 1px solid var(--border);
+    text-align: center; position: relative;
+    transition: border-color .2s, transform .2s;
+  }
+  .pipe-stage:first-child { border-radius: 14px 0 0 14px; }
+  .pipe-stage:last-child { border-radius: 0 14px 14px 0; }
+  .pipe-stage:hover { border-color: var(--accent); transform: translateY(-2px); z-index: 1; }
+  .pipe-stage::after {
+    content: '\25B6'; position: absolute; right: -8px; top: 50%;
+    transform: translateY(-50%); color: var(--accent); font-size: 12px;
+    z-index: 2;
+  }
+  .pipe-stage:last-child::after { display: none; }
+  .pipe-num {
+    font-size: 28px; font-weight: 800; color: var(--accent); opacity: .4;
+    margin-bottom: 6px;
+  }
+  .pipe-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .pipe-detail { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+  /* ── Channel grid ── */
+  .channel-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px; margin-bottom: 40px;
+  }
+  .channel-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+    transition: border-color .2s, transform .2s;
+  }
+  .channel-card:hover { border-color: var(--green); transform: translateY(-2px); }
+  .channel-icon { font-size: 24px; margin-bottom: 8px; }
+  .channel-name { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .channel-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* ── Two-col deliverables ── */
+  .two-col {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px; margin-bottom: 40px;
+  }
+  .del-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px;
+    transition: border-color .2s;
+  }
+  .del-card:hover { border-color: var(--accent); }
+  .del-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  .del-card ul {
+    list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px;
+  }
+  .del-card li {
+    font-size: 13px; color: var(--muted); line-height: 1.5;
+    padding-left: 18px; position: relative;
+  }
+  .del-card li::before {
+    content: '\2713'; position: absolute; left: 0; color: var(--green);
+    font-weight: 700; font-size: 12px;
+  }
+
+  /* ── Timeline ── */
+  .timeline {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px; margin-bottom: 40px;
+  }
+  .tl-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px; position: relative;
+    border-top: 3px solid var(--accent);
+    transition: transform .2s;
+  }
+  .tl-card:hover { transform: translateY(-2px); }
+  .tl-card:nth-child(2) { border-top-color: var(--green); }
+  .tl-card:nth-child(3) { border-top-color: var(--amber); }
+  .tl-period {
+    font-size: 11px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
+  }
+  .tl-card:nth-child(2) .tl-period { color: var(--green); }
+  .tl-card:nth-child(3) .tl-period { color: var(--amber); }
+  .tl-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .tl-items { font-size: 12px; color: var(--muted); line-height: 1.7; }
+
+  /* ── Mock dashboard ── */
+  .mock-dash {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px; margin-bottom: 40px;
+    overflow: hidden;
+  }
+  .mock-dash-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px; padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .mock-dash-title { font-size: 14px; font-weight: 700; }
+  .mock-dash-badge {
+    font-size: 10px; font-weight: 700; padding: 4px 10px;
+    border-radius: 99px; background: var(--green-glow); color: var(--green);
+    letter-spacing: .06em; text-transform: uppercase;
+  }
+  .mock-bar-row {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 12px;
+  }
+  .mock-bar-label {
+    font-size: 12px; color: var(--muted); width: 100px;
+    flex-shrink: 0; text-align: right;
+  }
+  .mock-bar-track {
+    flex: 1; height: 24px; background: var(--surface);
+    border-radius: 6px; overflow: hidden; position: relative;
+  }
+  .mock-bar-fill {
+    height: 100%; border-radius: 6px;
+    transition: width 1.2s ease;
+  }
+  .mock-bar-fill.purple { background: linear-gradient(90deg, var(--accent), #a78bfa); }
+  .mock-bar-fill.green { background: linear-gradient(90deg, var(--green), #34d399); }
+  .mock-bar-fill.amber { background: linear-gradient(90deg, var(--amber), #fbbf24); }
+  .mock-bar-val {
+    font-size: 11px; font-weight: 700; color: var(--text); width: 44px;
+    flex-shrink: 0;
+  }
+
+  /* ── Funnel ── */
+  .funnel {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 0; margin-bottom: 40px;
+  }
+  .funnel-step {
+    padding: 14px 0; text-align: center; border-radius: 10px;
+    transition: transform .2s;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+  }
+  .funnel-step:hover { transform: scale(1.02); }
+  .funnel-step:nth-child(1) { width: 100%; background: rgba(108,92,231,.12); }
+  .funnel-step:nth-child(2) { width: 82%; background: rgba(108,92,231,.09); }
+  .funnel-step:nth-child(3) { width: 64%; background: rgba(0,214,143,.10); }
+  .funnel-step:nth-child(4) { width: 48%; background: rgba(0,214,143,.14); }
+  .funnel-step:nth-child(5) { width: 34%; background: rgba(240,165,0,.12); }
+  .funnel-label { font-size: 13px; font-weight: 700; }
+  .funnel-num { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .funnel-arrow {
+    font-size: 10px; color: var(--muted); margin: 2px 0; text-align: center;
+  }
+
+  /* ── Loom + CTA ── */
+  .loom-card {
+    background: linear-gradient(135deg, rgba(108,92,231,.08), rgba(0,214,143,.06));
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 32px; text-align: center; margin-bottom: 24px;
+    transition: border-color .2s;
+  }
+  .loom-card:hover { border-color: var(--accent); }
+  .loom-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .loom-card p { font-size: 14px; color: var(--muted); }
+  .loom-icon { font-size: 40px; margin-bottom: 12px; }
+
+  .cta-card {
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    border-radius: 16px; padding: 40px; text-align: center;
+    margin-bottom: 60px;
+  }
+  .cta-card h3 {
+    font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 10px;
+  }
+  .cta-card p {
+    font-size: 14px; color: rgba(255,255,255,.8); line-height: 1.6;
+    max-width: 500px; margin: 0 auto;
+  }
+
+  footer {
+    text-align: center; padding: 40px 24px;
+    font-size: 11px; color: var(--muted); letter-spacing: .06em;
+  }
+
+  /* ── Scroll reveal ── */
+  .reveal {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── Mobile ── */
+  @media (max-width: 600px) {
+    .hero { padding: 60px 16px 40px; }
+    .section { padding: 40px 16px 0; }
+    .pipeline { flex-direction: column; }
+    .pipe-stage { border-radius: 10px !important; }
+    .pipe-stage::after { display: none; }
+    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Hero ── -->
+<div class="hero">
+  <div class="hero-eyebrow">System Blueprint</div>
+  <h1>Client Acquisition + Lead Management System</h1>
+  <p class="hero-sub">End-to-end engine that sources, qualifies, enriches, and routes leads into your CRM automatically. Every touchpoint tracked. Every follow-up on schedule.</p>
+</div>
+
+<!-- ── KPIs ── -->
+<div class="section">
+  <div class="section-label reveal">Projected Metrics</div>
+  <div class="section-title reveal">What this system delivers</div>
+  <div class="kpi-strip reveal">
+    <div class="kpi-card">
+      <div class="kpi-value">5,000+</div>
+      <div class="kpi-label">Verified leads / month</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value green-val">&lt;2%</div>
+      <div class="kpi-label">Bounce rate</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value amber-val">4 days</div>
+      <div class="kpi-label">System live</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">100%</div>
+      <div class="kpi-label">CRM sync coverage</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── System Architecture ── -->
+<div class="section">
+  <div class="section-label reveal">Architecture</div>
+  <div class="section-title reveal">System topology</div>
+  <div class="section-desc reveal">Six-node closed loop. Leads flow in, get qualified and enriched automatically, then route to outreach channels. CRM feeds learnings back into the scoring engine.</div>
+  <div class="mermaid-wrap reveal">
+    <div class="mermaid">
+flowchart TD
+  LEAD["📥 Lead Sources<br/>Forms · Ads · LinkedIn · Scrapers"]:::trigger --> HUB
+  KB(["📚 Knowledge Base<br/>ICP · Services · Pricing"]):::util --> HUB
+  HUB["🧠 AI Qualify + Enrich<br/>Score · Route · Segment"]:::ai --> DB
+  DB(["🗄️ Lead Database<br/>Clean enriched records"]):::util --> REACH
+  HUB --> REACH(["🔔 Multi-Channel Outreach<br/>Email · LinkedIn · Calls · Social"]):::out
+  REACH --> CRM(["🗂️ CRM Pipeline<br/>Stages · Tasks · Reporting"]):::out
+  CRM --> HUB
+
+  classDef trigger fill:#111,stroke:#555,color:#fff
+  classDef ai fill:#6366f1,stroke:#6366f1,color:#fff
+  classDef util fill:#e5e7eb,stroke:#ccc,color:#111
+  classDef out fill:#10b981,stroke:#10b981,color:#fff
+    </div>
+  </div>
+</div>
+
+<!-- ── Pipeline Stages ── -->
+<div class="section">
+  <div class="section-label reveal">CRM Pipeline</div>
+  <div class="section-title reveal">Every lead moves through five stages</div>
+  <div class="section-desc reveal">No lead falls through the cracks. Automated stage transitions with manual override for high-value prospects.</div>
+  <div class="pipeline reveal">
+    <div class="pipe-stage">
+      <div class="pipe-num">01</div>
+      <div class="pipe-name">Sourced</div>
+      <div class="pipe-detail">Raw lead captured from any channel</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="pipe-num">02</div>
+      <div class="pipe-name">Qualified</div>
+      <div class="pipe-detail">Scored against ICP criteria automatically</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="pipe-num">03</div>
+      <div class="pipe-name">Enriched</div>
+      <div class="pipe-detail">Contact data verified, firmographics added</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="pipe-num">04</div>
+      <div class="pipe-name">Engaged</div>
+      <div class="pipe-detail">Outreach deployed across channels</div>
+    </div>
+    <div class="pipe-stage">
+      <div class="pipe-num">05</div>
+      <div class="pipe-name">Converted</div>
+      <div class="pipe-detail">Meeting booked or deal in pipeline</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Channel Grid ── -->
+<div class="section">
+  <div class="section-label reveal">Outreach Channels</div>
+  <div class="section-title reveal">Multi-channel acquisition engine</div>
+  <div class="section-desc reveal">Each channel runs its own sequence with unified reporting back to the CRM.</div>
+  <div class="channel-grid reveal">
+    <div class="channel-card">
+      <div class="channel-icon">📧</div>
+      <div class="channel-name">Email Sequences</div>
+      <div class="channel-desc">Cold email campaigns with deliverability monitoring. Personalized at scale, A/B tested subject lines and CTAs.</div>
+    </div>
+    <div class="channel-card">
+      <div class="channel-icon">💼</div>
+      <div class="channel-name">LinkedIn Outreach</div>
+      <div class="channel-desc">Connection requests, profile visits, InMail sequences. Synced to CRM so reps never double-touch.</div>
+    </div>
+    <div class="channel-card">
+      <div class="channel-icon">📞</div>
+      <div class="channel-name">Call Campaigns</div>
+      <div class="channel-desc">Warm call lists generated from engaged leads. Call scripts and disposition codes logged automatically.</div>
+    </div>
+    <div class="channel-card">
+      <div class="channel-icon">📱</div>
+      <div class="channel-name">Social + Content</div>
+      <div class="channel-desc">SEO-driven inbound, PPC retargeting, social media engagement. All leads funneled into the same pipeline.</div>
+    </div>
+    <div class="channel-card">
+      <div class="channel-icon">🌐</div>
+      <div class="channel-name">Web Forms + Ads</div>
+      <div class="channel-desc">Landing pages, lead magnets, Google/Meta ads. Form submissions auto-qualify and route to the right rep.</div>
+    </div>
+    <div class="channel-card">
+      <div class="channel-icon">🔄</div>
+      <div class="channel-name">Referral + Networking</div>
+      <div class="channel-desc">Referral tracking system with automated thank-you sequences and partner attribution reporting.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Mock Dashboard ── -->
+<div class="section">
+  <div class="section-label reveal">Live Reporting</div>
+  <div class="section-title reveal">Real-time conversion dashboard</div>
+  <div class="section-desc reveal">Your management team gets a live view of what is working and where to double down. Updated automatically.</div>
+  <div class="mock-dash reveal">
+    <div class="mock-dash-header">
+      <div class="mock-dash-title">Lead Source Performance (30 days)</div>
+      <div class="mock-dash-badge">Live</div>
+    </div>
+    <div class="mock-bar-row">
+      <div class="mock-bar-label">Email</div>
+      <div class="mock-bar-track"><div class="mock-bar-fill purple" data-width="78%"></div></div>
+      <div class="mock-bar-val">2,340</div>
+    </div>
+    <div class="mock-bar-row">
+      <div class="mock-bar-label">LinkedIn</div>
+      <div class="mock-bar-track"><div class="mock-bar-fill green" data-width="52%"></div></div>
+      <div class="mock-bar-val">1,560</div>
+    </div>
+    <div class="mock-bar-row">
+      <div class="mock-bar-label">Ads / PPC</div>
+      <div class="mock-bar-track"><div class="mock-bar-fill amber" data-width="35%"></div></div>
+      <div class="mock-bar-val">1,050</div>
+    </div>
+    <div class="mock-bar-row">
+      <div class="mock-bar-label">Referral</div>
+      <div class="mock-bar-track"><div class="mock-bar-fill purple" data-width="22%"></div></div>
+      <div class="mock-bar-val">660</div>
+    </div>
+    <div class="mock-bar-row">
+      <div class="mock-bar-label">Inbound / SEO</div>
+      <div class="mock-bar-track"><div class="mock-bar-fill green" data-width="18%"></div></div>
+      <div class="mock-bar-val">540</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Conversion Funnel ── -->
+<div class="section">
+  <div class="section-label reveal">Funnel Analytics</div>
+  <div class="section-title reveal">Source to close conversion</div>
+  <div class="funnel reveal">
+    <div class="funnel-step">
+      <span class="funnel-label">Sourced</span>
+      <span class="funnel-num">6,150</span>
+    </div>
+    <div class="funnel-arrow">▼</div>
+    <div class="funnel-step">
+      <span class="funnel-label">Qualified</span>
+      <span class="funnel-num">3,690</span>
+    </div>
+    <div class="funnel-arrow">▼</div>
+    <div class="funnel-step">
+      <span class="funnel-label">Engaged</span>
+      <span class="funnel-num">2,214</span>
+    </div>
+    <div class="funnel-arrow">▼</div>
+    <div class="funnel-step">
+      <span class="funnel-label">Meeting Booked</span>
+      <span class="funnel-num">664</span>
+    </div>
+    <div class="funnel-arrow">▼</div>
+    <div class="funnel-step">
+      <span class="funnel-label">Client Won</span>
+      <span class="funnel-num">199</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── Deliverables ── -->
+<div class="section">
+  <div class="section-label reveal">Deliverables</div>
+  <div class="section-title reveal">What ships in Week 1</div>
+  <div class="two-col reveal">
+    <div class="del-card">
+      <h3>Acquisition Engine</h3>
+      <ul>
+        <li>Multi-source lead capture (forms, ads, scraping, LinkedIn)</li>
+        <li>AI-powered lead scoring against your ICP</li>
+        <li>Enrichment waterfall (verify to under 2% bounce)</li>
+        <li>Automated channel routing based on lead score</li>
+        <li>Duplicate detection and merge logic</li>
+      </ul>
+    </div>
+    <div class="del-card">
+      <h3>CRM + Reporting</h3>
+      <ul>
+        <li>5-stage pipeline with automated transitions</li>
+        <li>Follow-up task generation (calls, emails, touches)</li>
+        <li>Live dashboard: source, conversion, pipeline value</li>
+        <li>Weekly digest reports to management</li>
+        <li>Feedback loop: CRM data retrains scoring model</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ── Timeline ── -->
+<div class="section">
+  <div class="section-label reveal">Rollout</div>
+  <div class="section-title reveal">30 / 60 / 90 day plan</div>
+  <div class="timeline reveal">
+    <div class="tl-card">
+      <div class="tl-period">Days 1 to 30</div>
+      <div class="tl-title">Foundation</div>
+      <div class="tl-items">
+        Audit existing processes. Define ICP and scoring criteria. Set up CRM pipeline stages. Deploy lead capture from top 2 channels. First leads flowing within 4 days.
+      </div>
+    </div>
+    <div class="tl-card">
+      <div class="tl-period">Days 31 to 60</div>
+      <div class="tl-title">Scale</div>
+      <div class="tl-items">
+        Activate all outreach channels. A/B test messaging. Launch live dashboard. Automate follow-up sequences. Optimize conversion at each pipeline stage.
+      </div>
+    </div>
+    <div class="tl-card">
+      <div class="tl-period">Days 61 to 90</div>
+      <div class="tl-title">Optimize</div>
+      <div class="tl-items">
+        Retrain scoring model with real conversion data. Kill underperforming channels. Double down on winners. Hand off SOPs to your team for long-term operation.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Loom ── -->
+<div class="section">
+  <div class="loom-card reveal">
+    <div class="loom-icon">🎥</div>
+    <h3>2-Minute System Walkthrough</h3>
+    <p>Quick Loom showing how leads flow from source to close in this system, and where your team plugs in.</p>
+  </div>
+</div>
+
+<!-- ── CTA ── -->
+<div class="section">
+  <div class="cta-card reveal">
+    <h3>Let's build this for your agency</h3>
+    <p>I can have leads flowing into your pipeline within the first week. Let's jump on a quick call and I'll walk through the first 50 leads live so you can see the quality.</p>
+  </div>
+</div>
+
+<footer>System blueprint by Saif Shaikh</footer>
+
+<script>
+  // Mermaid init
+  mermaid.initialize({ theme: 'dark', themeVariables: {
+    primaryColor: '#6366f1', primaryBorderColor: '#6366f1',
+    primaryTextColor: '#fff', lineColor: '#555',
+    fontSize: '13px'
+  }});
+
+  // Scroll reveal
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }});
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Animate bars
+  const barObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.mock-bar-fill').forEach(bar => {
+          bar.style.width = bar.dataset.width;
+        });
+        barObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.mock-dash').forEach(el => barObs.observe(el));
+</script>
+</body>
+</html>
