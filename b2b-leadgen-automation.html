@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B2B Lead Generation + Outreach Automation</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #090910;
+    --surface: #111118;
+    --card: #18181f;
+    --border: #252530;
+    --text: #e6e6f0;
+    --muted: #80809a;
+    --accent: #7c6fec;
+    --accent2: #a78bfa;
+    --green: #00d68f;
+    --green-glow: rgba(0,214,143,.1);
+    --amber: #f0a500;
+    --blue: #3b82f6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: var(--bg); color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative; overflow: hidden;
+    padding: 80px 24px 64px; text-align: center;
+    background: linear-gradient(180deg, rgba(124,111,236,.07) 0%, transparent 65%);
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
+    width: 700px; height: 700px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(124,111,236,.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 16px; position: relative;
+  }
+  .hero h1 {
+    font-size: clamp(26px, 5vw, 44px); font-weight: 800;
+    letter-spacing: -.03em; line-height: 1.12;
+    max-width: 720px; margin: 0 auto 20px; position: relative;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero-sub {
+    font-size: 16px; color: var(--muted); line-height: 1.65;
+    max-width: 520px; margin: 0 auto; position: relative;
+  }
+
+  /* Section */
+  .section { max-width: 880px; margin: 0 auto; padding: 64px 24px 0; }
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+  }
+  .section-title { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 8px; }
+  .section-desc { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 32px; max-width: 600px; }
+
+  /* KPI */
+  .kpi-strip {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+    gap: 14px; margin-bottom: 40px;
+  }
+  .kpi-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px 16px; text-align: center;
+    transition: border-color .2s, transform .2s;
+  }
+  .kpi-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .kpi-value {
+    font-size: 30px; font-weight: 800; letter-spacing: -.02em;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .kpi-value.gv { background: linear-gradient(135deg, var(--green), #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .kpi-value.av { background: linear-gradient(135deg, var(--amber), #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .kpi-value.bv { background: linear-gradient(135deg, var(--blue), #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .kpi-label { font-size: 11px; color: var(--muted); margin-top: 6px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+
+  /* Mermaid */
+  .mermaid-wrap {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 40px 24px; margin-bottom: 40px; overflow-x: auto;
+  }
+  .mermaid { display: flex; justify-content: center; }
+
+  /* Waterfall */
+  .waterfall { display: flex; flex-direction: column; gap: 0; margin-bottom: 40px; }
+  .wf-row {
+    display: flex; align-items: stretch; gap: 0;
+    border-bottom: 1px solid var(--border);
+    transition: background .2s;
+  }
+  .wf-row:first-child { border-top: 1px solid var(--border); border-radius: 12px 12px 0 0; }
+  .wf-row:last-child { border-radius: 0 0 12px 12px; border-bottom: 1px solid var(--border); }
+  .wf-row:hover { background: rgba(124,111,236,.04); }
+  .wf-step {
+    width: 44px; flex-shrink: 0;
+    background: var(--surface); border-right: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; color: var(--accent);
+    padding: 14px 0;
+  }
+  .wf-tool {
+    width: 130px; flex-shrink: 0; padding: 14px 16px;
+    border-right: 1px solid var(--border);
+    font-size: 13px; font-weight: 700; display: flex; align-items: center;
+  }
+  .wf-action {
+    flex: 1; padding: 14px 16px; font-size: 12px; color: var(--muted);
+    line-height: 1.5; display: flex; align-items: center;
+  }
+  .wf-badge {
+    padding: 14px 16px; display: flex; align-items: center;
+    flex-shrink: 0;
+  }
+  .pill {
+    font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 99px;
+    white-space: nowrap;
+  }
+  .pill.find { background: rgba(124,111,236,.14); color: var(--accent); }
+  .pill.verify { background: var(--green-glow); color: var(--green); }
+  .pill.enrich { background: rgba(240,165,0,.12); color: var(--amber); }
+  .pill.fallback { background: rgba(59,130,246,.12); color: var(--blue); }
+
+  /* API grid */
+  .api-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 12px; margin-bottom: 40px;
+  }
+  .api-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px;
+    transition: border-color .2s, transform .2s;
+  }
+  .api-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .api-icon { font-size: 22px; margin-bottom: 8px; }
+  .api-name { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .api-role { font-size: 11px; color: var(--muted); line-height: 1.4; }
+  .api-tag {
+    display: inline-block; margin-top: 8px; font-size: 10px; font-weight: 700;
+    padding: 2px 7px; border-radius: 99px;
+    background: rgba(124,111,236,.12); color: var(--accent);
+  }
+
+  /* Workflow steps */
+  .steps-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px; margin-bottom: 40px;
+  }
+  .step-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px;
+    border-top: 3px solid var(--accent);
+    transition: transform .2s;
+  }
+  .step-card:nth-child(2) { border-top-color: var(--blue); }
+  .step-card:nth-child(3) { border-top-color: var(--green); }
+  .step-card:nth-child(4) { border-top-color: var(--amber); }
+  .step-card:hover { transform: translateY(-2px); }
+  .step-num { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+  .step-card:nth-child(2) .step-num { color: var(--blue); }
+  .step-card:nth-child(3) .step-num { color: var(--green); }
+  .step-card:nth-child(4) .step-num { color: var(--amber); }
+  .step-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .step-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* Mock output */
+  .output-mock {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden; margin-bottom: 40px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  }
+  .output-header {
+    background: var(--card); padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .output-dots { display: flex; gap: 6px; }
+  .output-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .output-dot.r { background: #ff5f57; }
+  .output-dot.a { background: #febc2e; }
+  .output-dot.g { background: #28c840; }
+  .output-label { font-size: 11px; color: var(--muted); font-family: inherit; }
+  .output-body { padding: 20px; font-size: 12px; line-height: 2; overflow-x: auto; }
+  .o-key { color: #7c6fec; }
+  .o-str { color: #00d68f; }
+  .o-num { color: #f0a500; }
+  .o-bool { color: #3b82f6; }
+  .o-muted { color: var(--muted); }
+
+  /* Two-col */
+  .two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .del-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; transition: border-color .2s; }
+  .del-card:hover { border-color: var(--accent); }
+  .del-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+  .del-card ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .del-card li { font-size: 13px; color: var(--muted); line-height: 1.5; padding-left: 18px; position: relative; }
+  .del-card li::before { content: '\2713'; position: absolute; left: 0; color: var(--green); font-weight: 700; font-size: 12px; }
+
+  /* Loom + CTA */
+  .loom-card {
+    background: linear-gradient(135deg, rgba(124,111,236,.08), rgba(0,214,143,.05));
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 32px; text-align: center; margin-bottom: 24px;
+    transition: border-color .2s;
+  }
+  .loom-card:hover { border-color: var(--accent); }
+  .loom-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .loom-card p { font-size: 14px; color: var(--muted); }
+  .loom-icon { font-size: 38px; margin-bottom: 12px; }
+
+  .cta-card {
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    border-radius: 16px; padding: 40px; text-align: center; margin-bottom: 60px;
+  }
+  .cta-card h3 { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 10px; }
+  .cta-card p { font-size: 14px; color: rgba(255,255,255,.8); line-height: 1.6; max-width: 500px; margin: 0 auto; }
+
+  footer { text-align: center; padding: 40px 24px; font-size: 11px; color: var(--muted); letter-spacing: .06em; }
+
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .55s ease, transform .55s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 600px) {
+    .hero { padding: 60px 16px 44px; }
+    .section { padding: 44px 16px 0; }
+    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+    .wf-tool { display: none; }
+    .wf-action { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-eyebrow">Automation Blueprint</div>
+  <h1>B2B Lead Gen + Outreach, <span>Fully Automated</span></h1>
+  <p class="hero-sub">One connected system that sources leads, enriches contact data, fires personalized outreach, manages follow-up automatically, and syncs every touchpoint into your CRM.</p>
+</div>
+
+<!-- KPIs -->
+<div class="section">
+  <div class="section-label reveal">System Output</div>
+  <div class="section-title reveal">What the automation produces</div>
+  <div class="kpi-strip reveal">
+    <div class="kpi-card">
+      <div class="kpi-value">5,000+</div>
+      <div class="kpi-label">Leads per month</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value gv">&lt;2%</div>
+      <div class="kpi-label">Bounce rate</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value av">4 days</div>
+      <div class="kpi-label">Live from kickoff</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value bv">100%</div>
+      <div class="kpi-label">CRM sync coverage</div>
+    </div>
+  </div>
+</div>
+
+<!-- Architecture -->
+<div class="section">
+  <div class="section-label reveal">System Architecture</div>
+  <div class="section-title reveal">End-to-end automation topology</div>
+  <div class="section-desc reveal">Six nodes, closed loop. Leads enter from any source, get qualified and enriched by the AI hub, route to outreach, and every reply and conversion feeds back for continuous improvement.</div>
+  <div class="mermaid-wrap reveal">
+    <div class="mermaid">
+flowchart TD
+  LEAD["📥 Lead Sources<br/>Apollo · LinkedIn · Scraping · Inbound"]:::trigger --> HUB
+  KB(["📚 ICP + Playbooks<br/>Scoring rules · Personas · Messaging"]):::util --> HUB
+  HUB["🧠 Claude Code + n8n<br/>Enrich · Qualify · Score · Route"]:::ai --> DB
+  DB(["🗄️ Lead Database<br/>Verified · Enriched · Deduplicated"]):::util --> REACH
+  HUB --> REACH(["✉️ Outreach Engine<br/>Instantly · Smartlead · LinkedIn · WhatsApp"]):::out
+  REACH --> CRM(["🗂️ CRM Sync<br/>HubSpot · Pipedrive · Custom"]):::out
+  CRM --> HUB
+
+  classDef trigger fill:#111,stroke:#555,color:#fff
+  classDef ai fill:#6366f1,stroke:#6366f1,color:#fff
+  classDef util fill:#e5e7eb,stroke:#ccc,color:#111
+  classDef out fill:#10b981,stroke:#10b981,color:#fff
+    </div>
+  </div>
+</div>
+
+<!-- Enrichment Waterfall -->
+<div class="section">
+  <div class="section-label reveal">Data Layer</div>
+  <div class="section-title reveal">Enrichment waterfall to under 2% bounce</div>
+  <div class="section-desc reveal">Each API fires only on misses from the previous step. Highest accuracy source goes first. ZeroBounce validates everything before a single email sends.</div>
+  <div class="waterfall reveal">
+    <div class="wf-row">
+      <div class="wf-step">1</div>
+      <div class="wf-tool">Apollo.io</div>
+      <div class="wf-action">Primary email + phone sourcing via Apollo API. Pulls firmographics, tech stack, headcount, LinkedIn URL in one call.</div>
+      <div class="wf-badge"><span class="pill find">Source</span></div>
+    </div>
+    <div class="wf-row">
+      <div class="wf-step">2</div>
+      <div class="wf-tool">Hunter.io</div>
+      <div class="wf-action">Fallback email finder on Apollo misses. Domain pattern matching with confidence scoring.</div>
+      <div class="wf-badge"><span class="pill find">Source</span></div>
+    </div>
+    <div class="wf-row">
+      <div class="wf-step">3</div>
+      <div class="wf-tool">Snov.io</div>
+      <div class="wf-action">Second fallback for hard-to-find contacts. LinkedIn profile crawl via email lookup.</div>
+      <div class="wf-badge"><span class="pill fallback">Fallback</span></div>
+    </div>
+    <div class="wf-row">
+      <div class="wf-step">4</div>
+      <div class="wf-tool">Clearbit / Datagma</div>
+      <div class="wf-action">Firmographic enrichment: revenue band, employee count, funding round, technologies used, recent hiring signals.</div>
+      <div class="wf-badge"><span class="pill enrich">Enrich</span></div>
+    </div>
+    <div class="wf-row">
+      <div class="wf-step">5</div>
+      <div class="wf-tool">Findymail</div>
+      <div class="wf-action">Catch-all verification to convert risky emails into confirmed-valid before they reach the sending step.</div>
+      <div class="wf-badge"><span class="pill verify">Verify</span></div>
+    </div>
+    <div class="wf-row">
+      <div class="wf-step">6</div>
+      <div class="wf-tool">ZeroBounce</div>
+      <div class="wf-action">Final validation pass. Flags disposable, role-based, and invalid addresses. Only verified emails enter the outreach queue.</div>
+      <div class="wf-badge"><span class="pill verify">Validate</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- API Stack -->
+<div class="section">
+  <div class="section-label reveal">Integration Stack</div>
+  <div class="section-title reveal">APIs and tools wired together</div>
+  <div class="section-desc reveal">Every tool talks to every other tool through n8n. No manual exports. No copy-pasting between platforms.</div>
+  <div class="api-grid reveal">
+    <div class="api-card">
+      <div class="api-icon">🤖</div>
+      <div class="api-name">Claude API</div>
+      <div class="api-role">Lead scoring, personalization, reply classification, objection detection</div>
+      <div class="api-tag">AI Core</div>
+    </div>
+    <div class="api-card">
+      <div class="api-icon">⚙️</div>
+      <div class="api-name">n8n</div>
+      <div class="api-role">Workflow orchestration, API routing, retry logic, error handling</div>
+      <div class="api-tag">Orchestration</div>
+    </div>
+    <div class="api-card">
+      <div class="api-icon">🔍</div>
+      <div class="api-name">Apollo.io API</div>
+      <div class="api-role">Lead sourcing by ICP filters: title, industry, headcount, tech stack</div>
+      <div class="api-tag">Sourcing</div>
+    </div>
+    <div class="api-card">
+      <div class="api-icon">✉️</div>
+      <div class="api-name">Instantly / Smartlead</div>
+      <div class="api-role">Cold email sequences with deliverability monitoring and inbox rotation</div>
+      <div class="api-tag">Outreach</div>
+    </div>
+    <div class="api-card">
+      <div class="api-icon">🗂️</div>
+      <div class="api-name">HubSpot / Pipedrive</div>
+      <div class="api-role">CRM sync: create contacts, update deal stages, log activities automatically</div>
+      <div class="api-tag">CRM</div>
+    </div>
+    <div class="api-card">
+      <div class="api-icon">💬</div>
+      <div class="api-name">Slack API</div>
+      <div class="api-role">Real-time alerts for warm replies, hot leads, and daily pipeline digest</div>
+      <div class="api-tag">Alerts</div>
+    </div>
+  </div>
+</div>
+
+<!-- Workflow Steps -->
+<div class="section">
+  <div class="section-label reveal">Automation Flow</div>
+  <div class="section-title reveal">Four stages, zero manual steps</div>
+  <div class="steps-grid reveal">
+    <div class="step-card">
+      <div class="step-num">Stage 01 — Source</div>
+      <div class="step-title">Automated lead capture</div>
+      <div class="step-desc">Apollo searches run on schedule against your ICP filters. New leads pulled, deduplicated against existing database, and queued for enrichment automatically.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">Stage 02 — Qualify</div>
+      <div class="step-title">AI scoring and routing</div>
+      <div class="step-desc">Claude scores each lead against ICP criteria. High-score leads go straight to personalized outreach. Mid-score leads enter a nurture track. Low-score leads get flagged for review.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">Stage 03 — Outreach</div>
+      <div class="step-title">Personalized sequences at scale</div>
+      <div class="step-desc">Emails generated with lead-specific personalization, pushed to Instantly or Smartlead via API. Follow-up touches fire automatically based on open and click behavior.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">Stage 04 — Sync</div>
+      <div class="step-title">CRM and reporting loop</div>
+      <div class="step-desc">Every reply, open, click, and meeting booked syncs to CRM in real time. Conversion data retrains the scoring model. Slack alert fires on every warm reply.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Mock JSON Output -->
+<div class="section">
+  <div class="section-label reveal">System Output</div>
+  <div class="section-title reveal">What a qualified lead record looks like</div>
+  <div class="section-desc reveal">Every lead exits the enrichment pipeline as a clean, structured record ready for outreach and CRM sync.</div>
+  <div class="output-mock reveal">
+    <div class="output-header">
+      <div class="output-dots">
+        <div class="output-dot r"></div>
+        <div class="output-dot a"></div>
+        <div class="output-dot g"></div>
+      </div>
+      <div class="output-label">Enriched Lead Record — n8n output</div>
+    </div>
+    <div class="output-body">
+<span class="o-muted">{</span><br>
+&nbsp;&nbsp;<span class="o-key">"name"</span>: <span class="o-str">"James Okafor"</span>,<br>
+&nbsp;&nbsp;<span class="o-key">"title"</span>: <span class="o-str">"Head of Operations"</span>,<br>
+&nbsp;&nbsp;<span class="o-key">"company"</span>: <span class="o-str">"Veritas Logistics Group"</span>,<br>
+&nbsp;&nbsp;<span class="o-key">"email"</span>: <span class="o-str">"j.okafor@veritaslogistics.com"</span>,<br>
+&nbsp;&nbsp;<span class="o-key">"email_status"</span>: <span class="o-str">"valid"</span>,<span class="o-muted"> // ZeroBounce verified</span><br>
+&nbsp;&nbsp;<span class="o-key">"linkedin"</span>: <span class="o-str">"linkedin.com/in/jamesokafor"</span>,<br>
+&nbsp;&nbsp;<span class="o-key">"headcount"</span>: <span class="o-num">85</span>,<br>
+&nbsp;&nbsp;<span class="o-key">"revenue_band"</span>: <span class="o-str">"$10M–$50M"</span>,<br>
+&nbsp;&nbsp;<span class="o-key">"tech_stack"</span>: <span class="o-muted">[</span><span class="o-str">"HubSpot"</span>, <span class="o-str">"Slack"</span>, <span class="o-str">"Shopify"</span><span class="o-muted">]</span>,<br>
+&nbsp;&nbsp;<span class="o-key">"icp_score"</span>: <span class="o-num">87</span>,<span class="o-muted"> // out of 100</span><br>
+&nbsp;&nbsp;<span class="o-key">"routing"</span>: <span class="o-str">"immediate_outreach"</span>,<br>
+&nbsp;&nbsp;<span class="o-key">"personalization_hook"</span>: <span class="o-str">"Hiring 3 ops managers + using HubSpot — signal for scale pain"</span>,<br>
+&nbsp;&nbsp;<span class="o-key">"crm_synced"</span>: <span class="o-bool">true</span>,<br>
+&nbsp;&nbsp;<span class="o-key">"outreach_status"</span>: <span class="o-str">"sequence_active"</span><br>
+<span class="o-muted">}</span>
+    </div>
+  </div>
+</div>
+
+<!-- Deliverables -->
+<div class="section">
+  <div class="section-label reveal">Deliverables</div>
+  <div class="section-title reveal">What gets built and handed over</div>
+  <div class="two-col reveal">
+    <div class="del-card">
+      <h3>Automation System</h3>
+      <ul>
+        <li>n8n workflows for sourcing, enrichment, and routing</li>
+        <li>Claude API integration for scoring and personalization</li>
+        <li>Enrichment waterfall across 5 to 6 data providers</li>
+        <li>CRM sync with automated stage transitions</li>
+        <li>Slack alerting for warm replies and hot leads</li>
+      </ul>
+    </div>
+    <div class="del-card">
+      <h3>Outreach Infrastructure</h3>
+      <ul>
+        <li>Instantly or Smartlead campaign setup and sequence build</li>
+        <li>Domain + mailbox warmup protocol</li>
+        <li>SPF, DKIM, DMARC configured and verified</li>
+        <li>A/B tested subject lines and messaging variants</li>
+        <li>Weekly reporting: opens, replies, conversions, pipeline</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Loom -->
+<div class="section">
+  <div class="loom-card reveal">
+    <div class="loom-icon">🎥</div>
+    <h3>2-Minute System Walkthrough</h3>
+    <p>Quick Loom showing leads flowing from Apollo through enrichment into an active outreach sequence live. You see the full pipeline in under 2 minutes.</p>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="section">
+  <div class="cta-card reveal">
+    <h3>Ready to build this for your stack</h3>
+    <p>Share your ICP and current tools and I will map the exact workflow before we start. System live in under 4 days from kickoff.</p>
+  </div>
+</div>
+
+<footer>System blueprint by Saif Shaikh</footer>
+
+<script>
+  mermaid.initialize({ theme: 'dark', themeVariables: {
+    primaryColor: '#6366f1', primaryBorderColor: '#6366f1',
+    primaryTextColor: '#fff', lineColor: '#555', fontSize: '13px'
+  }});
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }});
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
