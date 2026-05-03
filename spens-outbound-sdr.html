@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outbound Email SDR System — SPENS Development</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --card: #1a1a26;
+    --border: #2a2a3a;
+    --text: #e8e8f0;
+    --muted: #8888a0;
+    --accent: #6c5ce7;
+    --accent-glow: rgba(108,92,231,.15);
+    --green: #00d68f;
+    --green-glow: rgba(0,214,143,.12);
+    --amber: #f0a500;
+    --red: #ff6b6b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative; overflow: hidden;
+    padding: 80px 24px 60px; text-align: center;
+    background: linear-gradient(180deg, rgba(108,92,231,.08) 0%, transparent 60%);
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -120px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(108,92,231,.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: clamp(26px, 5vw, 42px); font-weight: 800;
+    letter-spacing: -.03em; line-height: 1.15;
+    max-width: 700px; margin: 0 auto 18px;
+  }
+  .hero-sub {
+    font-size: 16px; color: var(--muted); line-height: 1.6;
+    max-width: 540px; margin: 0 auto;
+  }
+  .hero-quote {
+    margin-top: 28px; display: inline-block;
+    font-size: 15px; font-style: italic; color: var(--accent);
+    border: 1px solid rgba(108,92,231,.3); border-radius: 8px;
+    padding: 10px 20px;
+  }
+
+  /* Section */
+  .section { max-width: 880px; margin: 0 auto; padding: 60px 24px 0; }
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+  }
+  .section-title {
+    font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 8px;
+  }
+  .section-desc {
+    font-size: 15px; color: var(--muted); line-height: 1.6;
+    margin-bottom: 32px; max-width: 600px;
+  }
+
+  /* KPI strip */
+  .kpi-strip {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px; margin-bottom: 40px;
+  }
+  .kpi-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px 16px; text-align: center;
+    transition: border-color .2s, transform .2s;
+  }
+  .kpi-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .kpi-value {
+    font-size: 30px; font-weight: 800; letter-spacing: -.02em;
+    background: linear-gradient(135deg, var(--accent), #a78bfa);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .kpi-value.green-val {
+    background: linear-gradient(135deg, var(--green), #34d399);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .kpi-value.amber-val {
+    background: linear-gradient(135deg, var(--amber), #fbbf24);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .kpi-label {
+    font-size: 11px; color: var(--muted); margin-top: 6px;
+    font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  }
+  .kpi-sub { font-size: 10px; color: var(--accent); margin-top: 4px; font-weight: 600; }
+
+  /* Mermaid */
+  .mermaid-wrap {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 40px 24px; margin-bottom: 40px; overflow-x: auto;
+  }
+  .mermaid { display: flex; justify-content: center; }
+
+  /* Research framework */
+  .research-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px; margin-bottom: 40px;
+  }
+  .research-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+    transition: border-color .2s, transform .2s;
+  }
+  .research-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .research-num {
+    font-size: 28px; font-weight: 800; color: var(--accent); opacity: .35; margin-bottom: 6px;
+  }
+  .research-name { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .research-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* Follow-up sequence */
+  .sequence {
+    display: flex; flex-direction: column; gap: 0;
+    margin-bottom: 40px; position: relative;
+  }
+  .sequence::before {
+    content: ''; position: absolute; left: 28px; top: 0; bottom: 0;
+    width: 2px; background: var(--border);
+  }
+  .seq-step {
+    display: flex; gap: 20px; align-items: flex-start;
+    padding: 0 0 24px 0; position: relative;
+  }
+  .seq-dot {
+    width: 58px; height: 58px; border-radius: 50%;
+    border: 2px solid var(--accent); background: var(--card);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    flex-shrink: 0; position: relative; z-index: 1;
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--accent);
+    transition: background .2s;
+  }
+  .seq-dot .day-num { font-size: 18px; font-weight: 800; line-height: 1; }
+  .seq-step:nth-child(1) .seq-dot { background: var(--accent); color: #fff; }
+  .seq-body {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 20px; flex: 1;
+    margin-top: 6px;
+    transition: border-color .2s;
+  }
+  .seq-body:hover { border-color: var(--accent); }
+  .seq-touch {
+    font-size: 11px; font-weight: 700; color: var(--accent);
+    text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px;
+  }
+  .seq-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .seq-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* Sample email */
+  .email-mock {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden; margin-bottom: 40px;
+  }
+  .email-mock-header {
+    background: var(--surface); padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .email-mock-dots { display: flex; gap: 6px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot.r { background: var(--red); }
+  .dot.a { background: var(--amber); }
+  .dot.g { background: var(--green); }
+  .email-mock-label {
+    font-size: 12px; color: var(--muted); font-weight: 600; margin-left: 4px;
+  }
+  .email-mock-body { padding: 24px; }
+  .email-field {
+    display: flex; gap: 12px; padding: 8px 0;
+    border-bottom: 1px solid var(--border); margin-bottom: 0;
+  }
+  .email-field:last-of-type { border-bottom: none; margin-bottom: 20px; }
+  .email-field-label {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; width: 48px; flex-shrink: 0; padding-top: 2px;
+  }
+  .email-field-val { font-size: 13px; color: var(--text); line-height: 1.5; }
+  .email-body-text {
+    font-size: 13px; color: var(--text); line-height: 1.8;
+    border-top: 1px solid var(--border); padding-top: 20px;
+  }
+  .email-body-text p { margin-bottom: 12px; }
+  .email-annotation {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    background: var(--accent-glow); color: var(--accent);
+    border: 1px solid rgba(108,92,231,.3); border-radius: 4px;
+    padding: 1px 6px; margin-left: 6px; vertical-align: middle;
+  }
+
+  /* Mock CRM */
+  .crm-mock {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden; margin-bottom: 40px;
+  }
+  .crm-header {
+    background: var(--surface); padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .crm-header-title { font-size: 13px; font-weight: 700; }
+  .crm-badge {
+    font-size: 10px; font-weight: 700; padding: 3px 8px;
+    border-radius: 99px; background: var(--green-glow); color: var(--green);
+    letter-spacing: .06em; text-transform: uppercase;
+  }
+  .crm-table { width: 100%; border-collapse: collapse; }
+  .crm-table th {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--muted); padding: 10px 16px;
+    text-align: left; border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .crm-table td {
+    font-size: 12px; padding: 12px 16px;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+  }
+  .crm-table tr:last-child td { border-bottom: none; }
+  .crm-table tr:hover td { background: rgba(108,92,231,.04); }
+  .status-pill {
+    font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 99px;
+  }
+  .status-pill.warm { background: rgba(240,165,0,.12); color: var(--amber); }
+  .status-pill.replied { background: var(--green-glow); color: var(--green); }
+  .status-pill.sent { background: rgba(108,92,231,.12); color: var(--accent); }
+  .status-pill.seq { background: rgba(255,255,255,.06); color: var(--muted); }
+
+  /* Two-col */
+  .two-col {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px; margin-bottom: 40px;
+  }
+  .del-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px; transition: border-color .2s;
+  }
+  .del-card:hover { border-color: var(--accent); }
+  .del-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  .del-card ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .del-card li {
+    font-size: 13px; color: var(--muted); line-height: 1.5;
+    padding-left: 18px; position: relative;
+  }
+  .del-card li::before {
+    content: '\2713'; position: absolute; left: 0;
+    color: var(--green); font-weight: 700; font-size: 12px;
+  }
+
+  /* Loom + CTA */
+  .loom-card {
+    background: linear-gradient(135deg, rgba(108,92,231,.08), rgba(0,214,143,.06));
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 32px; text-align: center; margin-bottom: 24px;
+    transition: border-color .2s;
+  }
+  .loom-card:hover { border-color: var(--accent); }
+  .loom-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .loom-card p { font-size: 14px; color: var(--muted); }
+  .loom-icon { font-size: 40px; margin-bottom: 12px; }
+
+  .cta-card {
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    border-radius: 16px; padding: 40px; text-align: center; margin-bottom: 60px;
+  }
+  .cta-card h3 { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 10px; }
+  .cta-card p { font-size: 14px; color: rgba(255,255,255,.8); line-height: 1.6; max-width: 500px; margin: 0 auto; }
+
+  footer { text-align: center; padding: 40px 24px; font-size: 11px; color: var(--muted); letter-spacing: .06em; }
+
+  /* Reveal */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 600px) {
+    .hero { padding: 60px 16px 40px; }
+    .section { padding: 40px 16px 0; }
+    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+    .crm-table { font-size: 11px; }
+    .crm-table th, .crm-table td { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-eyebrow">Outbound SDR Blueprint — SPENS Development</div>
+  <h1>Dental and Aesthetic Clinic Pipeline, Built on Personalization</h1>
+  <p class="hero-sub">Research-driven cold email system that identifies website growth gaps, writes clinic-specific outreach, and manages follow-up sequences into qualified conversations.</p>
+  <div class="hero-quote">"Growth is in the follow-up."</div>
+</div>
+
+<!-- KPIs -->
+<div class="section">
+  <div class="section-label reveal">30-Day Trial Targets</div>
+  <div class="section-title reveal">The numbers, from day one</div>
+  <div class="kpi-strip reveal">
+    <div class="kpi-card">
+      <div class="kpi-value">100</div>
+      <div class="kpi-label">Qualified Prospects</div>
+      <div class="kpi-sub">Target: 100</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value green-val">500</div>
+      <div class="kpi-label">Personalized Emails</div>
+      <div class="kpi-sub">Target: 500</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value amber-val">20+</div>
+      <div class="kpi-label">Genuine Replies</div>
+      <div class="kpi-sub">Target: 20+</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">5+</div>
+      <div class="kpi-label">Warm Opportunities</div>
+      <div class="kpi-sub">Target: 5+</div>
+    </div>
+  </div>
+</div>
+
+<!-- System Architecture -->
+<div class="section">
+  <div class="section-label reveal">System Architecture</div>
+  <div class="section-title reveal">How the outbound engine runs</div>
+  <div class="section-desc reveal">Every clinic goes through research, gap identification, personalized email, structured follow-up, and CRM handoff. No manual chasing. No guesswork on who to contact.</div>
+  <div class="mermaid-wrap reveal">
+    <div class="mermaid">
+flowchart TD
+  LEAD["📥 Prospect Sources<br/>Google Maps · LinkedIn · Directories"]:::trigger --> HUB
+  KB(["📚 SPENS Knowledge Base<br/>Services · ICP · Positioning"]):::util --> HUB
+  HUB["🧠 Research + Qualify<br/>Website audit · Decision maker · Score"]:::ai --> DB
+  DB(["🗄️ Prospect Database<br/>Verified contacts · Gap notes"]):::util --> REACH
+  HUB --> REACH(["✉️ Email Sequences<br/>Personalized send · Follow-up · Reply mgmt"]):::out
+  REACH --> CRM(["🗂️ CRM / Spreadsheet<br/>Stage tracking · Warm opps flagged"]):::out
+  CRM --> HUB
+
+  classDef trigger fill:#111,stroke:#555,color:#fff
+  classDef ai fill:#6366f1,stroke:#6366f1,color:#fff
+  classDef util fill:#e5e7eb,stroke:#ccc,color:#111
+  classDef out fill:#10b981,stroke:#10b981,color:#fff
+    </div>
+  </div>
+</div>
+
+<!-- Research Framework -->
+<div class="section">
+  <div class="section-label reveal">Research Process</div>
+  <div class="section-title reveal">What I check before writing a single word</div>
+  <div class="section-desc reveal">Every email opens with a genuine observation about that clinic specifically. No mail-merged compliments. Each audit takes 4 to 6 minutes and surfaces a real growth gap.</div>
+  <div class="research-grid reveal">
+    <div class="research-card">
+      <div class="research-num">01</div>
+      <div class="research-name">Website Speed + Mobile</div>
+      <div class="research-desc">Check PageSpeed, mobile layout, Core Web Vitals. Slow sites cost bookings. I note the exact issue to reference in the email.</div>
+    </div>
+    <div class="research-card">
+      <div class="research-num">02</div>
+      <div class="research-name">Before/After Gallery Quality</div>
+      <div class="research-desc">Premium aesthetic clinics win or lose on visual credibility. I check gallery layout, photo quality, and whether results are showcased or buried.</div>
+    </div>
+    <div class="research-card">
+      <div class="research-num">03</div>
+      <div class="research-name">Trust Signals</div>
+      <div class="research-desc">GMB reviews, testimonials, accreditations, doctor bios. Missing trust signals are a direct conversion leak I can point to.</div>
+    </div>
+    <div class="research-card">
+      <div class="research-num">04</div>
+      <div class="research-name">Booking UX</div>
+      <div class="research-desc">How many clicks to book? Is there a form, a phone number, a chatbot? Friction in the booking flow is a quantifiable problem.</div>
+    </div>
+    <div class="research-card">
+      <div class="research-num">05</div>
+      <div class="research-name">Local SEO Visibility</div>
+      <div class="research-desc">Search the clinic's top 3 services in their city. Are they on page one? If not, that is a revenue gap I can quantify in the email opener.</div>
+    </div>
+    <div class="research-card">
+      <div class="research-num">06</div>
+      <div class="research-name">Decision Maker ID</div>
+      <div class="research-desc">Find the practice owner or marketing lead on LinkedIn or the About page. Every email goes to a named person, never "info@".</div>
+    </div>
+  </div>
+</div>
+
+<!-- Sample Email -->
+<div class="section">
+  <div class="section-label reveal">Personalization in Practice</div>
+  <div class="section-title reveal">Sample outbound email</div>
+  <div class="section-desc reveal">Every email is built around a specific observation from the audit. The clinic recognizes themselves in the first two sentences. That is what drives replies.</div>
+  <div class="email-mock reveal">
+    <div class="email-mock-header">
+      <div class="email-mock-dots"><div class="dot r"></div><div class="dot a"></div><div class="dot g"></div></div>
+      <div class="email-mock-label">Cold Email — Touch 1</div>
+    </div>
+    <div class="email-mock-body">
+      <div class="email-field">
+        <div class="email-field-label">To</div>
+        <div class="email-field-val">Dr. Sarah Mitchell, Practice Owner — Clarity Aesthetics London</div>
+      </div>
+      <div class="email-field">
+        <div class="email-field-label">From</div>
+        <div class="email-field-val">saif@[sender domain]</div>
+      </div>
+      <div class="email-field">
+        <div class="email-field-label">Subject</div>
+        <div class="email-field-val">Clarity Aesthetics — one thing stopping bookings <span class="email-annotation">Under 8 words</span></div>
+      </div>
+      <div class="email-body-text">
+        <p>Sarah, your before/after portfolio is genuinely impressive, but your booking page requires four clicks and two form fields before a patient can even see your availability. <span class="email-annotation">Specific observation</span></p>
+        <p>We build conversion-focused sites for aesthetic and dental clinics across the UK. The last clinic we rebuilt dropped their booking friction from 6 clicks to 2 and saw a 34% increase in enquiries in 60 days. <span class="email-annotation">Social proof</span></p>
+        <p>Worth a 15-minute look at what that would mean for Clarity? <span class="email-annotation">Single soft CTA</span></p>
+        <p>Saif</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Follow-up Sequence -->
+<div class="section">
+  <div class="section-label reveal">Follow-Up System</div>
+  <div class="section-title reveal">5-touch sequence, every prospect</div>
+  <div class="section-desc reveal">Growth is in the follow-up. Every non-reply gets the full sequence. Every reply gets a manual response within the hour.</div>
+  <div class="sequence reveal">
+    <div class="seq-step">
+      <div class="seq-dot"><div class="day-num">D1</div>Send</div>
+      <div class="seq-body">
+        <div class="seq-touch">Touch 1 — Initial Send</div>
+        <div class="seq-title">Personalized audit email</div>
+        <div class="seq-desc">Website gap identified during research forms the opener. Named decision maker. Under 100 words. Single soft CTA asking for 15 minutes.</div>
+      </div>
+    </div>
+    <div class="seq-step">
+      <div class="seq-dot"><div class="day-num">D3</div>F/U</div>
+      <div class="seq-body">
+        <div class="seq-touch">Touch 2 — Bump</div>
+        <div class="seq-title">One-line follow-up</div>
+        <div class="seq-desc">Two sentences. Reference the original email. No repetition. Designed to resurface in a busy inbox without friction.</div>
+      </div>
+    </div>
+    <div class="seq-step">
+      <div class="seq-dot"><div class="day-num">D7</div>Val</div>
+      <div class="seq-body">
+        <div class="seq-touch">Touch 3 — Value Add</div>
+        <div class="seq-title">Relevant case study or stat</div>
+        <div class="seq-desc">A short result from a similar clinic (same niche, same problem). Gives them a reason to engage beyond the original pitch.</div>
+      </div>
+    </div>
+    <div class="seq-step">
+      <div class="seq-dot"><div class="day-num">D14</div>Alt</div>
+      <div class="seq-body">
+        <div class="seq-touch">Touch 4 — Alternative Ask</div>
+        <div class="seq-title">Lower-commitment CTA</div>
+        <div class="seq-desc">Instead of a call, offer a quick audit PDF or answer a specific question about their site. Lowers the barrier for skeptical decision makers.</div>
+      </div>
+    </div>
+    <div class="seq-step">
+      <div class="seq-dot"><div class="day-num">D21</div>Close</div>
+      <div class="seq-body">
+        <div class="seq-touch">Touch 5 — Break-Up</div>
+        <div class="seq-title">Polite close-out</div>
+        <div class="seq-desc">Short note letting them know this is the last email. Break-up emails often get the highest reply rate of the sequence. Prospect moved to a re-engage list at 90 days.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CRM Mock -->
+<div class="section">
+  <div class="section-label reveal">CRM Tracking</div>
+  <div class="section-title reveal">Every prospect, every stage, every action logged</div>
+  <div class="section-desc reveal">Nothing lives in my head. Every clinic has a row, a stage, and a next action date. Warm opportunities flagged and escalated immediately.</div>
+  <div class="crm-mock reveal">
+    <div class="crm-header">
+      <div class="crm-header-title">Prospect Tracker — SPENS Development</div>
+      <div class="crm-badge">Live</div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="crm-table">
+        <thead>
+          <tr>
+            <th>Clinic</th>
+            <th>Contact</th>
+            <th>Niche</th>
+            <th>Gap Identified</th>
+            <th>Touch</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Clarity Aesthetics</td>
+            <td>Dr. Sarah Mitchell</td>
+            <td>Aesthetics</td>
+            <td>Booking friction (4-click)</td>
+            <td>T1 sent</td>
+            <td><span class="status-pill sent">Sent</span></td>
+          </tr>
+          <tr>
+            <td>SmileFirst Dental</td>
+            <td>Dr. James Okafor</td>
+            <td>Dental</td>
+            <td>No patient testimonials</td>
+            <td>T2 reply</td>
+            <td><span class="status-pill replied">Replied</span></td>
+          </tr>
+          <tr>
+            <td>Radiance Skin Clinic</td>
+            <td>Anna Petrov (Owner)</td>
+            <td>Aesthetics</td>
+            <td>Gallery buried below fold</td>
+            <td>T3 value</td>
+            <td><span class="status-pill seq">In Sequence</span></td>
+          </tr>
+          <tr>
+            <td>Perfect Smile London</td>
+            <td>Dr. Chen Wei</td>
+            <td>Dental</td>
+            <td>Not ranking for "Invisalign London"</td>
+            <td>T1 sent</td>
+            <td><span class="status-pill warm">Warm Opp</span></td>
+          </tr>
+          <tr>
+            <td>Elite Dermatology</td>
+            <td>Dr. Priya Nair</td>
+            <td>Healthcare</td>
+            <td>Mobile site broken on iOS</td>
+            <td>T2 bump</td>
+            <td><span class="status-pill seq">In Sequence</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Deliverables -->
+<div class="section">
+  <div class="section-label reveal">What ships weekly</div>
+  <div class="section-title reveal">Deliverables and reporting</div>
+  <div class="two-col reveal">
+    <div class="del-card">
+      <h3>Weekly Output</h3>
+      <ul>
+        <li>25 researched, qualified prospects added</li>
+        <li>125 personalized emails sent</li>
+        <li>All sequences managed and advanced</li>
+        <li>Every reply handled within the hour</li>
+        <li>Warm opportunities escalated same day</li>
+      </ul>
+    </div>
+    <div class="del-card">
+      <h3>Reporting + Tracking</h3>
+      <ul>
+        <li>Weekly summary: sent, open rate, replies, opps</li>
+        <li>CRM updated daily (stage, next action, notes)</li>
+        <li>A/B subject line testing with results logged</li>
+        <li>Underperforming angles flagged and replaced</li>
+        <li>Full audit trail from first send to booked call</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Loom -->
+<div class="section">
+  <div class="loom-card reveal">
+    <div class="loom-icon">🎥</div>
+    <h3>2-Minute Walkthrough</h3>
+    <p>Quick Loom showing how I research a clinic, identify the gap, and write the first email. You can see the quality before we start.</p>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="section">
+  <div class="cta-card reveal">
+    <h3>Let's run the first 30 days</h3>
+    <p>100 qualified prospects, 500 personalized emails, 20+ replies. I am ready to hit those numbers from day one. Let's talk about the niche and the ICP you want to target first.</p>
+  </div>
+</div>
+
+<footer>System blueprint by Saif Shaikh</footer>
+
+<script>
+  mermaid.initialize({ theme: 'dark', themeVariables: {
+    primaryColor: '#6366f1', primaryBorderColor: '#6366f1',
+    primaryTextColor: '#fff', lineColor: '#555', fontSize: '13px'
+  }});
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }});
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
