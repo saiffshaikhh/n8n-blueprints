@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Email Marketing System — Leadership Training + Consulting</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --bg: #08090e;
+    --surface: #0f1018;
+    --card: #161720;
+    --border: #222230;
+    --text: #e4e4f0;
+    --muted: #7878a0;
+    --accent: #6c5ce7;
+    --accent2: #a78bfa;
+    --green: #00d68f;
+    --green-glow: rgba(0,214,143,.1);
+    --amber: #f0a500;
+    --amber-glow: rgba(240,165,0,.1);
+    --teal: #06b6d4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: var(--bg); color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative; overflow: hidden;
+    padding: 80px 24px 64px; text-align: center;
+    background: linear-gradient(180deg, rgba(108,92,231,.07) 0%, transparent 65%);
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
+    width: 640px; height: 640px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(108,92,231,.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 11px; font-weight: 700; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 16px; position: relative;
+  }
+  .hero h1 {
+    font-size: clamp(26px, 4.8vw, 42px); font-weight: 800;
+    letter-spacing: -.03em; line-height: 1.13;
+    max-width: 680px; margin: 0 auto 20px; position: relative;
+  }
+  .hero-sub {
+    font-size: 16px; color: var(--muted); line-height: 1.65;
+    max-width: 520px; margin: 0 auto; position: relative;
+  }
+
+  /* Section */
+  .section { max-width: 880px; margin: 0 auto; padding: 64px 24px 0; }
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+  }
+  .section-title { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 8px; }
+  .section-desc { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 32px; max-width: 620px; }
+
+  /* KPI */
+  .kpi-strip {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px; margin-bottom: 40px;
+  }
+  .kpi-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px 16px; text-align: center;
+    transition: border-color .2s, transform .2s;
+  }
+  .kpi-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .kpi-value {
+    font-size: 30px; font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .kpi-value.gv { background: linear-gradient(135deg, var(--green), #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .kpi-value.av { background: linear-gradient(135deg, var(--amber), #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .kpi-value.tv { background: linear-gradient(135deg, var(--teal), #67e8f9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .kpi-label { font-size: 11px; color: var(--muted); margin-top: 6px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+
+  /* Phase cards */
+  .phase-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 14px; margin-bottom: 40px;
+  }
+  .phase-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px;
+    border-top: 3px solid transparent;
+    transition: transform .2s, border-color .2s;
+  }
+  .phase-card:nth-child(1) { border-top-color: var(--accent); }
+  .phase-card:nth-child(2) { border-top-color: var(--teal); }
+  .phase-card:nth-child(3) { border-top-color: var(--green); }
+  .phase-card:nth-child(4) { border-top-color: var(--amber); }
+  .phase-card:hover { transform: translateY(-2px); }
+  .phase-num {
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .09em;
+    color: var(--accent); margin-bottom: 6px;
+  }
+  .phase-card:nth-child(2) .phase-num { color: var(--teal); }
+  .phase-card:nth-child(3) .phase-num { color: var(--green); }
+  .phase-card:nth-child(4) .phase-num { color: var(--amber); }
+  .phase-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .phase-timing {
+    display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 8px;
+    border-radius: 99px; margin-bottom: 10px;
+    background: rgba(108,92,231,.12); color: var(--accent); letter-spacing: .05em;
+  }
+  .phase-card:nth-child(2) .phase-timing { background: rgba(6,182,212,.1); color: var(--teal); }
+  .phase-card:nth-child(3) .phase-timing { background: var(--green-glow); color: var(--green); }
+  .phase-card:nth-child(4) .phase-timing { background: var(--amber-glow); color: var(--amber); }
+  .phase-items { font-size: 12px; color: var(--muted); line-height: 1.8; }
+
+  /* Sequence visualization */
+  .sequence { display: flex; flex-direction: column; gap: 0; margin-bottom: 40px; position: relative; }
+  .sequence::before {
+    content: ''; position: absolute; left: 27px; top: 8px; bottom: 8px;
+    width: 2px; background: linear-gradient(180deg, var(--accent), var(--green));
+    opacity: .3;
+  }
+  .seq-row {
+    display: flex; gap: 18px; align-items: flex-start; padding-bottom: 20px; position: relative;
+  }
+  .seq-icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    border: 2px solid var(--border); background: var(--card);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0; z-index: 1; margin-top: 4px;
+    transition: border-color .2s;
+  }
+  .seq-row:hover .seq-icon { border-color: var(--accent); }
+  .seq-content {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px; flex: 1;
+    transition: border-color .2s;
+  }
+  .seq-row:hover .seq-content { border-color: rgba(108,92,231,.3); }
+  .seq-day { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px; }
+  .seq-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .seq-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  /* Segment table */
+  .seg-wrap {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden; margin-bottom: 40px;
+  }
+  .seg-header {
+    background: var(--surface); padding: 14px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .seg-header-title { font-size: 13px; font-weight: 700; }
+  .seg-live {
+    font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 99px;
+    background: var(--green-glow); color: var(--green); letter-spacing: .06em; text-transform: uppercase;
+  }
+  .seg-table { width: 100%; border-collapse: collapse; }
+  .seg-table th {
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--muted); padding: 10px 18px; text-align: left;
+    border-bottom: 1px solid var(--border); background: var(--surface);
+  }
+  .seg-table td { font-size: 12px; padding: 13px 18px; border-bottom: 1px solid rgba(255,255,255,.04); }
+  .seg-table tr:last-child td { border-bottom: none; }
+  .seg-table tr:hover td { background: rgba(108,92,231,.03); }
+  .seg-pill {
+    font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 99px;
+  }
+  .seg-pill.active { background: var(--green-glow); color: var(--green); }
+  .seg-pill.nurture { background: rgba(108,92,231,.12); color: var(--accent); }
+  .seg-pill.re-eng { background: var(--amber-glow); color: var(--amber); }
+  .seg-pill.vip { background: rgba(6,182,212,.1); color: var(--teal); }
+
+  /* Campaign calendar */
+  .cal-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px; margin-bottom: 40px;
+  }
+  .cal-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px;
+    transition: border-color .2s, transform .2s;
+  }
+  .cal-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .cal-week { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .09em; margin-bottom: 6px; }
+  .cal-name { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .cal-seg { font-size: 11px; color: var(--muted); }
+  .cal-tag {
+    display: inline-block; margin-top: 10px; font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 99px; background: rgba(108,92,231,.1); color: var(--accent);
+  }
+  .cal-tag.green { background: var(--green-glow); color: var(--green); }
+  .cal-tag.amber { background: var(--amber-glow); color: var(--amber); }
+
+  /* Mock email template */
+  .email-preview {
+    background: #ffffff; border-radius: 16px; overflow: hidden;
+    margin-bottom: 40px; max-width: 560px;
+  }
+  .ep-header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    padding: 32px; text-align: center;
+  }
+  .ep-logo {
+    font-size: 13px; font-weight: 800; color: #fff; letter-spacing: .1em;
+    text-transform: uppercase; margin-bottom: 20px; opacity: .7;
+  }
+  .ep-header h2 { font-size: 22px; font-weight: 800; color: #fff; line-height: 1.3; margin-bottom: 8px; }
+  .ep-header p { font-size: 13px; color: rgba(255,255,255,.65); line-height: 1.6; }
+  .ep-body { padding: 28px 32px; }
+  .ep-body p { font-size: 14px; color: #333; line-height: 1.75; margin-bottom: 14px; }
+  .ep-cta {
+    display: block; text-align: center; background: #6c5ce7;
+    color: #fff; font-size: 14px; font-weight: 700;
+    padding: 14px 32px; border-radius: 8px; text-decoration: none;
+    margin: 24px 0; letter-spacing: .04em;
+  }
+  .ep-footer {
+    background: #f8f8fc; padding: 16px 32px; text-align: center;
+    font-size: 11px; color: #999; border-top: 1px solid #eee;
+    line-height: 1.6;
+  }
+  .ep-annotation {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    background: rgba(108,92,231,.1); color: var(--accent);
+    border: 1px solid rgba(108,92,231,.2); border-radius: 4px;
+    padding: 2px 6px; margin-left: 6px; vertical-align: middle;
+    font-family: -apple-system, sans-serif;
+  }
+
+  /* Deliverability checklist */
+  .checklist {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px; margin-bottom: 40px;
+  }
+  .check-item {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px;
+    transition: border-color .2s;
+  }
+  .check-item:hover { border-color: var(--green); }
+  .check-icon {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--green-glow); color: var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+  }
+  .check-label { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .check-desc { font-size: 11px; color: var(--muted); line-height: 1.45; }
+
+  /* Mock performance */
+  .perf-wrap {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 26px; margin-bottom: 40px;
+  }
+  .perf-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+  }
+  .perf-title { font-size: 14px; font-weight: 700; }
+  .perf-badge {
+    font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 99px;
+    background: var(--green-glow); color: var(--green); letter-spacing: .06em; text-transform: uppercase;
+  }
+  .perf-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .perf-label { font-size: 12px; color: var(--muted); width: 120px; flex-shrink: 0; text-align: right; }
+  .perf-track {
+    flex: 1; height: 22px; background: var(--surface);
+    border-radius: 5px; overflow: hidden;
+  }
+  .perf-fill { height: 100%; border-radius: 5px; transition: width 1.2s ease; }
+  .perf-fill.p { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+  .perf-fill.g { background: linear-gradient(90deg, var(--green), #34d399); }
+  .perf-fill.t { background: linear-gradient(90deg, var(--teal), #67e8f9); }
+  .perf-fill.a { background: linear-gradient(90deg, var(--amber), #fbbf24); }
+  .perf-val { font-size: 12px; font-weight: 700; color: var(--text); width: 40px; flex-shrink: 0; }
+
+  /* Two-col */
+  .two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .del-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; transition: border-color .2s; }
+  .del-card:hover { border-color: var(--accent); }
+  .del-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+  .del-card ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .del-card li { font-size: 13px; color: var(--muted); line-height: 1.5; padding-left: 18px; position: relative; }
+  .del-card li::before { content: '\2713'; position: absolute; left: 0; color: var(--green); font-weight: 700; font-size: 12px; }
+
+  /* Loom + CTA */
+  .loom-card {
+    background: linear-gradient(135deg, rgba(108,92,231,.08), rgba(0,214,143,.05));
+    border: 1px solid var(--border); border-radius: 16px;
+    padding: 32px; text-align: center; margin-bottom: 24px; transition: border-color .2s;
+  }
+  .loom-card:hover { border-color: var(--accent); }
+  .loom-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .loom-card p { font-size: 14px; color: var(--muted); }
+  .loom-icon { font-size: 38px; margin-bottom: 12px; }
+
+  .cta-card {
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    border-radius: 16px; padding: 40px; text-align: center; margin-bottom: 60px;
+  }
+  .cta-card h3 { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 10px; }
+  .cta-card p { font-size: 14px; color: rgba(255,255,255,.8); line-height: 1.6; max-width: 500px; margin: 0 auto; }
+
+  footer { text-align: center; padding: 40px 24px; font-size: 11px; color: var(--muted); letter-spacing: .06em; }
+
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .55s ease, transform .55s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 600px) {
+    .hero { padding: 60px 16px 44px; }
+    .section { padding: 44px 16px 0; }
+    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+    .email-preview { max-width: 100%; }
+    .ep-header { padding: 22px; }
+    .ep-body { padding: 20px; }
+    .seg-table th:nth-child(3), .seg-table td:nth-child(3) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-eyebrow">Email Marketing Blueprint — Leadership + Consulting</div>
+  <h1>Your List Stays Warm Between Events, Automatically</h1>
+  <p class="hero-sub">Full-system build on GHL: deliverability audit, branded templates, automated sequences, 4 to 6 campaigns per month, and social alignment. Off your plate from week one.</p>
+</div>
+
+<!-- KPIs -->
+<div class="section">
+  <div class="section-label reveal">What This System Delivers</div>
+  <div class="section-title reveal">Results, not activity</div>
+  <div class="kpi-strip reveal">
+    <div class="kpi-card">
+      <div class="kpi-value">4 to 6</div>
+      <div class="kpi-label">Campaigns per month</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value gv">40%+</div>
+      <div class="kpi-label">Target open rate</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value av">Week 1</div>
+      <div class="kpi-label">Audit complete</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value tv">3</div>
+      <div class="kpi-label">Core sequences live</div>
+    </div>
+  </div>
+</div>
+
+<!-- 4 Phases -->
+<div class="section">
+  <div class="section-label reveal">Project Roadmap</div>
+  <div class="section-title reveal">Four phases, one clean handoff</div>
+  <div class="section-desc reveal">Structured rollout from audit to execution. You stay focused on delivering leadership training. The email system runs itself.</div>
+  <div class="phase-grid reveal">
+    <div class="phase-card">
+      <div class="phase-num">Phase 01</div>
+      <div class="phase-title">Audit + Fix</div>
+      <div class="phase-timing">Week 1</div>
+      <div class="phase-items">
+        GHL full audit. SPF/DKIM/DMARC verified. Contact list cleaned and tagged. Gaps and platform recommendation documented before anything gets built.
+      </div>
+    </div>
+    <div class="phase-card">
+      <div class="phase-num">Phase 02</div>
+      <div class="phase-title">Build</div>
+      <div class="phase-timing">Weeks 2 to 3</div>
+      <div class="phase-items">
+        3 branded templates built. Welcome sequence live. Event follow-up flow built. Nurture campaign wired. All segments created and mapped.
+      </div>
+    </div>
+    <div class="phase-card">
+      <div class="phase-num">Phase 03</div>
+      <div class="phase-title">Execute</div>
+      <div class="phase-timing">Month 1 onward</div>
+      <div class="phase-items">
+        4 to 6 campaigns per month drafted, scheduled, and sent. Copy written for each audience segment. Performance tracked and optimized weekly.
+      </div>
+    </div>
+    <div class="phase-card">
+      <div class="phase-num">Phase 04</div>
+      <div class="phase-title">Social Align</div>
+      <div class="phase-timing">Ongoing</div>
+      <div class="phase-items">
+        Each email campaign repurposed into LinkedIn and Facebook posts. Consistent messaging across both channels. Scheduled and published on cadence.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Deliverability -->
+<div class="section">
+  <div class="section-label reveal">Deliverability First</div>
+  <div class="section-title reveal">Everything checked before a single email sends</div>
+  <div class="section-desc reveal">Most email problems start here. A clean technical foundation means your emails reach inboxes, not spam folders, before copy or design matters.</div>
+  <div class="checklist reveal">
+    <div class="check-item">
+      <div class="check-icon">&#10003;</div>
+      <div>
+        <div class="check-label">SPF Record</div>
+        <div class="check-desc">Sending domain authorized. No unauthorized server can spoof your brand.</div>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="check-icon">&#10003;</div>
+      <div>
+        <div class="check-label">DKIM Signing</div>
+        <div class="check-desc">Every email cryptographically signed. Inbox providers trust signed mail.</div>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="check-icon">&#10003;</div>
+      <div>
+        <div class="check-label">DMARC Policy</div>
+        <div class="check-desc">Policy set and reports flowing. Quarantine or reject spoofed sends.</div>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="check-icon">&#10003;</div>
+      <div>
+        <div class="check-label">List Hygiene</div>
+        <div class="check-desc">Unengaged contacts suppressed. Bounce and complaint rates minimized.</div>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="check-icon">&#10003;</div>
+      <div>
+        <div class="check-label">Sending Warm-Up</div>
+        <div class="check-desc">New domains or IPs ramped gradually. Reputation built before bulk sends.</div>
+      </div>
+    </div>
+    <div class="check-item">
+      <div class="check-icon">&#10003;</div>
+      <div>
+        <div class="check-label">Unsubscribe Flow</div>
+        <div class="check-desc">One-click unsubscribe wired. CAN-SPAM and GDPR compliant from day one.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Audience Segments -->
+<div class="section">
+  <div class="section-label reveal">List Architecture</div>
+  <div class="section-title reveal">Four segments, four different journeys</div>
+  <div class="section-desc reveal">Every contact gets the right message for where they are. No blasting the full list with the same email.</div>
+  <div class="seg-wrap reveal">
+    <div class="seg-header">
+      <div class="seg-header-title">Audience Segment Map</div>
+      <div class="seg-live">GHL Configured</div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="seg-table">
+        <thead>
+          <tr>
+            <th>Segment</th>
+            <th>Who's In It</th>
+            <th>Primary Goal</th>
+            <th>Cadence</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>New Leads</strong></td>
+            <td>Form fills, ad clicks, new opt-ins</td>
+            <td>Convert to first event booking</td>
+            <td>Welcome seq (5 emails)</td>
+            <td><span class="seg-pill active">Active</span></td>
+          </tr>
+          <tr>
+            <td><strong>Past Attendees</strong></td>
+            <td>Completed a class or event</td>
+            <td>Repeat booking + referral</td>
+            <td>Event follow-up + monthly</td>
+            <td><span class="seg-pill active">Active</span></td>
+          </tr>
+          <tr>
+            <td><strong>Agencies / Partners</strong></td>
+            <td>B2B contacts, referral sources</td>
+            <td>Partnership nurture + co-promotion</td>
+            <td>Bi-monthly insight email</td>
+            <td><span class="seg-pill vip">Partner Track</span></td>
+          </tr>
+          <tr>
+            <td><strong>Cold / Dormant</strong></td>
+            <td>Unengaged 90 days or more</td>
+            <td>Re-engage or suppress</td>
+            <td>Re-engagement seq (3 emails)</td>
+            <td><span class="seg-pill re-eng">Re-Engage</span></td>
+          </tr>
+          <tr>
+            <td><strong>Clients</strong></td>
+            <td>Active retainer or consulting clients</td>
+            <td>Retention, upsell, advocacy</td>
+            <td>Monthly value email</td>
+            <td><span class="seg-pill nurture">Nurture</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Welcome Sequence -->
+<div class="section">
+  <div class="section-label reveal">Core Sequence</div>
+  <div class="section-title reveal">Welcome sequence: 5 emails, 14 days</div>
+  <div class="section-desc reveal">Every new lead enters this sequence automatically on opt-in. Educates, builds trust, and moves toward a first event booking without manual work.</div>
+  <div class="sequence reveal">
+    <div class="seq-row">
+      <div class="seq-icon">✉️</div>
+      <div class="seq-content">
+        <div class="seq-day">Email 1 — Immediate</div>
+        <div class="seq-title">Welcome + What to Expect</div>
+        <div class="seq-desc">Warm, personal intro from the founder. Sets expectations. Delivers the lead magnet or promised resource. One soft CTA to explore the flagship program.</div>
+      </div>
+    </div>
+    <div class="seq-row">
+      <div class="seq-icon">💡</div>
+      <div class="seq-content">
+        <div class="seq-day">Email 2 — Day 2</div>
+        <div class="seq-title">Your Most Valuable Leadership Insight</div>
+        <div class="seq-desc">Short, high-value teaching email. One concept from the training methodology. Positions the founder as an authority before pitching anything.</div>
+      </div>
+    </div>
+    <div class="seq-row">
+      <div class="seq-icon">🗣️</div>
+      <div class="seq-content">
+        <div class="seq-day">Email 3 — Day 5</div>
+        <div class="seq-title">Social Proof + Transformation Story</div>
+        <div class="seq-desc">Client result or attendee testimonial told as a story. Specific outcome. Makes the prospect picture themselves in the same situation.</div>
+      </div>
+    </div>
+    <div class="seq-row">
+      <div class="seq-icon">📅</div>
+      <div class="seq-content">
+        <div class="seq-day">Email 4 — Day 9</div>
+        <div class="seq-title">Upcoming Class or Event Announcement</div>
+        <div class="seq-desc">Next class or event promoted directly. Date, format, what they will walk away with. Registration link with urgency framed around limited spots.</div>
+      </div>
+    </div>
+    <div class="seq-row">
+      <div class="seq-icon">🎯</div>
+      <div class="seq-content">
+        <div class="seq-day">Email 5 — Day 14</div>
+        <div class="seq-title">Last Chance + Direct Ask</div>
+        <div class="seq-desc">Final nudge for the event or a direct offer. One question reply CTA for those who are not yet ready to book. Routes to nurture sequence on no-click.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sample Template Preview -->
+<div class="section">
+  <div class="section-label reveal">Template Design</div>
+  <div class="section-title reveal">Clean, branded, mobile-first</div>
+  <div class="section-desc reveal">Every template built to the same standard: fast loading, clear hierarchy, one CTA per email. Reflects the professionalism of a premium leadership brand.</div>
+  <div class="email-preview reveal">
+    <div class="ep-header">
+      <div class="ep-logo">Your Leadership Brand</div>
+      <h2>Lead with Clarity.<br/>The Monthly Insight.</h2>
+      <p>Practical frameworks for leaders who want to build stronger teams and communicate with more impact.</p>
+    </div>
+    <div class="ep-body">
+      <p>Hi [First Name], <span class="ep-annotation">Personalized</span></p>
+      <p>Most leaders handle conflict by avoiding it. They delay the hard conversation, hoping the situation resolves itself. It rarely does. <span class="ep-annotation">Hook</span></p>
+      <p>This month's training insight covers the one reframe that turns conflict into clarity — and why the most respected leaders in any room are the ones willing to address tension directly.</p>
+      <a href="#" class="ep-cta">Read the Full Insight <span class="ep-annotation" style="background:rgba(255,255,255,.15);color:#fff;border-color:rgba(255,255,255,.2);">CTA</span></a>
+      <p style="color:#888;font-size:12px;">Upcoming: [Event Name] — [Date] — [City / Online]. Registration now open.</p>
+    </div>
+    <div class="ep-footer">
+      You are receiving this because you opted in at [website].<br>
+      <a href="#" style="color:#6c5ce7; text-decoration:none;">Unsubscribe</a> &nbsp;|&nbsp; [Business Name], [Address]
+    </div>
+  </div>
+</div>
+
+<!-- Campaign Calendar -->
+<div class="section">
+  <div class="section-label reveal">Monthly Execution</div>
+  <div class="section-title reveal">Sample campaign calendar</div>
+  <div class="section-desc reveal">4 to 6 campaigns every month. Drafted, scheduled, and sent. You review before anything goes out. Nothing misses your brand standards.</div>
+  <div class="cal-grid reveal">
+    <div class="cal-card">
+      <div class="cal-week">Week 1</div>
+      <div class="cal-name">Class Announcement</div>
+      <div class="cal-seg">All leads + past attendees</div>
+      <div class="cal-tag">Event Promo</div>
+    </div>
+    <div class="cal-card">
+      <div class="cal-week">Week 2</div>
+      <div class="cal-name">Leadership Insight Email</div>
+      <div class="cal-seg">Full active list</div>
+      <div class="cal-tag green">Content</div>
+    </div>
+    <div class="cal-card">
+      <div class="cal-week">Week 2</div>
+      <div class="cal-name">Event Reminder</div>
+      <div class="cal-seg">Registered attendees</div>
+      <div class="cal-tag amber">Reminder</div>
+    </div>
+    <div class="cal-card">
+      <div class="cal-week">Week 3</div>
+      <div class="cal-name">Post-Event Follow-Up</div>
+      <div class="cal-seg">Recent attendees</div>
+      <div class="cal-tag green">Follow-Up</div>
+    </div>
+    <div class="cal-card">
+      <div class="cal-week">Week 4</div>
+      <div class="cal-name">Re-Engagement Campaign</div>
+      <div class="cal-seg">Dormant 90 days+</div>
+      <div class="cal-tag amber">Re-Engage</div>
+    </div>
+    <div class="cal-card">
+      <div class="cal-week">Week 4</div>
+      <div class="cal-name">Monthly Summary + Next Steps</div>
+      <div class="cal-seg">Clients + partners</div>
+      <div class="cal-tag">Retention</div>
+    </div>
+  </div>
+</div>
+
+<!-- Performance Mock -->
+<div class="section">
+  <div class="section-label reveal">Reporting</div>
+  <div class="section-title reveal">Monthly performance summary</div>
+  <div class="section-desc reveal">Every month: what performed, what did not, and what changes in the next cycle. No guessing at what is working.</div>
+  <div class="perf-wrap reveal">
+    <div class="perf-header">
+      <div class="perf-title">Campaign Performance — Month Overview</div>
+      <div class="perf-badge">Sample</div>
+    </div>
+    <div class="perf-row">
+      <div class="perf-label">Open Rate</div>
+      <div class="perf-track"><div class="perf-fill p" data-width="72%"></div></div>
+      <div class="perf-val">42%</div>
+    </div>
+    <div class="perf-row">
+      <div class="perf-label">Click Rate</div>
+      <div class="perf-track"><div class="perf-fill g" data-width="38%"></div></div>
+      <div class="perf-val">8.4%</div>
+    </div>
+    <div class="perf-row">
+      <div class="perf-label">Event Reg Rate</div>
+      <div class="perf-track"><div class="perf-fill t" data-width="52%"></div></div>
+      <div class="perf-val">11.2%</div>
+    </div>
+    <div class="perf-row">
+      <div class="perf-label">Unsubscribe</div>
+      <div class="perf-track"><div class="perf-fill a" data-width="8%"></div></div>
+      <div class="perf-val">0.3%</div>
+    </div>
+  </div>
+</div>
+
+<!-- Deliverables -->
+<div class="section">
+  <div class="section-label reveal">Deliverables</div>
+  <div class="section-title reveal">What you get, by phase</div>
+  <div class="two-col reveal">
+    <div class="del-card">
+      <h3>Setup + Build (One-Time)</h3>
+      <ul>
+        <li>Full GHL audit with written findings and recommendations</li>
+        <li>SPF, DKIM, DMARC configured and verified</li>
+        <li>Contact list cleaned, tagged, and segmented into 5 audiences</li>
+        <li>3 branded email templates (mobile-first, on-brand)</li>
+        <li>3 core sequences: welcome, event follow-up, nurture</li>
+      </ul>
+    </div>
+    <div class="del-card">
+      <h3>Ongoing Monthly</h3>
+      <ul>
+        <li>4 to 6 campaigns written, scheduled, and sent</li>
+        <li>Email copy tailored per audience segment</li>
+        <li>Each campaign repurposed into 1 to 2 social posts</li>
+        <li>Performance summary with optimization notes</li>
+        <li>Sequence updates based on engagement data</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Loom -->
+<div class="section">
+  <div class="loom-card reveal">
+    <div class="loom-icon">🎥</div>
+    <h3>2-Minute Walkthrough</h3>
+    <p>Quick Loom showing how I audit a GHL account, map a welcome sequence, and set up segmentation from scratch. You can see the process before we start.</p>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="section">
+  <div class="cta-card reveal">
+    <h3>Ready to take this off your plate</h3>
+    <p>Week 1 starts with the GHL audit so I know exactly what we are working with before building anything. Share access and we can begin this week.</p>
+  </div>
+</div>
+
+<footer>System blueprint by Saif Shaikh</footer>
+
+<script>
+  mermaid.initialize({ theme: 'dark' });
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }});
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  const perfObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.perf-fill').forEach(bar => { bar.style.width = bar.dataset.width; });
+        perfObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.perf-wrap').forEach(el => perfObs.observe(el));
+</script>
+</body>
+</html>
