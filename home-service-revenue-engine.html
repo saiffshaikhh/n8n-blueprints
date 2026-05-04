@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home Service Revenue Engine — GHL 8-System Framework</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --card: #13161e;
+      --card2: #181c26;
+      --border: #1f2435;
+      --accent: #6366f1;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --teal: #14b8a6;
+      --orange: #f97316;
+      --text: #e5e7eb;
+      --muted: #6b7280;
+      --ghl-blue: #1d6ae5;
+      --ghl-nav: #0f1520;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    .wrapper { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+    section { padding: 64px 0; border-bottom: 1px solid var(--border); }
+
+    /* Hero */
+    .hero { padding: 72px 0 60px; text-align: center; border-bottom: 1px solid var(--border); }
+    .hero-badge { display: inline-block; background: rgba(99,102,241,0.15); color: var(--accent); border: 1px solid rgba(99,102,241,0.3); border-radius: 20px; padding: 6px 16px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 20px; }
+    .hero h1 { font-size: clamp(26px, 5vw, 46px); font-weight: 700; line-height: 1.15; margin-bottom: 14px; }
+    .hero h1 span { color: var(--green); }
+    .hero p { color: var(--muted); font-size: 17px; max-width: 600px; margin: 0 auto 32px; }
+    .hero-stats { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; }
+    .hero-stat-num { font-size: 28px; font-weight: 700; color: var(--accent); }
+    .hero-stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .section-title { font-size: clamp(20px, 3vw, 26px); font-weight: 700; margin-bottom: 8px; }
+    .section-sub { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+
+    /* 8-system grid */
+    .systems-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .sys-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px; position: relative; overflow: hidden; }
+    .sys-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .sys-card.s1::before { background: var(--green); }
+    .sys-card.s2::before { background: var(--amber); }
+    .sys-card.s3::before { background: var(--blue); }
+    .sys-card.s4::before { background: var(--teal); }
+    .sys-card.s5::before { background: var(--orange); }
+    .sys-card.s6::before { background: var(--accent); }
+    .sys-card.s7::before { background: #a855f7; }
+    .sys-card.s8::before { background: var(--red); }
+    .sys-num { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 6px; }
+    .sys-icon { font-size: 24px; margin-bottom: 10px; }
+    .sys-name { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .sys-desc { font-size: 13px; color: var(--muted); margin-bottom: 12px; line-height: 1.5; }
+    .sys-trigger { font-size: 11px; }
+    .sys-trigger span { font-weight: 600; }
+    .sys-timing { display: inline-block; margin-top: 8px; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+
+    /* Mermaid */
+    .mermaid-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 32px; overflow-x: auto; }
+
+    /* Snapshot architecture */
+    .snapshot-layout { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; align-items: center; }
+    @media (max-width: 700px) { .snapshot-layout { grid-template-columns: 1fr; } }
+    .snapshot-master { background: var(--card); border: 2px solid var(--accent); border-radius: 14px; padding: 24px; }
+    .snapshot-master h3 { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 14px; }
+    .snapshot-arrow { text-align: center; padding: 0 24px; }
+    .snapshot-arrow-icon { font-size: 32px; color: var(--muted); }
+    .snapshot-arrow-label { font-size: 11px; color: var(--muted); display: block; margin-top: 4px; }
+    .snapshot-clients { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .snapshot-client { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+    .snapshot-client-name { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
+    .snapshot-client-time { font-size: 11px; color: var(--green); }
+    .snapshot-client-type { font-size: 11px; color: var(--muted); }
+    .snapshot-module { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .snapshot-module:last-child { border-bottom: none; }
+    .snapshot-module-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .snapshot-plus { display: inline-block; background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; font-size: 12px; text-align: center; }
+
+    /* Pipeline Kanban (GHL-style) */
+    .ghl-chrome { background: var(--ghl-nav); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .ghl-topbar { background: #0a0d15; border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; align-items: center; gap: 10px; }
+    .ghl-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .ghl-topbar-title { font-size: 13px; font-weight: 600; color: var(--muted); margin-left: 4px; }
+    .ghl-topbar-right { font-size: 12px; color: #374151; margin-left: auto; }
+    .ghl-pipeline-wrap { padding: 20px; overflow-x: auto; }
+    .ghl-pipeline { display: flex; gap: 14px; min-width: 920px; }
+    .pipeline-col { flex: 1; min-width: 165px; }
+    .col-header { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 12px; border-radius: 6px 6px 0 0; display: flex; align-items: center; justify-content: space-between; }
+    .col-header .count { background: rgba(255,255,255,0.1); color: #fff; border-radius: 10px; padding: 1px 7px; font-size: 10px; }
+    .col-body { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; padding: 8px; min-height: 180px; display: flex; flex-direction: column; gap: 8px; }
+    .lead-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 11px; }
+    .lead-service { font-size: 12px; font-weight: 700; margin-bottom: 3px; }
+    .lead-meta { font-size: 11px; color: var(--muted); line-height: 1.5; }
+    .lead-source { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 4px; margin-top: 5px; }
+    .src-google { background: rgba(34,197,94,0.1); color: var(--green); }
+    .src-fb { background: rgba(59,130,246,0.1); color: var(--blue); }
+    .src-chat { background: rgba(99,102,241,0.1); color: var(--accent); }
+    .src-call { background: rgba(245,158,11,0.1); color: var(--amber); }
+    .src-ref { background: rgba(20,184,166,0.1); color: var(--teal); }
+
+    /* Stage colors */
+    .s-new { background: rgba(99,102,241,0.15); color: var(--accent); }
+    .s-contacted { background: rgba(59,130,246,0.15); color: var(--blue); }
+    .s-appt { background: rgba(245,158,11,0.15); color: var(--amber); }
+    .s-job { background: rgba(20,184,166,0.15); color: var(--teal); }
+    .s-review { background: rgba(249,115,22,0.15); color: var(--orange); }
+    .s-won { background: rgba(34,197,94,0.15); color: var(--green); }
+
+    /* Simple/No-overengineer table */
+    .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .data-table th { text-align: left; padding: 10px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 11px 16px; border-bottom: 1px solid var(--border); vertical-align: top; font-size: 13px; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .in-col { color: var(--green); font-weight: 600; }
+    .out-col { color: var(--red); }
+
+    /* Week plan */
+    .week-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 640px) { .week-grid { grid-template-columns: 1fr; } }
+    .week-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+    .week-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 6px; }
+    .week-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .week-goal { font-size: 13px; color: var(--muted); margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+    .week-items { list-style: none; }
+    .week-items li { font-size: 13px; padding: 5px 0 5px 18px; position: relative; border-bottom: 1px solid rgba(255,255,255,0.03); color: var(--muted); }
+    .week-items li:last-child { border-bottom: none; }
+    .week-items li::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-size: 11px; top: 6px; }
+    .week-items li strong { color: var(--text); }
+
+    /* Pill */
+    .pill { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .pill-green { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+    .pill-amber { background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+    .pill-accent { background: rgba(99,102,241,0.12); color: var(--accent); border: 1px solid rgba(99,102,241,0.2); }
+    .pill-red { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+
+    /* Deliverables */
+    .deliverables { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    @media (max-width: 640px) { .deliverables { grid-template-columns: 1fr; } }
+    .deliverables h4 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 14px; }
+    .deliverables ul { list-style: none; }
+    .deliverables ul li { font-size: 14px; padding: 8px 0 8px 22px; position: relative; border-bottom: 1px solid var(--border); }
+    .deliverables ul li:last-child { border-bottom: none; }
+    .deliverables ul li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; font-size: 12px; top: 9px; }
+
+    /* Loom */
+    .loom-card { background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(99,102,241,0.02)); border: 1px solid rgba(99,102,241,0.25); border-radius: 14px; padding: 40px; text-align: center; }
+    .loom-card h3 { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+    .loom-card p { color: var(--muted); margin-bottom: 28px; font-size: 15px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: opacity 0.2s; text-decoration: none; }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-outline { background: transparent; color: var(--accent); border: 1px solid rgba(99,102,241,0.4); margin-left: 12px; }
+
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    footer { padding: 40px 0; text-align: center; color: var(--muted); font-size: 13px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">GoHighLevel · Home Service · 8-System Revenue Engine</div>
+    <h1>Build Once.<br><span>Deploy to 50+ Clients.</span></h1>
+    <p>A fully templated, snapshot-ready Revenue Engine that captures, responds, follows up, books, and reviews — automatically. No human in the loop.</p>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-num">8</div>
+        <div class="hero-stat-label">Automated Systems</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">14 days</div>
+        <div class="hero-stat-label">Build Timeline</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">30 min</div>
+        <div class="hero-stat-label">New Client Clone</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">50+</div>
+        <div class="hero-stat-label">Clients, Same Snapshot</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8 SYSTEMS -->
+  <section class="reveal">
+    <div class="section-label">The Framework</div>
+    <div class="section-title">8-System Revenue Engine</div>
+    <div class="section-sub">Every system is a self-contained GHL module. Each one runs independently and talks to the others via tags and pipeline stage changes.</div>
+
+    <div class="systems-grid">
+      <div class="sys-card s1">
+        <div class="sys-num">System 01</div>
+        <div class="sys-icon">⚡</div>
+        <div class="sys-name">Instant Lead Response</div>
+        <div class="sys-desc">First contact fires in under 60 seconds from any lead source — form, Facebook Lead Ad, Google LSA, chat widget, or inbound call.</div>
+        <div class="sys-trigger"><span>Trigger:</span> Lead created (any source)<br><span>Action:</span> SMS + email within 60s</div>
+        <div class="sys-timing" style="background: rgba(34,197,94,0.1); color: var(--green);">Target: &lt; 60s</div>
+      </div>
+
+      <div class="sys-card s2">
+        <div class="sys-num">System 02</div>
+        <div class="sys-icon">📞</div>
+        <div class="sys-name">Missed Call Text-Back</div>
+        <div class="sys-desc">Missed call fires an instant SMS: "We just missed you — want to book a quick estimate?" Catches the lead before they call the next contractor.</div>
+        <div class="sys-trigger"><span>Trigger:</span> Missed inbound call<br><span>Action:</span> SMS within 30s</div>
+        <div class="sys-timing" style="background: rgba(245,158,11,0.1); color: var(--amber);">Target: &lt; 30s</div>
+      </div>
+
+      <div class="sys-card s3">
+        <div class="sys-num">System 03</div>
+        <div class="sys-icon">🔁</div>
+        <div class="sys-name">Follow-Up Sequences</div>
+        <div class="sys-desc">5-touch sequence over 14 days. SMS, email, and voicemail drop. Stops automatically when lead books or replies. No spam, no chaos.</div>
+        <div class="sys-trigger"><span>Trigger:</span> Lead unresponsive after first contact<br><span>Action:</span> D1, D3, D7, D10, D14</div>
+        <div class="sys-timing" style="background: rgba(59,130,246,0.1); color: var(--blue);">14-day window</div>
+      </div>
+
+      <div class="sys-card s4">
+        <div class="sys-num">System 04</div>
+        <div class="sys-icon">📅</div>
+        <div class="sys-name">Booking Automation</div>
+        <div class="sys-desc">GHL calendar link delivered via SMS. Booking confirmation fires instantly. Reminder sent 24h and 1h before appointment. No-show re-engagement built in.</div>
+        <div class="sys-trigger"><span>Trigger:</span> Calendar link clicked → Appointment booked<br><span>Action:</span> Confirm + remind</div>
+        <div class="sys-timing" style="background: rgba(20,184,166,0.1); color: var(--teal);">Auto reminders</div>
+      </div>
+
+      <div class="sys-card s5">
+        <div class="sys-num">System 05</div>
+        <div class="sys-icon">⭐</div>
+        <div class="sys-name">Review + Reputation</div>
+        <div class="sys-desc">Job marked Done in pipeline triggers a review request SMS with direct Google link. 2-day follow-up if no review. Stops when review is left.</div>
+        <div class="sys-trigger"><span>Trigger:</span> Stage moved to "Job Done"<br><span>Action:</span> SMS review request → Google</div>
+        <div class="sys-timing" style="background: rgba(249,115,22,0.1); color: var(--orange);">Post-job auto</div>
+      </div>
+
+      <div class="sys-card s6">
+        <div class="sys-num">System 06</div>
+        <div class="sys-icon">📊</div>
+        <div class="sys-name">Pipeline + Dashboard</div>
+        <div class="sys-desc">Clean 6-stage pipeline for home service. Every lead has a stage, a source, and a status. Owner opens GHL and sees exactly where every deal lives.</div>
+        <div class="sys-trigger"><span>Stages:</span> New → Contacted → Appt Set → Job Done → Review → Closed<br><span>Tags:</span> Standardized taxonomy</div>
+        <div class="sys-timing" style="background: rgba(99,102,241,0.1); color: var(--accent);">Always visible</div>
+      </div>
+
+      <div class="sys-card s7">
+        <div class="sys-num">System 07</div>
+        <div class="sys-icon">🤖</div>
+        <div class="sys-name">AI SMS Response Layer</div>
+        <div class="sys-desc">Simple AI handles the top 5 lead questions: availability, service area, pricing range, what to expect, and booking link. Controlled. No hallucinations. Hands off when uncertain.</div>
+        <div class="sys-trigger"><span>Trigger:</span> Inbound SMS from new lead<br><span>Action:</span> GPT classifies + responds or escalates</div>
+        <div class="sys-timing" style="background: rgba(168,85,247,0.1); color: #a855f7;">Controlled AI</div>
+      </div>
+
+      <div class="sys-card s8">
+        <div class="sys-num">System 08</div>
+        <div class="sys-icon">💬</div>
+        <div class="sys-name">Chat to SMS Capture</div>
+        <div class="sys-desc">GHL chat widget on client website. Visitor asks a question — GHL captures name and phone, moves conversation to SMS. Lead is in the CRM before they leave the site.</div>
+        <div class="sys-trigger"><span>Trigger:</span> Chat widget interaction → phone captured<br><span>Action:</span> Contact created + Speed-to-Lead fires</div>
+        <div class="sys-timing" style="background: rgba(239,68,68,0.1); color: var(--red);">Instant capture</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEAD LIFECYCLE -->
+  <section class="reveal">
+    <div class="section-label">Full Lead Lifecycle</div>
+    <div class="section-title">How All 8 Systems Connect</div>
+    <div class="section-sub">Every system hands off to the next via pipeline stage changes and tags. Nothing falls through.</div>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+  A["🌐 Lead Sources\nForm · Facebook · Google LSA · Chat · Missed Call"]:::trigger
+  B["⚡ System 01: Speed-to-Lead\nSMS + Email &lt;60s · Contact created · Stage: New Lead"]:::ai
+  C["📞 System 02: Missed Call\nInstant text-back if call unanswered &lt;30s"]:::util
+  D["🔁 System 03: Follow-Up\n5-touch D1/D3/D7/D10/D14 · Stops on reply"]:::util
+  E["📅 System 04: Booking\nCalendar link · Confirm · Remind 24h + 1h · No-show recovery"]:::ai
+  F["📊 System 06: Pipeline\nStage: Job Booked → Job Done · Owner sees everything"]:::util
+  G["⭐ System 05: Review\nPost-job SMS request → Google · 2-day follow-up"]:::out
+  H["🤖 System 07: AI Layer\nInbound SMS handled · FAQ answered · Hands off if unsure"]:::ai
+  I["💬 System 08: Chat Capture\nWebsite chat → phone → CRM → Speed-to-Lead fires"]:::trigger
+
+  A --> B
+  A --> C
+  B --> D
+  D --> E
+  E --> F
+  F --> G
+  H --> B
+  I --> B
+
+  classDef trigger fill:#111,stroke:#374151,color:#e5e7eb
+  classDef ai fill:#1e1b4b,stroke:#4338ca,color:#a5b4fc
+  classDef util fill:#1a1a1a,stroke:#374151,color:#9ca3af
+  classDef out fill:#052e16,stroke:#16a34a,color:#86efac
+      </div>
+    </div>
+  </section>
+
+  <!-- GHL PIPELINE VIEW -->
+  <section class="reveal">
+    <div class="section-label">GHL Pipeline View</div>
+    <div class="section-title">What the Client Sees Every Morning</div>
+    <div class="section-sub">A clean, simple 6-stage pipeline. Every lead tracked, every stage automated. The owner sees the whole business in one view.</div>
+
+    <div class="ghl-chrome">
+      <div class="ghl-topbar">
+        <div class="ghl-dot" style="background:#ef4444;"></div>
+        <div class="ghl-dot" style="background:#f59e0b;"></div>
+        <div class="ghl-dot" style="background:#22c55e;"></div>
+        <div class="ghl-topbar-title">GoHighLevel — Home Service Revenue Engine</div>
+        <div class="ghl-topbar-right">Pipeline → Home Service · 11 Leads</div>
+      </div>
+      <div class="ghl-pipeline-wrap">
+        <div class="ghl-pipeline">
+
+          <div class="pipeline-col">
+            <div class="col-header s-new">New Lead <span class="count">3</span></div>
+            <div class="col-body">
+              <div class="lead-card">
+                <div class="lead-service">HVAC Repair</div>
+                <div class="lead-meta">Sandra M. · (847) 555-0134<br>AC not cooling</div>
+                <div class="lead-source src-google">Google LSA</div>
+              </div>
+              <div class="lead-card">
+                <div class="lead-service">Plumbing</div>
+                <div class="lead-meta">Devon R. · (630) 555-0298<br>Leaking pipe under sink</div>
+                <div class="lead-source src-chat">Chat Widget</div>
+              </div>
+              <div class="lead-card">
+                <div class="lead-service">Electrical</div>
+                <div class="lead-meta">Priya S. · (312) 555-0445<br>Missed call · text-back sent</div>
+                <div class="lead-source src-call">Missed Call</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pipeline-col">
+            <div class="col-header s-contacted">Contacted <span class="count">2</span></div>
+            <div class="col-body">
+              <div class="lead-card">
+                <div class="lead-service">Roofing Estimate</div>
+                <div class="lead-meta">Tim K. · (773) 555-0512<br>Storm damage · replied to SMS</div>
+                <div class="lead-source src-fb">Facebook Ad</div>
+              </div>
+              <div class="lead-card">
+                <div class="lead-service">Garage Door</div>
+                <div class="lead-meta">Maria L. · (708) 555-0671<br>D3 follow-up sent · no reply yet</div>
+                <div class="lead-source src-ref">Referral</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pipeline-col">
+            <div class="col-header s-appt">Appt Set <span class="count">2</span></div>
+            <div class="col-body">
+              <div class="lead-card">
+                <div class="lead-service">HVAC Tune-Up</div>
+                <div class="lead-meta">Joe B. · Tomorrow 10am<br>24h reminder sent ✓</div>
+                <div class="lead-source src-google">Google LSA</div>
+              </div>
+              <div class="lead-card">
+                <div class="lead-service">Plumbing Inspection</div>
+                <div class="lead-meta">Yolanda F. · Friday 2pm<br>Confirmed via SMS ✓</div>
+                <div class="lead-source src-chat">Chat Widget</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pipeline-col">
+            <div class="col-header s-job">Job Done <span class="count">2</span></div>
+            <div class="col-body">
+              <div class="lead-card">
+                <div class="lead-service">AC Repair — $380</div>
+                <div class="lead-meta">Frank T. · Completed today<br>Review request: sending in 2h</div>
+                <div class="lead-source src-google">Google LSA</div>
+              </div>
+              <div class="lead-card">
+                <div class="lead-service">Electrical Panel</div>
+                <div class="lead-meta">Nina C. · Completed yesterday<br>Review requested · pending</div>
+                <div class="lead-source src-fb">Facebook Ad</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pipeline-col">
+            <div class="col-header s-review">Review Sent <span class="count">1</span></div>
+            <div class="col-body">
+              <div class="lead-card">
+                <div class="lead-service">Roof Repair — $1,200</div>
+                <div class="lead-meta">Dave W. · Review link sent<br>Follow-up in 2 days if no review</div>
+                <div class="lead-source src-ref">Referral</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pipeline-col">
+            <div class="col-header s-won">Closed Won <span class="count">1</span></div>
+            <div class="col-body">
+              <div class="lead-card">
+                <div class="lead-service">HVAC Install — $3,400</div>
+                <div class="lead-meta">Carla M. · 5-star review left ✓<br>Referral request sent</div>
+                <div class="lead-source src-google">Google LSA</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SNAPSHOT SCALING -->
+  <section class="reveal">
+    <div class="section-label">Scale Architecture</div>
+    <div class="section-title">One Snapshot. 50+ Clients. 30 Minutes to Deploy.</div>
+    <div class="section-sub">The master template is the business. Every new client gets an identical clone. Only 5 things change per deployment.</div>
+
+    <div class="snapshot-layout">
+      <div class="snapshot-master">
+        <h3>Master Template Sub-Account</h3>
+        <div class="snapshot-module"><div class="snapshot-module-dot" style="background: var(--green);"></div><span style="font-size:13px;">System 01: Speed-to-Lead workflow</span></div>
+        <div class="snapshot-module"><div class="snapshot-module-dot" style="background: var(--amber);"></div><span style="font-size:13px;">System 02: Missed call text-back</span></div>
+        <div class="snapshot-module"><div class="snapshot-module-dot" style="background: var(--blue);"></div><span style="font-size:13px;">System 03: 5-touch follow-up</span></div>
+        <div class="snapshot-module"><div class="snapshot-module-dot" style="background: var(--teal);"></div><span style="font-size:13px;">System 04: Booking + reminders</span></div>
+        <div class="snapshot-module"><div class="snapshot-module-dot" style="background: var(--orange);"></div><span style="font-size:13px;">System 05: Review request</span></div>
+        <div class="snapshot-module"><div class="snapshot-module-dot" style="background: var(--accent);"></div><span style="font-size:13px;">System 06: Pipeline + tags</span></div>
+        <div class="snapshot-module"><div class="snapshot-module-dot" style="background: #a855f7;"></div><span style="font-size:13px;">System 07: AI SMS layer</span></div>
+        <div class="snapshot-module"><div class="snapshot-module-dot" style="background: var(--red);"></div><span style="font-size:13px;">System 08: Chat capture widget</span></div>
+        <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted);">All tested. All documented. Snapshot taken. Ready to clone.</div>
+      </div>
+
+      <div class="snapshot-arrow">
+        <div class="snapshot-arrow-icon">→</div>
+        <span class="snapshot-arrow-label">Snapshot<br>Deploy<br>30 min</span>
+      </div>
+
+      <div class="snapshot-clients">
+        <div class="snapshot-client">
+          <div class="snapshot-client-name">ABC Plumbing</div>
+          <div class="snapshot-client-type">Plumber · Chicago, IL</div>
+          <div class="snapshot-client-time">Deployed in 28 min</div>
+        </div>
+        <div class="snapshot-client">
+          <div class="snapshot-client-name">Cool Air HVAC</div>
+          <div class="snapshot-client-type">HVAC · Dallas, TX</div>
+          <div class="snapshot-client-time">Deployed in 31 min</div>
+        </div>
+        <div class="snapshot-client">
+          <div class="snapshot-client-name">FastFix Electric</div>
+          <div class="snapshot-client-type">Electrical · Miami, FL</div>
+          <div class="snapshot-client-time">Deployed in 26 min</div>
+        </div>
+        <div class="snapshot-client">
+          <div class="snapshot-client-name">RoofPro Services</div>
+          <div class="snapshot-client-type">Roofing · Denver, CO</div>
+          <div class="snapshot-client-time">Deployed in 29 min</div>
+        </div>
+        <div class="snapshot-plus" style="grid-column: 1 / -1;">
+          + 46 more clients<br>
+          <span style="color: var(--muted);">Same snapshot. Same 30 min.</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 24px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+      <div class="section-label" style="margin-bottom: 12px;">The 5 Things That Change Per Client</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
+        <div style="background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 13px; color: var(--muted);">1. Business phone number</div>
+        <div style="background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 13px; color: var(--muted);">2. Business name in templates</div>
+        <div style="background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 13px; color: var(--muted);">3. Calendar availability</div>
+        <div style="background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 13px; color: var(--muted);">4. Service area / zip codes</div>
+        <div style="background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 13px; color: var(--muted);">5. Google review link</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NO OVER-ENGINEERING -->
+  <section class="reveal">
+    <div class="section-label">Simplicity First</div>
+    <div class="section-title">What Is In vs What Is Out</div>
+    <div class="section-sub">The fastest way to kill a system that needs to run 24/7 for 50+ clients is to over-engineer it. Here's the line.</div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 50%;">IN — What Gets Built</th>
+            <th style="width: 50%;">OUT — What Gets Left Out</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="in-col">One clean follow-up sequence (5 touches, hard stop)</td>
+            <td class="out-col">Nested conditional branches for every lead scenario</td>
+          </tr>
+          <tr>
+            <td class="in-col">AI handles 5 FAQs, escalates everything else</td>
+            <td class="out-col">AI tries to handle full sales conversations</td>
+          </tr>
+          <tr>
+            <td class="in-col">6 clear pipeline stages every team member understands</td>
+            <td class="out-col">14-stage pipelines with ambiguous transitions</td>
+          </tr>
+          <tr>
+            <td class="in-col">Tags: source, status, opt-out, reviewed (4 categories)</td>
+            <td class="out-col">50+ tags no one can maintain</td>
+          </tr>
+          <tr>
+            <td class="in-col">Workflow stops when lead replies or books</td>
+            <td class="out-col">Workflows that keep running regardless of lead behavior</td>
+          </tr>
+          <tr>
+            <td class="in-col">One master snapshot, 5 client variables</td>
+            <td class="out-col">Custom builds per client</td>
+          </tr>
+          <tr>
+            <td class="in-col">Review request fires once, one follow-up if no response</td>
+            <td class="out-col">Aggressive review drips that get complaints</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- WEEK 1 / 2 PLAN -->
+  <section class="reveal">
+    <div class="section-label">Build Timeline</div>
+    <div class="section-title">14-Day Delivery Plan</div>
+    <div class="section-sub">Week 1 is infrastructure and the highest-revenue systems. Week 2 is full integration, testing, and handoff.</div>
+    <div class="week-grid">
+      <div class="week-card">
+        <div class="week-label">Week One</div>
+        <div class="week-title">Core Revenue Systems</div>
+        <div class="week-goal">Build the systems that move money first. Speed-to-lead and booking automation account for 80% of the revenue impact.</div>
+        <ul class="week-items">
+          <li><strong>Day 1:</strong> Sub-account setup, pipeline, tag taxonomy, custom fields</li>
+          <li><strong>Day 2:</strong> System 01 — Speed-to-Lead (all sources wired)</li>
+          <li><strong>Day 3:</strong> System 02 — Missed Call Text-Back + IVR</li>
+          <li><strong>Day 4:</strong> System 03 — 5-touch follow-up sequence</li>
+          <li><strong>Day 5:</strong> System 04 — Booking, confirm, remind, no-show recovery</li>
+          <li><strong>Day 5:</strong> First round of end-to-end testing on all 4 systems</li>
+        </ul>
+      </div>
+      <div class="week-card">
+        <div class="week-label">Week Two</div>
+        <div class="week-title">Reputation, AI + Snapshot</div>
+        <div class="week-goal">Complete the full 8-system framework, harden the logic, document everything, and cut the client-ready snapshot.</div>
+        <ul class="week-items">
+          <li><strong>Day 6:</strong> System 05 — Review request + follow-up</li>
+          <li><strong>Day 7:</strong> System 07 — AI SMS layer (controlled FAQ responses)</li>
+          <li><strong>Day 8:</strong> System 08 — Chat widget to SMS capture</li>
+          <li><strong>Day 9:</strong> Full integration test — lead in, all 8 systems fire correctly</li>
+          <li><strong>Day 10:</strong> Master snapshot taken, Loom walkthroughs recorded</li>
+          <li><strong>Day 10:</strong> Client onboarding checklist and maintenance guide delivered</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- DELIVERABLES -->
+  <section class="reveal">
+    <div class="section-label">Deliverables</div>
+    <div class="section-title">What Gets Handed Off</div>
+    <div class="deliverables">
+      <div>
+        <h4>Systems Built</h4>
+        <ul>
+          <li>All 8 systems live and tested in GHL</li>
+          <li>6-stage pipeline with clean tag taxonomy</li>
+          <li>Speed-to-lead wired to all lead sources</li>
+          <li>Missed call text-back (30-second fire)</li>
+          <li>5-touch follow-up with hard stop on reply</li>
+          <li>Booking + 24h/1h reminders + no-show recovery</li>
+          <li>Post-job review request + 2-day follow-up</li>
+          <li>AI SMS layer (5 FAQs, escalation logic)</li>
+          <li>Chat widget to SMS lead capture</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Templates + Handoff</h4>
+        <ul>
+          <li>Master GHL snapshot ready for duplication</li>
+          <li>5-variable client onboarding checklist</li>
+          <li>Loom: how the system works end-to-end</li>
+          <li>Loom: how to onboard a new client (30 min)</li>
+          <li>Loom: how to troubleshoot each system</li>
+          <li>All SMS + email templates documented</li>
+          <li>Tag and pipeline stage reference guide</li>
+          <li>Anti-loop tag structure documented</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOOM -->
+  <section class="reveal">
+    <div class="loom-card">
+      <h3>See an Existing System Walkthrough</h3>
+      <p>Full demo of a live GHL automation build: speed-to-lead, follow-up, booking, and review — running without a human in the loop.</p>
+      <a href="[LOOM_LINK]" class="btn btn-primary">▶ Watch Walkthrough</a>
+      <a href="https://blueprints-saif-shaikh-s-projects.vercel.app/home-service-revenue-engine.html" class="btn btn-outline">View Blueprint</a>
+    </div>
+  </section>
+
+  <footer>
+    Build it once. Clone it 50 times. Infrastructure, not campaigns.
+  </footer>
+
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true, theme: 'dark',
+    themeVariables: {
+      darkMode: true, background: '#111111',
+      primaryColor: '#1e1b4b', primaryTextColor: '#a5b4fc',
+      primaryBorderColor: '#4338ca', lineColor: '#374151',
+      secondaryColor: '#111111', tertiaryColor: '#0a0a0a'
+    }
+  });
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.07 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
