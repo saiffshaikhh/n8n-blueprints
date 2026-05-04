@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instantly Cold Email Management</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --surface: #f8fafc;
+      --border: #e2e8f0;
+      --blue: #3b82f6;
+      --blue-light: #eff6ff;
+      --blue-mid: #dbeafe;
+      --text: #0f172a;
+      --muted: #64748b;
+      --green: #22c55e;
+      --green-light: #f0fdf4;
+      --red: #ef4444;
+      --red-light: #fef2f2;
+      --amber: #f59e0b;
+      --amber-light: #fffbeb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; font-size: 14px; line-height: 1.6; }
+    .wrapper { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+    section { padding: 56px 0; border-bottom: 1px solid var(--border); }
+
+    /* Topbar */
+    .topbar { background: #fff; border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; height: 52px; gap: 32px; position: sticky; top: 0; z-index: 10; }
+    .topbar-logo { font-size: 16px; font-weight: 700; color: var(--blue); letter-spacing: -0.3px; }
+    .topbar-nav { display: flex; gap: 24px; }
+    .topbar-nav a { font-size: 13px; color: var(--muted); text-decoration: none; }
+    .topbar-nav a.active { color: var(--blue); font-weight: 600; }
+    .topbar-cta { margin-left: auto; background: var(--blue); color: #fff; border-radius: 6px; padding: 7px 16px; font-size: 13px; font-weight: 600; text-decoration: none; }
+
+    /* Hero */
+    .hero { padding: 60px 0 48px; border-bottom: 1px solid var(--border); }
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--blue-light); color: var(--blue); border: 1px solid var(--blue-mid); border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 600; margin-bottom: 18px; }
+    .hero h1 { font-size: clamp(24px, 4vw, 40px); font-weight: 700; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.5px; }
+    .hero h1 span { color: var(--blue); }
+    .hero p { color: var(--muted); font-size: 16px; max-width: 560px; margin-bottom: 28px; }
+    .hero-stats { display: flex; gap: 32px; flex-wrap: wrap; }
+    .stat { }
+    .stat-num { font-size: 26px; font-weight: 700; color: var(--blue); }
+    .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* Section headers */
+    .sec-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+    .sec-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.3px; }
+    .sec-sub { color: var(--muted); margin-bottom: 28px; }
+
+    /* Cards */
+    .card { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+    .card-grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+    .card-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+    .card-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media(max-width:640px){.card-grid-2{grid-template-columns:1fr;}}
+    .card-icon { font-size: 22px; margin-bottom: 10px; }
+    .card h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+    .card p { font-size: 13px; color: var(--muted); }
+
+    /* KPI card */
+    .kpi { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+    .kpi-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 10px; }
+    .kpi-val { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+    .kpi-sub { font-size: 12px; color: var(--muted); }
+    .kpi-bar { height: 4px; border-radius: 2px; background: var(--border); margin-top: 12px; overflow: hidden; }
+    .kpi-fill { height: 100%; border-radius: 2px; width: 0; transition: width 1s ease; }
+
+    /* Table */
+    .table-wrap { background: #fff; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 10px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); background: var(--surface); border-bottom: 1px solid var(--border); }
+    td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface); }
+
+    /* Status dots */
+    .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; }
+    .dot-green { background: var(--green); }
+    .dot-amber { background: var(--amber); }
+    .dot-red { background: var(--red); }
+    .dot-blue { background: var(--blue); }
+
+    /* Pill */
+    .pill { display: inline-flex; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .pill-green { background: var(--green-light); color: #16a34a; }
+    .pill-amber { background: var(--amber-light); color: #d97706; }
+    .pill-red { background: var(--red-light); color: #dc2626; }
+    .pill-blue { background: var(--blue-light); color: var(--blue); }
+
+    /* Weekly scope timeline */
+    .scope-list { display: flex; flex-direction: column; gap: 0; background: #fff; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .scope-item { display: grid; grid-template-columns: 100px 1fr; border-bottom: 1px solid var(--border); }
+    .scope-item:last-child { border-bottom: none; }
+    .scope-day { background: var(--surface); padding: 16px; font-size: 12px; font-weight: 700; color: var(--blue); border-right: 1px solid var(--border); display: flex; align-items: center; }
+    .scope-content { padding: 14px 18px; }
+    .scope-content h4 { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+    .scope-content p { font-size: 12px; color: var(--muted); }
+
+    /* Domain table */
+    .domain-health { display: flex; gap: 8px; align-items: center; }
+    .health-bar { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .health-fill { height: 100%; border-radius: 3px; }
+
+    /* Warmup visual */
+    .warmup-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .warmup-day { aspect-ratio: 1; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #fff; }
+
+    /* Checklist */
+    .checklist { list-style: none; display: flex; flex-direction: column; }
+    .checklist li { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .checklist li:last-child { border-bottom: none; }
+    .check-icon { color: var(--green); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+    /* Deliverables */
+    .deliv-col h4 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--blue); margin-bottom: 12px; }
+    .deliv-col ul { list-style: none; }
+    .deliv-col li { font-size: 13px; padding: 7px 0 7px 18px; border-bottom: 1px solid var(--border); position: relative; color: var(--text); }
+    .deliv-col li:last-child { border-bottom: none; }
+    .deliv-col li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; font-size: 11px; top: 8px; }
+
+    /* CTA */
+    .cta-card { background: var(--blue); border-radius: 12px; padding: 36px; text-align: center; color: #fff; }
+    .cta-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .cta-card p { opacity: 0.85; margin-bottom: 24px; }
+    .btn-white { background: #fff; color: var(--blue); border-radius: 7px; padding: 11px 26px; font-weight: 700; font-size: 14px; text-decoration: none; display: inline-block; }
+    .btn-outline-white { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.4); border-radius: 7px; padding: 11px 26px; font-weight: 600; font-size: 14px; text-decoration: none; display: inline-block; margin-left: 10px; }
+
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.45s, transform 0.45s; }
+    .reveal.in { opacity: 1; transform: none; }
+
+    footer { padding: 32px 0; text-align: center; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-logo">⚡ Instantly</div>
+  <nav class="topbar-nav">
+    <a href="#" class="active">Campaigns</a>
+    <a href="#">Leads</a>
+    <a href="#">Unibox</a>
+    <a href="#">Analytics</a>
+    <a href="#">Settings</a>
+  </nav>
+  <a href="#" class="topbar-cta">View Blueprint</a>
+</div>
+
+<div class="wrapper">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">🍕 AI Phone Assistant · Pizza Shops · Cold Email</div>
+    <h1>Instantly Account.<br><span>Owned End to End.</span></h1>
+    <p>Deliverability, list hygiene, domain warmup, campaign launches, and weekly reporting — all in one place, all handled.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">94%+</div><div class="stat-label">Delivery Rate</div></div>
+      <div class="stat"><div class="stat-num">Wed</div><div class="stat-label">Launch Day</div></div>
+      <div class="stat"><div class="stat-num">Every Week</div><div class="stat-label">Performance Report</div></div>
+      <div class="stat"><div class="stat-num">0</div><div class="stat-label">Missed Warm Replies</div></div>
+    </div>
+  </div>
+
+  <!-- CAMPAIGN DASHBOARD MOCK -->
+  <section class="reveal">
+    <div class="sec-label">Campaigns</div>
+    <div class="sec-title">Active Campaigns</div>
+    <div class="sec-sub">All campaigns monitored daily. Issues flagged before they compound.</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Campaign</th>
+            <th>Status</th>
+            <th>Sent</th>
+            <th>Open Rate</th>
+            <th>Reply Rate</th>
+            <th>Bounce Rate</th>
+            <th>Step</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Pizza Shop Owners — US West</strong></td>
+            <td><span class="dot dot-green"></span><span class="pill pill-green">Active</span></td>
+            <td>1,840</td>
+            <td style="color:#16a34a; font-weight:600;">38.4%</td>
+            <td style="color:#16a34a; font-weight:600;">4.2%</td>
+            <td>1.1%</td>
+            <td>Step 3 of 5</td>
+          </tr>
+          <tr>
+            <td><strong>Pizza Shop Owners — US East</strong></td>
+            <td><span class="dot dot-green"></span><span class="pill pill-green">Active</span></td>
+            <td>2,210</td>
+            <td style="color:#16a34a; font-weight:600;">34.7%</td>
+            <td style="color:#16a34a; font-weight:600;">3.8%</td>
+            <td>1.4%</td>
+            <td>Step 4 of 5</td>
+          </tr>
+          <tr>
+            <td><strong>Independent Pizzerias — Midwest</strong></td>
+            <td><span class="dot dot-amber"></span><span class="pill pill-amber">Monitoring</span></td>
+            <td>980</td>
+            <td style="color:#d97706; font-weight:600;">24.1%</td>
+            <td>2.9%</td>
+            <td style="color:#dc2626; font-weight:600;">3.8%</td>
+            <td>Step 2 of 4</td>
+          </tr>
+          <tr>
+            <td><strong>Pizza Chains Under 10 Locations</strong></td>
+            <td><span class="dot dot-blue"></span><span class="pill pill-blue">Launching Wed</span></td>
+            <td>0</td>
+            <td>—</td>
+            <td>—</td>
+            <td>—</td>
+            <td>Queued</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:10px; background:var(--amber-light); border:1px solid #fde68a; border-radius:8px; padding:12px 16px; font-size:13px; color:#92400e;">
+      <strong>Flag:</strong> Midwest campaign bounce rate at 3.8% — above 2% threshold. List suppression and re-validation in progress before next send.
+    </div>
+  </section>
+
+  <!-- KPI STRIP -->
+  <section class="reveal">
+    <div class="sec-label">Deliverability Health</div>
+    <div class="sec-title">Account-Wide Metrics</div>
+    <div class="sec-sub">Tracked weekly. Issues surface here before they affect inbox placement.</div>
+    <div class="card-grid-4">
+      <div class="kpi">
+        <div class="kpi-label">Avg Delivery Rate</div>
+        <div class="kpi-val" style="color:var(--green);">95.2%</div>
+        <div class="kpi-sub">Target: 94%+</div>
+        <div class="kpi-bar"><div class="kpi-fill" data-w="95" style="background:var(--green);"></div></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Avg Open Rate</div>
+        <div class="kpi-val" style="color:var(--blue);">32.4%</div>
+        <div class="kpi-sub">Good for cold outreach</div>
+        <div class="kpi-bar"><div class="kpi-fill" data-w="65" style="background:var(--blue);"></div></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Avg Bounce Rate</div>
+        <div class="kpi-val" style="color:var(--amber);">1.8%</div>
+        <div class="kpi-sub">Flag threshold: 2%</div>
+        <div class="kpi-bar"><div class="kpi-fill" data-w="18" style="background:var(--amber);"></div></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Spam Complaint Rate</div>
+        <div class="kpi-val" style="color:var(--green);">0.04%</div>
+        <div class="kpi-sub">Well under 0.1% threshold</div>
+        <div class="kpi-bar"><div class="kpi-fill" data-w="4" style="background:var(--green);"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WEEKLY SCOPE -->
+  <section class="reveal">
+    <div class="sec-label">Weekly Rhythm</div>
+    <div class="sec-title">What Happens Every Week</div>
+    <div class="sec-sub">Consistent schedule so nothing slips and your team always knows what to expect.</div>
+    <div class="scope-list">
+      <div class="scope-item">
+        <div class="scope-day">Monday</div>
+        <div class="scope-content">
+          <h4>List Hygiene + Validation</h4>
+          <p>Incoming lists run through validation before entering Instantly. Hard bounces suppressed. Unsubscribes synced. Prior campaign bounces excluded.</p>
+        </div>
+      </div>
+      <div class="scope-item">
+        <div class="scope-day">Tuesday</div>
+        <div class="scope-content">
+          <h4>Campaign Setup + QA</h4>
+          <p>New campaign loaded, sequences reviewed, sending schedule set, reply notifications tested to confirm they're routing to your team correctly.</p>
+        </div>
+      </div>
+      <div class="scope-item">
+        <div class="scope-day">Wednesday</div>
+        <div class="scope-content">
+          <h4>Campaign Launch</h4>
+          <p>Campaign goes live. First-hour delivery monitored for early bounce signals. Domain health confirmed before full send volume ramps.</p>
+        </div>
+      </div>
+      <div class="scope-item">
+        <div class="scope-day">Thu–Fri</div>
+        <div class="scope-content">
+          <h4>Monitoring + Flags</h4>
+          <p>Open rates, bounce rates, complaint signals, and inbox placement checked. Any issue flagged to your team with a recommended fix before it compounds.</p>
+        </div>
+      </div>
+      <div class="scope-item">
+        <div class="scope-day">Friday</div>
+        <div class="scope-content">
+          <h4>Weekly Report</h4>
+          <p>Campaign performance, deliverability health, domains added, issues resolved, and anything to change heading into next week. Sent by EOD Friday.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOMAIN HEALTH -->
+  <section class="reveal">
+    <div class="sec-label">Sending Infrastructure</div>
+    <div class="sec-title">Domain + Inbox Health</div>
+    <div class="sec-sub">Each sending domain tracked individually. Warmup managed before any campaign volume is added.</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Domain</th>
+            <th>Inboxes</th>
+            <th>Warmup</th>
+            <th>Daily Limit</th>
+            <th>Reputation</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>outreach-01.co</td>
+            <td>3</td>
+            <td><span class="pill pill-green">Complete</span></td>
+            <td>90 / day</td>
+            <td>
+              <div class="domain-health"><div class="health-bar"><div class="health-fill" style="width:92%;background:var(--green);height:100%;border-radius:3px;"></div></div><span style="font-size:12px;color:var(--green);font-weight:600;">92</span></div>
+            </td>
+            <td><span class="dot dot-green"></span>Healthy</td>
+          </tr>
+          <tr>
+            <td>outreach-02.co</td>
+            <td>3</td>
+            <td><span class="pill pill-green">Complete</span></td>
+            <td>90 / day</td>
+            <td>
+              <div class="domain-health"><div class="health-bar"><div class="health-fill" style="width:88%;background:var(--green);height:100%;border-radius:3px;"></div></div><span style="font-size:12px;color:var(--green);font-weight:600;">88</span></div>
+            </td>
+            <td><span class="dot dot-green"></span>Healthy</td>
+          </tr>
+          <tr>
+            <td>outreach-03.co</td>
+            <td>3</td>
+            <td><span class="pill pill-amber">Warming</span></td>
+            <td>30 / day</td>
+            <td>
+              <div class="domain-health"><div class="health-bar"><div class="health-fill" style="width:61%;background:var(--amber);height:100%;border-radius:3px;"></div></div><span style="font-size:12px;color:var(--amber);font-weight:600;">61</span></div>
+            </td>
+            <td><span class="dot dot-amber"></span>Warming (Day 12)</td>
+          </tr>
+          <tr>
+            <td>outreach-04.co</td>
+            <td>2</td>
+            <td><span class="pill pill-blue">Queued</span></td>
+            <td>—</td>
+            <td>—</td>
+            <td><span class="dot dot-blue"></span>Starting warmup</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- REPLY ROUTING -->
+  <section class="reveal">
+    <div class="sec-label">Reply Management</div>
+    <div class="sec-title">Zero Missed Warm Replies</div>
+    <div class="sec-sub">Your team handles replies. My job is making sure they actually get there.</div>
+    <div class="card-grid-3">
+      <div class="card">
+        <div class="card-icon">🔔</div>
+        <h3>Notification Testing</h3>
+        <p>Reply routing to your team confirmed live each week. Test reply sent and received before every new campaign launch.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔁</div>
+        <h3>Auto-Pause on Reply</h3>
+        <p>Instantly's auto-pause-on-reply configured for every sequence. A warm lead never gets a follow-up after responding.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📤</div>
+        <h3>Unibox Routing</h3>
+        <p>Replies surfaced in Unibox and forwarded correctly. Labels and filters set so your team sees warm replies first, not OOOs.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DELIVERABLES -->
+  <section class="reveal">
+    <div class="sec-label">Deliverables</div>
+    <div class="sec-title">What You Get Every Week</div>
+    <div class="card-grid-2">
+      <div class="card deliv-col">
+        <h4>Ongoing Management</h4>
+        <ul class="deliv-col">
+          <li>1 campaign launched every Wednesday</li>
+          <li>List validation before every upload</li>
+          <li>Bounce suppression and unsubscribe sync</li>
+          <li>Domain and inbox warmup management</li>
+          <li>New sending infrastructure as you scale</li>
+          <li>Reply routing confirmed working each week</li>
+          <li>Deliverability flag alerts before issues grow</li>
+        </ul>
+      </div>
+      <div class="card deliv-col">
+        <h4>Reporting + Visibility</h4>
+        <ul class="deliv-col">
+          <li>Weekly performance report (EOD Friday)</li>
+          <li>Delivery, open, reply, bounce per campaign</li>
+          <li>Domain reputation scores tracked</li>
+          <li>Inbox placement health summary</li>
+          <li>Flags with recommended actions</li>
+          <li>Scaling recommendations when ready</li>
+          <li>Running suppression list maintained</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="reveal" style="border-bottom:none;">
+    <div class="cta-card">
+      <h3>See the Full System Walkthrough</h3>
+      <p>Live Instantly account setup, domain warmup, campaign launch, and weekly reporting workflow.</p>
+      <a href="[LOOM_LINK]" class="btn-white">▶ Watch Loom</a>
+      <a href="https://blueprints-saif-shaikh-s-projects.vercel.app/instantly-cold-email-expert.html" class="btn-outline-white">View Blueprint</a>
+    </div>
+  </section>
+
+  <footer>Deliverability first. Every campaign, every week.</footer>
+</div>
+
+<script>
+  const obs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); }), {threshold:0.07});
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  const barObs = new IntersectionObserver(es => es.forEach(e => {
+    if(e.isIntersecting){ e.target.querySelectorAll('.kpi-fill').forEach(b => b.style.width = b.dataset.w+'%'); barObs.unobserve(e.target); }
+  }), {threshold:0.2});
+  document.querySelectorAll('.card-grid-4').forEach(el => barObs.observe(el));
+</script>
+</body>
+</html>
