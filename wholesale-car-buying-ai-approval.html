@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wholesale Car Buying — GHL + AI Approval System</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --sidebar: #0a0c10;
+      --card: #13161e;
+      --card2: #181c26;
+      --border: #1f2435;
+      --accent: #6366f1;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --teal: #14b8a6;
+      --text: #e5e7eb;
+      --muted: #6b7280;
+      --ghl-blue: #1d6ae5;
+      --ghl-nav: #0f1520;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+
+    .wrapper { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+    section { padding: 64px 0; border-bottom: 1px solid var(--border); }
+
+    /* Hero */
+    .hero { padding: 72px 0 60px; text-align: center; border-bottom: 1px solid var(--border); }
+    .hero-badge { display: inline-block; background: rgba(99,102,241,0.15); color: var(--accent); border: 1px solid rgba(99,102,241,0.3); border-radius: 20px; padding: 6px 16px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 20px; }
+    .hero h1 { font-size: clamp(26px, 5vw, 46px); font-weight: 700; line-height: 1.15; margin-bottom: 14px; }
+    .hero h1 span { color: var(--green); }
+    .hero p { color: var(--muted); font-size: 17px; max-width: 560px; margin: 0 auto 32px; }
+    .hero-flow { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; }
+    .hero-step { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 20px; font-size: 13px; font-weight: 600; }
+    .hero-arrow { color: var(--muted); padding: 0 10px; font-size: 18px; }
+
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .section-title { font-size: clamp(20px, 3vw, 26px); font-weight: 700; margin-bottom: 8px; }
+    .section-sub { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+
+    /* GHL Chrome */
+    .ghl-chrome { background: var(--ghl-nav); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .ghl-topbar { background: #0a0d15; border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; align-items: center; gap: 12px; }
+    .ghl-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .ghl-topbar-title { font-size: 13px; font-weight: 600; color: var(--muted); margin-left: 4px; }
+    .ghl-topbar-breadcrumb { font-size: 12px; color: #374151; margin-left: auto; }
+
+    /* Pipeline Kanban */
+    .ghl-pipeline-wrap { padding: 20px; overflow-x: auto; }
+    .ghl-pipeline { display: flex; gap: 14px; min-width: 900px; }
+    .pipeline-col { flex: 1; min-width: 175px; }
+    .col-header { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; padding: 8px 12px; border-radius: 6px 6px 0 0; display: flex; align-items: center; justify-content: space-between; }
+    .col-header .count { background: rgba(255,255,255,0.1); color: #fff; border-radius: 10px; padding: 1px 7px; font-size: 10px; }
+    .col-body { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-top: none; border-radius: 0 0 8px 8px; padding: 8px; min-height: 200px; display: flex; flex-direction: column; gap: 8px; }
+    .lead-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; cursor: pointer; transition: border-color 0.2s; }
+    .lead-card:hover { border-color: var(--accent); }
+    .lead-vehicle { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .lead-meta { font-size: 11px; color: var(--muted); margin-bottom: 8px; line-height: 1.5; }
+    .lead-price-badge { display: inline-block; background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.2); border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 700; }
+    .lead-price-pending { display: inline-block; background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 700; }
+
+    /* Stage colors */
+    .stage-new { background: rgba(99,102,241,0.15); color: var(--accent); }
+    .stage-info { background: rgba(59,130,246,0.15); color: var(--blue); }
+    .stage-approval { background: rgba(245,158,11,0.15); color: var(--amber); }
+    .stage-sent { background: rgba(34,197,94,0.15); color: var(--green); }
+    .stage-closed { background: rgba(107,114,128,0.15); color: var(--muted); }
+
+    /* Pill */
+    .pill { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .pill-green { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+    .pill-amber { background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+    .pill-blue { background: rgba(59,130,246,0.12); color: var(--blue); border: 1px solid rgba(59,130,246,0.2); }
+    .pill-accent { background: rgba(99,102,241,0.12); color: var(--accent); border: 1px solid rgba(99,102,241,0.2); }
+    .pill-red { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+
+    /* AI Pricing Calculator */
+    .calc-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 700px) { .calc-layout { grid-template-columns: 1fr; } }
+    .calc-form { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+    .calc-form h3 { font-size: 14px; font-weight: 700; margin-bottom: 20px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .form-field { display: flex; flex-direction: column; gap: 5px; }
+    .form-field label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .form-field input, .form-field select { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: 13px; color: var(--text); outline: none; transition: border-color 0.2s; width: 100%; }
+    .form-field input:focus, .form-field select:focus { border-color: var(--accent); }
+    .form-field input[type="checkbox"] { width: auto; margin-right: 6px; }
+    .checkbox-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+    .checkbox-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); background: var(--card2); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+    .checkbox-item input { accent-color: var(--accent); }
+    .checkbox-item:has(input:checked) { border-color: var(--accent); color: var(--text); background: rgba(99,102,241,0.08); }
+
+    /* Pricing output */
+    .calc-output { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+    .output-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 16px; }
+    .price-trio { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    .price-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+    .price-box-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; }
+    .price-box-value { font-size: 28px; font-weight: 700; }
+    .price-start { color: var(--amber); }
+    .price-target { color: var(--green); }
+    .price-max { color: var(--blue); }
+    .breakdown-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .breakdown-item { display: flex; justify-content: space-between; font-size: 13px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .breakdown-item:last-child { border-bottom: none; font-weight: 700; font-size: 14px; }
+    .breakdown-plus { color: var(--green); font-weight: 600; }
+    .breakdown-minus { color: var(--red); font-weight: 600; }
+    .breakdown-base { color: var(--muted); }
+    .sms-preview { background: var(--ghl-nav); border: 1px solid var(--border); border-radius: 10px; padding: 16px; font-size: 13px; }
+    .sms-preview-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 10px; }
+    .sms-bubble { background: var(--ghl-blue); color: #fff; border-radius: 12px 12px 4px 12px; padding: 12px 16px; font-size: 13px; line-height: 1.6; display: inline-block; max-width: 100%; }
+    .zero-alert { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; padding: 12px 16px; color: var(--red); font-size: 13px; font-weight: 600; }
+
+    /* Workflow Builder */
+    .wf-builder { display: flex; flex-direction: column; align-items: center; gap: 0; }
+    .wf-step { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; width: 100%; max-width: 520px; display: flex; align-items: flex-start; gap: 14px; position: relative; }
+    .wf-step.trigger-step { border-color: var(--amber); background: rgba(245,158,11,0.04); }
+    .wf-step.action-step { border-color: var(--border); }
+    .wf-step.ai-step { border-color: var(--accent); background: rgba(99,102,241,0.04); }
+    .wf-step.branch-step { border-color: var(--blue); background: rgba(59,130,246,0.04); width: 100%; max-width: 520px; }
+    .wf-step.wait-step { border-color: var(--teal); background: rgba(20,184,166,0.04); }
+    .wf-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+    .wf-content h4 { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+    .wf-content p { font-size: 12px; color: var(--muted); }
+    .wf-tag { display: inline-block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 4px; margin-bottom: 5px; }
+    .wf-tag-trigger { background: rgba(245,158,11,0.15); color: var(--amber); }
+    .wf-tag-action { background: rgba(99,102,241,0.1); color: var(--accent); }
+    .wf-tag-wait { background: rgba(20,184,166,0.1); color: var(--teal); }
+    .wf-tag-branch { background: rgba(59,130,246,0.1); color: var(--blue); }
+    .wf-connector { width: 2px; height: 24px; background: var(--border); margin: 0 auto; }
+    .wf-connector-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); margin: 0 auto; }
+
+    /* Branch layout */
+    .branch-paths { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; width: 100%; max-width: 760px; }
+    .branch-path { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+    .branch-condition { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .branch-action { font-size: 13px; color: var(--muted); }
+    .branch-action strong { color: var(--text); }
+
+    /* SMS Conversation */
+    .sms-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 700px) { .sms-layout { grid-template-columns: 1fr; } }
+    .phone-frame { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .phone-header { background: var(--ghl-nav); padding: 12px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+    .phone-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--ghl-blue); display: flex; align-items: center; justify-content: font-size: 14px; justify-content: center; font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .phone-contact { font-size: 13px; font-weight: 600; }
+    .phone-status { font-size: 11px; color: var(--green); }
+    .phone-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; min-height: 280px; }
+    .msg { max-width: 82%; }
+    .msg-out { margin-left: auto; }
+    .msg-in { margin-right: auto; }
+    .msg-bubble { padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
+    .msg-out .msg-bubble { background: var(--ghl-blue); color: #fff; border-radius: 12px 12px 4px 12px; }
+    .msg-in .msg-bubble { background: var(--card2); color: var(--text); border-radius: 12px 12px 12px 4px; }
+    .msg-time { font-size: 10px; color: var(--muted); margin-top: 3px; text-align: right; }
+    .msg-in .msg-time { text-align: left; }
+    .phone-input { background: var(--ghl-nav); border-top: 1px solid var(--border); padding: 10px 14px; display: flex; gap: 10px; align-items: center; }
+    .phone-input-field { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 7px 14px; font-size: 12px; color: var(--muted); }
+    .phone-send-btn { background: var(--ghl-blue); color: #fff; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+
+    /* Conversation label */
+    .conv-scenario { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 12px; }
+
+    /* Form fields mock */
+    .ghl-form-mock { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .ghl-form-header { background: var(--ghl-nav); padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .ghl-form-header span { font-size: 13px; font-weight: 600; }
+    .ghl-form-body { padding: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 600px) { .ghl-form-body { grid-template-columns: 1fr; } }
+    .ghl-field { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+    .ghl-field-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 5px; }
+    .ghl-field-value { font-size: 13px; color: var(--text); }
+    .ghl-field-type { float: right; font-size: 10px; color: var(--border); font-style: italic; }
+
+    /* Loom */
+    .loom-card { background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(99,102,241,0.02)); border: 1px solid rgba(99,102,241,0.25); border-radius: 14px; padding: 40px; text-align: center; }
+    .loom-card h3 { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+    .loom-card p { color: var(--muted); margin-bottom: 28px; font-size: 15px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: opacity 0.2s; text-decoration: none; }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-outline { background: transparent; color: var(--accent); border: 1px solid rgba(99,102,241,0.4); margin-left: 12px; }
+
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    footer { padding: 40px 0; text-align: center; color: var(--muted); font-size: 13px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">GHL + OpenAI · Wholesale Car Buying · AI Approval</div>
+    <h1>Lead <span>→ AI Price →</span> You Approve → Sent</h1>
+    <p>No employee guessing. No slow response. AI prices the car, texts you for approval, you reply YES, customer gets the offer in under 2 minutes.</p>
+    <div class="hero-flow">
+      <div class="hero-step">📋 Lead Submits Form</div>
+      <div class="hero-arrow">→</div>
+      <div class="hero-step">🤖 GPT Prices Car</div>
+      <div class="hero-arrow">→</div>
+      <div class="hero-step">📱 You Get Text</div>
+      <div class="hero-arrow">→</div>
+      <div class="hero-step">✅ Reply YES</div>
+      <div class="hero-arrow">→</div>
+      <div class="hero-step">💬 Auto-Sent</div>
+    </div>
+  </div>
+
+  <!-- GHL PIPELINE -->
+  <section class="reveal">
+    <div class="section-label">GHL CRM</div>
+    <div class="section-title">Pipeline View</div>
+    <div class="section-sub">Every lead lives in one of 5 stages. You always know exactly where each deal sits.</div>
+
+    <div class="ghl-chrome">
+      <div class="ghl-topbar">
+        <div class="ghl-dot" style="background:#ef4444;"></div>
+        <div class="ghl-dot" style="background:#f59e0b;"></div>
+        <div class="ghl-dot" style="background:#22c55e;"></div>
+        <div class="ghl-topbar-title">GoHighLevel — Wholesale Pipeline</div>
+        <div class="ghl-topbar-breadcrumb">Opportunities → Wholesale Car Buying</div>
+      </div>
+      <div class="ghl-pipeline-wrap">
+        <div class="ghl-pipeline">
+
+          <!-- New Lead -->
+          <div class="pipeline-col">
+            <div class="col-header stage-new">New Lead <span class="count">2</span></div>
+            <div class="col-body">
+              <div class="lead-card">
+                <div class="lead-vehicle">2019 Ford Explorer</div>
+                <div class="lead-meta">180k mi · No cats · Has title<br>📍 Mike, (312) 555-0192</div>
+                <div class="lead-price-pending">Pending AI price</div>
+              </div>
+              <div class="lead-card">
+                <div class="lead-vehicle">2017 Chevy Malibu</div>
+                <div class="lead-meta">211k mi · Has cats · No title<br>📍 Dana, (773) 555-0344</div>
+                <div class="lead-price-pending">Pending AI price</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Info Collected -->
+          <div class="pipeline-col">
+            <div class="col-header stage-info">Info Collected <span class="count">1</span></div>
+            <div class="col-body">
+              <div class="lead-card">
+                <div class="lead-vehicle">2018 Honda Accord</div>
+                <div class="lead-meta">142k mi · Has cats · Has title<br>📍 Carlos, (847) 555-0081</div>
+                <div class="lead-price-badge">AI: $450 target</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Awaiting Approval -->
+          <div class="pipeline-col">
+            <div class="col-header stage-approval">Awaiting Approval <span class="count">1</span></div>
+            <div class="col-body">
+              <div class="lead-card" style="border-color: var(--amber);">
+                <div class="lead-vehicle">2013 Ford Fusion</div>
+                <div class="lead-meta">165k mi · Accident · Has title<br>📍 James, (630) 555-0277</div>
+                <div class="lead-price-badge">$150 / $250 / $300</div>
+                <div style="margin-top: 8px; font-size: 11px; color: var(--amber);">⏳ Awaiting owner reply</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Approved / Sent -->
+          <div class="pipeline-col">
+            <div class="col-header stage-sent">Approved / Sent <span class="count">2</span></div>
+            <div class="col-body">
+              <div class="lead-card">
+                <div class="lead-vehicle">2015 Mercedes C300</div>
+                <div class="lead-meta">95k mi · Has cats · Has title<br>📍 Anna, (224) 555-0419</div>
+                <div class="lead-price-badge">Sent: $600</div>
+              </div>
+              <div class="lead-card">
+                <div class="lead-vehicle">2014 Ford Expedition</div>
+                <div class="lead-meta">178k mi · Has cats · Has title<br>📍 Ray, (708) 555-0566</div>
+                <div class="lead-price-badge">Sent: $400</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Closed -->
+          <div class="pipeline-col">
+            <div class="col-header stage-closed">Closed <span class="count">1</span></div>
+            <div class="col-body">
+              <div class="lead-card">
+                <div class="lead-vehicle">2016 Ford Expedition</div>
+                <div class="lead-meta">201k mi · Has cats · No title<br>📍 Tom, (847) 555-0733</div>
+                <div class="lead-price-badge" style="background: rgba(107,114,128,0.1); color: var(--muted); border-color: rgba(107,114,128,0.2);">Won: $350</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTAKE FORM -->
+  <section class="reveal">
+    <div class="section-label">GHL Form Builder</div>
+    <div class="section-title">Lead Intake Form Fields</div>
+    <div class="section-sub">Form fields map directly to GHL custom fields. GPT reads these to price the vehicle. Every field matters.</div>
+
+    <div class="ghl-form-mock">
+      <div class="ghl-form-header">
+        <span>Wholesale Intake Form</span>
+        <span class="pill pill-green">Live</span>
+      </div>
+      <div class="ghl-form-body">
+        <div class="ghl-field">
+          <div class="ghl-field-label">Year <span class="ghl-field-type">text</span></div>
+          <div class="ghl-field-value">e.g. 2013</div>
+        </div>
+        <div class="ghl-field">
+          <div class="ghl-field-label">Make <span class="ghl-field-type">text</span></div>
+          <div class="ghl-field-value">e.g. Ford</div>
+        </div>
+        <div class="ghl-field">
+          <div class="ghl-field-label">Model <span class="ghl-field-type">text</span></div>
+          <div class="ghl-field-value">e.g. Fusion</div>
+        </div>
+        <div class="ghl-field">
+          <div class="ghl-field-label">Mileage <span class="ghl-field-type">number</span></div>
+          <div class="ghl-field-value">e.g. 165000</div>
+        </div>
+        <div class="ghl-field">
+          <div class="ghl-field-label">Does it start? <span class="ghl-field-type">dropdown</span></div>
+          <div class="ghl-field-value">Yes / No</div>
+        </div>
+        <div class="ghl-field">
+          <div class="ghl-field-label">Transmission <span class="ghl-field-type">dropdown</span></div>
+          <div class="ghl-field-value">Good / Slipping / Bad</div>
+        </div>
+        <div class="ghl-field">
+          <div class="ghl-field-label">Has Catalytic Converters? <span class="ghl-field-type">checkbox</span></div>
+          <div class="ghl-field-value">Yes / No</div>
+        </div>
+        <div class="ghl-field">
+          <div class="ghl-field-label">Has Title? <span class="ghl-field-type">checkbox</span></div>
+          <div class="ghl-field-value">Yes / No</div>
+        </div>
+        <div class="ghl-field">
+          <div class="ghl-field-label">Accident History? <span class="ghl-field-type">checkbox</span></div>
+          <div class="ghl-field-value">Yes / No</div>
+        </div>
+        <div class="ghl-field">
+          <div class="ghl-field-label">Fire Damage? <span class="ghl-field-type">checkbox</span></div>
+          <div class="ghl-field-value">Yes / No</div>
+        </div>
+        <div class="ghl-field">
+          <div class="ghl-field-label">Engine / Trans Missing? <span class="ghl-field-type">checkbox</span></div>
+          <div class="ghl-field-value">Yes / No</div>
+        </div>
+        <div class="ghl-field">
+          <div class="ghl-field-label">Phone Number <span class="ghl-field-type">phone</span></div>
+          <div class="ghl-field-value">(630) 555-0277</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI PRICING CALCULATOR -->
+  <section class="reveal">
+    <div class="section-label">AI Pricing Logic</div>
+    <div class="section-title">Live Pricing Calculator — Exact GPT Logic</div>
+    <div class="section-sub">Fill in the vehicle details. See the Start / Target / Max prices update in real time, exactly as GPT calculates them. Owner approval text previews below.</div>
+
+    <div class="calc-layout">
+      <div class="calc-form">
+        <h3>Vehicle Details</h3>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Year</label>
+            <input type="number" id="year" placeholder="2013" min="1990" max="2025" oninput="recalc()" />
+          </div>
+          <div class="form-field">
+            <label>Make</label>
+            <input type="text" id="make" placeholder="Ford" oninput="recalc()" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Model</label>
+            <input type="text" id="model" placeholder="Fusion" oninput="recalc()" />
+          </div>
+          <div class="form-field">
+            <label>Mileage</label>
+            <input type="number" id="miles" placeholder="165000" oninput="recalc()" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field">
+            <label>Does it start?</label>
+            <select id="starts" onchange="recalc()">
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Transmission</label>
+            <select id="trans" onchange="recalc()">
+              <option value="good">Good</option>
+              <option value="bad">Bad / No Go</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);">Condition Flags</div>
+        <div class="checkbox-row">
+          <label class="checkbox-item"><input type="checkbox" id="accident" onchange="recalc()" /> Accident (+$150)</label>
+          <label class="checkbox-item"><input type="checkbox" id="hasCats" onchange="recalc()" /> Has Cats (+$50)</label>
+          <label class="checkbox-item"><input type="checkbox" id="hasTitle" checked onchange="recalc()" /> Has Title</label>
+          <label class="checkbox-item"><input type="checkbox" id="missingEngine" onchange="recalc()" /> Missing Engine/Trans (-$200)</label>
+          <label class="checkbox-item"><input type="checkbox" id="fireDamage" onchange="recalc()" /> Fire Damage (-$100)</label>
+          <label class="checkbox-item"><input type="checkbox" id="missingCats" onchange="recalc()" /> Missing Cats (-$150)</label>
+        </div>
+      </div>
+
+      <div class="calc-output">
+        <div>
+          <div class="output-label">AI Price Output</div>
+          <div id="zero-alert" class="zero-alert" style="display:none;">🚫 No Start or Bad Transmission — Offer is $0. Do not send.</div>
+          <div id="price-output">
+            <div class="price-trio">
+              <div class="price-box">
+                <div class="price-box-label">Start</div>
+                <div class="price-box-value price-start" id="price-start">$150</div>
+              </div>
+              <div class="price-box">
+                <div class="price-box-label">Target</div>
+                <div class="price-box-value price-target" id="price-target">$250</div>
+              </div>
+              <div class="price-box">
+                <div class="price-box-label">Max</div>
+                <div class="price-box-value price-max" id="price-max">$300</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="output-label">Price Breakdown</div>
+          <ul class="breakdown-list" id="breakdown-list">
+            <li class="breakdown-item"><span>Base price</span><span class="breakdown-base">$200</span></li>
+            <li class="breakdown-item" style="font-weight:700; border-top: 1px solid var(--border); margin-top: 4px; padding-top: 8px;"><span>Target Price</span><span id="breakdown-total" style="color: var(--green);">$250</span></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="sms-preview">
+            <div class="sms-preview-label">Owner Approval Text Preview</div>
+            <div class="sms-bubble" id="sms-preview-text">
+              NEW LEAD: 2013 Ford Fusion<br>
+              Start: $150&nbsp;&nbsp;Target: $250&nbsp;&nbsp;Max: $300<br><br>
+              Reply YES to send or type new number
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- APPROVAL SMS FLOW -->
+  <section class="reveal">
+    <div class="section-label">Owner Approval</div>
+    <div class="section-title">3 Reply Scenarios — GHL Conversation View</div>
+    <div class="section-sub">The system handles all three reply patterns automatically. No manual follow-up required.</div>
+
+    <div class="sms-layout">
+      <!-- YES Reply -->
+      <div>
+        <div class="conv-scenario" style="color: var(--green);">✓ Scenario 1: Owner replies YES</div>
+        <div class="phone-frame">
+          <div class="phone-header">
+            <div class="phone-avatar">O</div>
+            <div>
+              <div class="phone-contact">Owner — Approval Line</div>
+              <div class="phone-status">● Active</div>
+            </div>
+          </div>
+          <div class="phone-body">
+            <div class="msg msg-out">
+              <div class="msg-bubble">NEW LEAD: 2013 Ford Fusion<br>Start: $150 &nbsp;Target: $250 &nbsp;Max: $300<br><br>Reply YES to send or type new number</div>
+              <div class="msg-time">System · 2:14 PM</div>
+            </div>
+            <div class="msg msg-in">
+              <div class="msg-bubble">YES</div>
+              <div class="msg-time">2:15 PM</div>
+            </div>
+            <div class="msg msg-out">
+              <div class="msg-bubble" style="background: rgba(34,197,94,0.2); color: var(--green); border: 1px solid rgba(34,197,94,0.3);">✓ Target price sent to James</div>
+              <div class="msg-time">System · 2:15 PM</div>
+            </div>
+          </div>
+          <div class="phone-input">
+            <div class="phone-input-field">Type a message...</div>
+            <div class="phone-send-btn">↑</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Number Override -->
+      <div>
+        <div class="conv-scenario" style="color: var(--amber);">✎ Scenario 2: Owner overrides with number</div>
+        <div class="phone-frame">
+          <div class="phone-header">
+            <div class="phone-avatar">O</div>
+            <div>
+              <div class="phone-contact">Owner — Approval Line</div>
+              <div class="phone-status">● Active</div>
+            </div>
+          </div>
+          <div class="phone-body">
+            <div class="msg msg-out">
+              <div class="msg-bubble">NEW LEAD: 2013 Ford Fusion<br>Start: $150 &nbsp;Target: $250 &nbsp;Max: $300<br><br>Reply YES to send or type new number</div>
+              <div class="msg-time">System · 2:14 PM</div>
+            </div>
+            <div class="msg msg-in">
+              <div class="msg-bubble">225</div>
+              <div class="msg-time">2:16 PM</div>
+            </div>
+            <div class="msg msg-out">
+              <div class="msg-bubble" style="background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.3);">✓ Override $225 sent to James</div>
+              <div class="msg-time">System · 2:16 PM</div>
+            </div>
+          </div>
+          <div class="phone-input">
+            <div class="phone-input-field">Type a message...</div>
+            <div class="phone-send-btn">↑</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No reply -->
+    <div style="margin-top: 20px;">
+      <div class="conv-scenario" style="color: var(--muted); margin-bottom: 12px;">⏱ Scenario 3: No reply in 10 minutes — auto-send fires</div>
+      <div class="phone-frame" style="max-width: 420px;">
+        <div class="phone-header">
+          <div class="phone-avatar">S</div>
+          <div>
+            <div class="phone-contact">System — Auto-send</div>
+            <div class="phone-status" style="color: var(--amber);">● 10-min timer elapsed</div>
+          </div>
+        </div>
+        <div class="phone-body" style="min-height: 120px;">
+          <div class="msg msg-out">
+            <div class="msg-bubble" style="background: rgba(107,114,128,0.15); color: var(--muted); border: 1px solid rgba(107,114,128,0.2);">No owner reply in 10 minutes. Sending AI target price ($250) to James automatically.</div>
+            <div class="msg-time">System · Auto · 2:24 PM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer text -->
+    <div style="margin-top: 24px;">
+      <div class="conv-scenario" style="color: var(--accent); margin-bottom: 12px;">💬 Final: Customer receives this text</div>
+      <div class="phone-frame" style="max-width: 420px;">
+        <div class="phone-header">
+          <div class="phone-avatar">J</div>
+          <div>
+            <div class="phone-contact">James — (630) 555-0277</div>
+            <div class="phone-status" style="color: var(--green);">● Offer Sent</div>
+          </div>
+        </div>
+        <div class="phone-body" style="min-height: 100px;">
+          <div class="msg msg-out">
+            <div class="msg-bubble">Hey James! We're around $250–$300 for your 2013 Ford Fusion depending on condition when we see it. Does that work for you?</div>
+            <div class="msg-time">GHL Auto-SMS · 2:15 PM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKFLOW AUTOMATION -->
+  <section class="reveal">
+    <div class="section-label">GHL Workflow Builder</div>
+    <div class="section-title">Automation Steps — Full Logic</div>
+    <div class="section-sub">This is the exact workflow configured in GHL. Triggers, actions, waits, and branching are all automated — zero manual steps.</div>
+
+    <div class="wf-builder">
+      <div class="wf-step trigger-step">
+        <div class="wf-icon">⚡</div>
+        <div class="wf-content">
+          <div class="wf-tag wf-tag-trigger">Trigger</div>
+          <h4>Form Submitted</h4>
+          <p>Fires when Wholesale Intake Form is submitted. Contact is created with all vehicle fields populated.</p>
+        </div>
+      </div>
+      <div class="wf-connector"></div>
+
+      <div class="wf-step action-step">
+        <div class="wf-icon">📋</div>
+        <div class="wf-content">
+          <div class="wf-tag wf-tag-action">Action</div>
+          <h4>Move to "Info Collected" Stage</h4>
+          <p>Contact moves to Stage 2. Anti-loop tag added: <code>wf-intake-received</code>.</p>
+        </div>
+      </div>
+      <div class="wf-connector"></div>
+
+      <div class="wf-step ai-step">
+        <div class="wf-icon">🤖</div>
+        <div class="wf-content">
+          <div class="wf-tag wf-tag-action">Action — OpenAI GPT</div>
+          <h4>Send to GPT Pricing Logic</h4>
+          <p>Webhook fires to n8n. Vehicle fields passed to GPT with the pricing prompt. GPT returns JSON: <code>{"start": 150, "target": 250, "max": 300}</code>.</p>
+        </div>
+      </div>
+      <div class="wf-connector"></div>
+
+      <div class="wf-step action-step">
+        <div class="wf-icon">💾</div>
+        <div class="wf-content">
+          <div class="wf-tag wf-tag-action">Action</div>
+          <h4>Update Contact Custom Fields</h4>
+          <p>ai_price_start, ai_price_target, ai_price_max written to contact record. Available in merge tags for SMS templates.</p>
+        </div>
+      </div>
+      <div class="wf-connector"></div>
+
+      <div class="wf-step action-step">
+        <div class="wf-icon">📱</div>
+        <div class="wf-content">
+          <div class="wf-tag wf-tag-action">Action — Send SMS</div>
+          <h4>Send Approval Text to Owner</h4>
+          <p>GHL sends SMS to owner's number using template with merged vehicle and price fields. Moves contact to "Awaiting Approval."</p>
+        </div>
+      </div>
+      <div class="wf-connector"></div>
+
+      <div class="wf-step wait-step">
+        <div class="wf-icon">⏱</div>
+        <div class="wf-content">
+          <div class="wf-tag wf-tag-wait">Wait</div>
+          <h4>Wait for Owner Reply — Max 10 Minutes</h4>
+          <p>GHL listens for inbound SMS reply on owner line. If reply received, branch fires immediately. If no reply in 10 min, auto-send branch fires.</p>
+        </div>
+      </div>
+      <div class="wf-connector"></div>
+
+      <!-- Branch -->
+      <div class="wf-step branch-step">
+        <div class="wf-icon">🔀</div>
+        <div class="wf-content">
+          <div class="wf-tag wf-tag-branch">Branch — If/Else</div>
+          <h4>Owner Reply Check</h4>
+          <p>Three paths based on reply content.</p>
+        </div>
+      </div>
+      <div class="wf-connector"></div>
+
+      <div class="branch-paths" style="margin: 0 auto;">
+        <div class="branch-path">
+          <div class="branch-condition" style="color: var(--green);">Reply = "YES"</div>
+          <div class="branch-action">Send customer: <strong>AI target price</strong><br>Move to Approved/Sent</div>
+        </div>
+        <div class="branch-path">
+          <div class="branch-condition" style="color: var(--amber);">Reply = number (e.g. 225)</div>
+          <div class="branch-action">Parse number, send customer: <strong>override price</strong><br>Update field + move stage</div>
+        </div>
+        <div class="branch-path">
+          <div class="branch-condition" style="color: var(--muted);">No reply in 10 min</div>
+          <div class="branch-action">Auto-send: <strong>AI target price</strong><br>Log auto-send tag on contact</div>
+        </div>
+      </div>
+
+      <div class="wf-connector" style="margin-top: 14px;"></div>
+      <div class="wf-step action-step">
+        <div class="wf-icon">✅</div>
+        <div class="wf-content">
+          <div class="wf-tag wf-tag-action">Action</div>
+          <h4>Contact Moves to "Approved / Sent"</h4>
+          <p>Sent price logged to custom field. Conversation assigned to sales rep. Follow-up sequence begins 24h later if no response from customer.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOOM -->
+  <section class="reveal">
+    <div class="loom-card">
+      <h3>Full System Walkthrough</h3>
+      <p>Live demo of the GHL pipeline, GPT pricing logic, approval SMS flow, and workflow automation steps inside a real account.</p>
+      <a href="[LOOM_LINK]" class="btn btn-primary">▶ Watch Walkthrough</a>
+      <a href="https://blueprints-saif-shaikh-s-projects.vercel.app/wholesale-car-buying-ai-approval.html" class="btn btn-outline">View Blueprint</a>
+    </div>
+  </section>
+
+  <footer>
+    Lead to offer in under 2 minutes. Owner control on every deal.
+  </footer>
+
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.07 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // SCRAP BONUSES
+  const SCRAP = {
+    accord: 100, taurus: 100, explorer: 200,
+    expedition: 200, mercedes: 200, jaguar: 200
+  };
+
+  function calcPrice() {
+    const starts  = document.getElementById('starts').value;
+    const trans   = document.getElementById('trans').value;
+    const miles   = parseInt(document.getElementById('miles').value) || null;
+    const model   = (document.getElementById('model').value || '').toLowerCase();
+    const make    = (document.getElementById('make').value || '').toLowerCase();
+    const year    = document.getElementById('year').value || '';
+
+    const accident     = document.getElementById('accident').checked;
+    const hasCats      = document.getElementById('hasCats').checked;
+    const hasTitle     = document.getElementById('hasTitle').checked;
+    const missingEngine= document.getElementById('missingEngine').checked;
+    const fireDamage   = document.getElementById('fireDamage').checked;
+    const missingCats  = document.getElementById('missingCats').checked;
+
+    // Hard zeros
+    if (starts === 'no' || trans === 'bad') return { target: 0, start: 0, max: 0, zero: true, items: [] };
+
+    let price = 200;
+    const items = [{ label: 'Base price', val: 200, type: 'base' }];
+
+    if (accident)  { price += 150; items.push({ label: 'Accident (+$150)', val: 150, type: 'plus' }); }
+    if (hasCats)   { price += 50;  items.push({ label: 'Has cats (+$50)', val: 50, type: 'plus' }); }
+    if (miles !== null && miles < 150000) { price += 50; items.push({ label: 'Under 150k mi (+$50)', val: 50, type: 'plus' }); }
+
+    // Scrap bonuses — check model + make
+    const combined = model + ' ' + make;
+    for (const [key, bonus] of Object.entries(SCRAP)) {
+      if (combined.includes(key)) {
+        price += bonus;
+        items.push({ label: key.charAt(0).toUpperCase() + key.slice(1) + ' scrap bonus (+$' + bonus + ')', val: bonus, type: 'plus' });
+        break;
+      }
+    }
+
+    if (missingEngine) { price -= 200; items.push({ label: 'Missing engine/trans (-$200)', val: -200, type: 'minus' }); }
+    if (fireDamage)    { price -= 100; items.push({ label: 'Fire damage (-$100)', val: -100, type: 'minus' }); }
+    if (missingCats)   { price -= 150; items.push({ label: 'Missing cats (-$150)', val: -150, type: 'minus' }); }
+    if (!hasTitle)     { price -= 100; items.push({ label: 'No title (-$100)', val: -100, type: 'minus' }); }
+
+    price = Math.max(0, price);
+    return {
+      target: price,
+      start: Math.max(0, price - 100),
+      max: price + 50,
+      zero: false,
+      items
+    };
+  }
+
+  function recalc() {
+    const r = calcPrice();
+    const year  = document.getElementById('year').value || '????';
+    const make  = document.getElementById('make').value || 'Make';
+    const model = document.getElementById('model').value || 'Model';
+
+    const zeroEl   = document.getElementById('zero-alert');
+    const priceOut = document.getElementById('price-output');
+
+    if (r.zero) {
+      zeroEl.style.display = 'block';
+      priceOut.style.opacity = '0.3';
+      document.getElementById('price-start').textContent = '$0';
+      document.getElementById('price-target').textContent = '$0';
+      document.getElementById('price-max').textContent = '$0';
+      document.getElementById('sms-preview-text').innerHTML =
+        'NEW LEAD: ' + year + ' ' + make + ' ' + model + '<br>' +
+        'Start: $0 &nbsp; Target: $0 &nbsp; Max: $0<br><br>' +
+        '⚠ No-start or bad trans — DO NOT SEND';
+    } else {
+      zeroEl.style.display = 'none';
+      priceOut.style.opacity = '1';
+      document.getElementById('price-start').textContent  = '$' + r.start;
+      document.getElementById('price-target').textContent = '$' + r.target;
+      document.getElementById('price-max').textContent    = '$' + r.max;
+      document.getElementById('sms-preview-text').innerHTML =
+        'NEW LEAD: ' + year + ' ' + make + ' ' + model + '<br>' +
+        'Start: $' + r.start + '&nbsp;&nbsp;Target: $' + r.target + '&nbsp;&nbsp;Max: $' + r.max + '<br><br>' +
+        'Reply YES to send or type new number';
+    }
+
+    // Breakdown
+    const list = document.getElementById('breakdown-list');
+    let html = '';
+    r.items.forEach(item => {
+      const cls = item.type === 'plus' ? 'breakdown-plus' : item.type === 'minus' ? 'breakdown-minus' : 'breakdown-base';
+      const prefix = item.type === 'plus' ? '+' : '';
+      html += '<li class="breakdown-item"><span>' + item.label + '</span><span class="' + cls + '">' + (item.type === 'base' ? '$' + item.val : (item.val > 0 ? '+$' : '-$') + Math.abs(item.val)) + '</span></li>';
+    });
+    html += '<li class="breakdown-item" style="font-weight:700; border-top: 1px solid var(--border); margin-top: 4px; padding-top: 8px;"><span>Target Price</span><span id="breakdown-total" style="color: var(--green);">$' + r.target + '</span></li>';
+    list.innerHTML = html;
+  }
+
+  recalc();
+</script>
+</body>
+</html>
