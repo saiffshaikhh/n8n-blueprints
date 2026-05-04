@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>250K Email Campaign Execution</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card: #111111;
+      --border: #1e1e1e;
+      --accent: #6366f1;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --text: #e5e7eb;
+      --muted: #6b7280;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+
+    .wrapper { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    section { padding: 64px 0; border-bottom: 1px solid var(--border); }
+
+    .hero { padding: 80px 0 64px; text-align: center; border-bottom: 1px solid var(--border); }
+    .hero-badge { display: inline-block; background: rgba(99,102,241,0.15); color: var(--accent); border: 1px solid rgba(99,102,241,0.3); border-radius: 20px; padding: 6px 16px; font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 24px; }
+    .hero h1 { font-size: clamp(26px, 5vw, 46px); font-weight: 700; line-height: 1.15; margin-bottom: 16px; }
+    .hero h1 span { color: var(--green); }
+    .hero p { color: var(--muted); font-size: 17px; max-width: 580px; margin: 0 auto 32px; }
+    .hero-stats { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; }
+    .hero-stat-num { font-size: 30px; font-weight: 700; color: var(--accent); }
+    .hero-stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+    .section-title { font-size: clamp(20px, 3vw, 28px); font-weight: 700; margin-bottom: 8px; }
+    .section-sub { color: var(--muted); font-size: 15px; margin-bottom: 36px; }
+
+    /* Funnel */
+    .funnel { display: flex; flex-direction: column; gap: 0; }
+    .funnel-row { display: grid; grid-template-columns: 180px 1fr 120px 140px; gap: 16px; align-items: center; padding: 16px 24px; background: var(--card); border: 1px solid var(--border); border-bottom: none; }
+    .funnel-row:first-child { border-radius: 12px 12px 0 0; }
+    .funnel-row:last-child { border-bottom: 1px solid var(--border); border-radius: 0 0 12px 12px; }
+    .funnel-row:hover { background: rgba(255,255,255,0.02); }
+    .funnel-stage { font-size: 13px; font-weight: 600; }
+    .funnel-bar-track { background: rgba(255,255,255,0.05); border-radius: 4px; height: 6px; overflow: hidden; }
+    .funnel-bar-fill { height: 100%; border-radius: 4px; width: 0; transition: width 1.1s ease; }
+    .funnel-count { font-size: 15px; font-weight: 700; text-align: right; }
+    .funnel-rate { font-size: 12px; color: var(--muted); text-align: right; }
+
+    /* Scenario toggle */
+    .scenario-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+    .scenario-tab { padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: var(--card); color: var(--muted); transition: all 0.2s; }
+    .scenario-tab.active { background: rgba(99,102,241,0.15); color: var(--accent); border-color: rgba(99,102,241,0.3); }
+
+    /* Mermaid */
+    .mermaid-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 32px; overflow-x: auto; }
+
+    /* Pill */
+    .pill { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .pill-green { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+    .pill-amber { background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+    .pill-blue { background: rgba(59,130,246,0.12); color: var(--blue); border: 1px solid rgba(59,130,246,0.2); }
+    .pill-accent { background: rgba(99,102,241,0.12); color: var(--accent); border: 1px solid rgba(99,102,241,0.2); }
+    .pill-red { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+
+    /* Table */
+    .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .data-table th { text-align: left; padding: 10px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* Cards */
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+    .card-icon { font-size: 28px; margin-bottom: 12px; }
+    .card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+    .card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* Checklist */
+    .checklist { display: flex; flex-direction: column; gap: 0; }
+    .check-item { display: flex; gap: 14px; align-items: flex-start; padding: 14px 20px; background: var(--card); border: 1px solid var(--border); border-bottom: none; }
+    .check-item:first-child { border-radius: 12px 12px 0 0; }
+    .check-item:last-child { border-bottom: 1px solid var(--border); border-radius: 0 0 12px 12px; }
+    .check-icon { color: var(--green); font-size: 14px; font-weight: 700; margin-top: 2px; flex-shrink: 0; }
+    .check-title { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+    .check-desc { font-size: 13px; color: var(--muted); }
+
+    /* Batch schedule */
+    .batch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+    .batch-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; text-align: center; }
+    .batch-day { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 8px; }
+    .batch-volume { font-size: 22px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .batch-note { font-size: 12px; color: var(--muted); }
+
+    /* Deliverables */
+    .deliverables { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    @media (max-width: 640px) { .deliverables { grid-template-columns: 1fr; } }
+    .deliverables h4 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 14px; }
+    .deliverables ul { list-style: none; }
+    .deliverables ul li { font-size: 14px; padding: 8px 0 8px 22px; position: relative; border-bottom: 1px solid var(--border); }
+    .deliverables ul li:last-child { border-bottom: none; }
+    .deliverables ul li::before { content: '✓'; position: absolute; left: 0; color: var(--green); font-weight: 700; font-size: 12px; top: 9px; }
+
+    /* Loom */
+    .loom-card { background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(99,102,241,0.02)); border: 1px solid rgba(99,102,241,0.25); border-radius: 14px; padding: 40px; text-align: center; }
+    .loom-card h3 { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+    .loom-card p { color: var(--muted); margin-bottom: 28px; font-size: 15px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: opacity 0.2s; text-decoration: none; }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-outline { background: transparent; color: var(--accent); border: 1px solid rgba(99,102,241,0.4); margin-left: 12px; }
+
+    /* Warning banner */
+    .warning-banner { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.25); border-radius: 10px; padding: 16px 20px; margin-bottom: 24px; display: flex; gap: 12px; align-items: flex-start; }
+    .warning-icon { color: var(--amber); font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+    .warning-text { font-size: 13px; color: var(--muted); }
+    .warning-text strong { color: var(--amber); }
+
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.55s ease, transform 0.55s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    footer { padding: 40px 0; text-align: center; color: var(--muted); font-size: 13px; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">Email Campaign Execution · 250K Sends · U.S. Audience</div>
+    <h1>250,000 Sends.<br><span>Inbox, Not Spam.</span></h1>
+    <p>Infrastructure-first execution. Deliverability, compliance, and realistic conversion projections built in before a single send fires.</p>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-num">94%+</div>
+        <div class="hero-stat-label">Delivery Rate Target</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">22–30%</div>
+        <div class="hero-stat-label">Realistic Open Rate</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">3–5 days</div>
+        <div class="hero-stat-label">Launch to Final Send</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">CAN-SPAM</div>
+        <div class="hero-stat-label">Fully Compliant</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECTED FUNNEL -->
+  <section class="reveal">
+    <div class="section-label">Conversion Projections</div>
+    <div class="section-title">Realistic Funnel: 250,000 Sends</div>
+    <div class="section-sub">Two scenarios based on list quality. Warm opted-in lists and cold purchased lists perform differently. Both are shown honestly.</div>
+
+    <div class="scenario-tabs">
+      <div class="scenario-tab active" id="tab-warm" onclick="showScenario('warm')">Warm / Opted-In List</div>
+      <div class="scenario-tab" id="tab-cold" onclick="showScenario('cold')">Cold / Purchased List</div>
+    </div>
+
+    <div id="funnel-warm" class="funnel">
+      <div class="funnel-row">
+        <div class="funnel-stage">📋 List Size</div>
+        <div class="funnel-bar-track"><div class="funnel-bar-fill" data-width="100" style="background: var(--accent);"></div></div>
+        <div class="funnel-count" style="color: var(--accent);">250,000</div>
+        <div class="funnel-rate">Starting volume</div>
+      </div>
+      <div class="funnel-row">
+        <div class="funnel-stage">🔍 Post-Validation</div>
+        <div class="funnel-bar-track"><div class="funnel-bar-fill" data-width="96" style="background: var(--accent);"></div></div>
+        <div class="funnel-count" style="color: var(--accent);">240,000</div>
+        <div class="funnel-rate">96% valid</div>
+      </div>
+      <div class="funnel-row">
+        <div class="funnel-stage">📨 Delivered</div>
+        <div class="funnel-bar-track"><div class="funnel-bar-fill" data-width="94" style="background: var(--blue);"></div></div>
+        <div class="funnel-count" style="color: var(--blue);">225,600</div>
+        <div class="funnel-rate">94% delivery</div>
+      </div>
+      <div class="funnel-row">
+        <div class="funnel-stage">👁 Opened</div>
+        <div class="funnel-bar-track"><div class="funnel-bar-fill" data-width="30" style="background: var(--amber);"></div></div>
+        <div class="funnel-count" style="color: var(--amber);">67,680</div>
+        <div class="funnel-rate">30% open rate</div>
+      </div>
+      <div class="funnel-row">
+        <div class="funnel-stage">🖱 Clicked</div>
+        <div class="funnel-bar-track"><div class="funnel-bar-fill" data-width="10" style="background: var(--amber);"></div></div>
+        <div class="funnel-count" style="color: var(--amber);">13,536</div>
+        <div class="funnel-rate">6% CTR (of delivered)</div>
+      </div>
+      <div class="funnel-row">
+        <div class="funnel-stage">✅ Converted</div>
+        <div class="funnel-bar-track"><div class="funnel-bar-fill" data-width="5" style="background: var(--green);"></div></div>
+        <div class="funnel-count" style="color: var(--green);">2,707 – 4,061</div>
+        <div class="funnel-rate">20–30% page CVR</div>
+      </div>
+    </div>
+
+    <div id="funnel-cold" class="funnel" style="display:none;">
+      <div class="funnel-row">
+        <div class="funnel-stage">📋 List Size</div>
+        <div class="funnel-bar-track"><div class="funnel-bar-fill" data-width="100" style="background: var(--accent);"></div></div>
+        <div class="funnel-count" style="color: var(--accent);">250,000</div>
+        <div class="funnel-rate">Starting volume</div>
+      </div>
+      <div class="funnel-row">
+        <div class="funnel-stage">🔍 Post-Validation</div>
+        <div class="funnel-bar-track"><div class="funnel-bar-fill" data-width="85" style="background: var(--accent);"></div></div>
+        <div class="funnel-count" style="color: var(--accent);">212,500</div>
+        <div class="funnel-rate">85% valid (expect decay)</div>
+      </div>
+      <div class="funnel-row">
+        <div class="funnel-stage">📨 Delivered</div>
+        <div class="funnel-bar-track"><div class="funnel-bar-fill" data-width="80" style="background: var(--blue);"></div></div>
+        <div class="funnel-count" style="color: var(--blue);">191,250</div>
+        <div class="funnel-rate">90% of valid (higher bounces)</div>
+      </div>
+      <div class="funnel-row">
+        <div class="funnel-stage">👁 Opened</div>
+        <div class="funnel-bar-track"><div class="funnel-bar-fill" data-width="22" style="background: var(--amber);"></div></div>
+        <div class="funnel-count" style="color: var(--amber);">38,250</div>
+        <div class="funnel-rate">20% open rate (lower engagement)</div>
+      </div>
+      <div class="funnel-row">
+        <div class="funnel-stage">🖱 Clicked</div>
+        <div class="funnel-bar-track"><div class="funnel-bar-fill" data-width="5" style="background: var(--amber);"></div></div>
+        <div class="funnel-count" style="color: var(--amber);">5,738</div>
+        <div class="funnel-rate">3% CTR (of delivered)</div>
+      </div>
+      <div class="funnel-row">
+        <div class="funnel-stage">✅ Converted</div>
+        <div class="funnel-bar-track"><div class="funnel-bar-fill" data-width="2" style="background: var(--green);"></div></div>
+        <div class="funnel-count" style="color: var(--green);">861 – 1,435</div>
+        <div class="funnel-rate">15–25% page CVR</div>
+      </div>
+    </div>
+
+    <div class="warning-banner" style="margin-top: 20px;">
+      <div class="warning-icon">⚠</div>
+      <div class="warning-text"><strong>Honest note on list quality:</strong> The single biggest lever in this campaign is whether the list is opted-in and recently active. A cold purchased list can still perform, but expect lower deliverability, higher unsubscribes, and a tighter margin for sender reputation. Validation before send is non-negotiable at this volume.</div>
+    </div>
+  </section>
+
+  <!-- SEND ARCHITECTURE -->
+  <section class="reveal">
+    <div class="section-label">Infrastructure</div>
+    <div class="section-title">Send Architecture</div>
+    <div class="section-sub">Every send goes through validation, hygiene, and a batched deployment strategy to protect deliverability.</div>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+flowchart TD
+  A["📋 Provided Contact List\n250,000 U.S. Contacts"]:::trigger
+  B["🔍 List Validation + Hygiene\nZeroBounce / NeverBounce · Dupe Remove · Suppression Check"]:::util
+  C["📊 Segmentation Layer\nEngagement buckets · Timezone split · ISP-aware batching"]:::util
+  D["🏗 Sending Infrastructure\nWarmed IPs · Custom Domains · DKIM/SPF/DMARC Configured"]:::ai
+  E["📤 Batched Send Engine\n50K/day · Throttled · ISP rate-limit aware"]:::ai
+  F["📨 Delivery + Monitoring\nBounce handling · Complaint rate watch · Spam trap alerts"]:::util
+  G["🖱 Click + Open Tracking\nUTM-tagged links · Pixel tracking · Real-time dashboard"]:::util
+  H["🌐 Landing Page Traffic\nClean UTM attribution · CVR reporting · Heatmap ready"]:::out
+
+  A --> B --> C --> D --> E --> F --> G --> H
+
+  classDef trigger fill:#111,stroke:#374151,color:#e5e7eb
+  classDef ai fill:#1e1b4b,stroke:#4338ca,color:#a5b4fc
+  classDef util fill:#1a1a1a,stroke:#374151,color:#9ca3af
+  classDef out fill:#052e16,stroke:#16a34a,color:#86efac
+      </div>
+    </div>
+  </section>
+
+  <!-- BATCH SCHEDULE -->
+  <section class="reveal">
+    <div class="section-label">Send Strategy</div>
+    <div class="section-title">Batched Deployment: 5-Day Schedule</div>
+    <div class="section-sub">Volume spread across 5 days keeps complaint rates low and delivery rates high. Sending 250K in one blast is how you get blacklisted.</div>
+    <div class="batch-grid">
+      <div class="batch-card">
+        <div class="batch-day">Day 1</div>
+        <div class="batch-volume">30,000</div>
+        <div class="batch-note">Seed batch. Monitor bounce and complaint rates before scaling.</div>
+      </div>
+      <div class="batch-card">
+        <div class="batch-day">Day 2</div>
+        <div class="batch-volume">45,000</div>
+        <div class="batch-note">Ramp if Day 1 complaint rate stays below 0.08%.</div>
+      </div>
+      <div class="batch-card">
+        <div class="batch-day">Day 3</div>
+        <div class="batch-volume">55,000</div>
+        <div class="batch-note">Peak send day. Timed for Tue–Thu 9–11am recipient timezone.</div>
+      </div>
+      <div class="batch-card">
+        <div class="batch-day">Day 4</div>
+        <div class="batch-volume">60,000</div>
+        <div class="batch-note">Remaining high-engagement segments deployed first.</div>
+      </div>
+      <div class="batch-card">
+        <div class="batch-day">Day 5</div>
+        <div class="batch-volume">50,000</div>
+        <div class="batch-note">Final batch. Lower-engagement contacts, suppression re-check.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DELIVERABILITY PRACTICES -->
+  <section class="reveal">
+    <div class="section-label">Healthy Practices</div>
+    <div class="section-title">What Keeps Deliverability Above 94%</div>
+    <div class="section-sub">Good rates are not luck. They come from technical setup and discipline before a single email is sent.</div>
+    <div class="checklist">
+      <div class="check-item">
+        <div class="check-icon">✓</div>
+        <div>
+          <div class="check-title">Email Validation Before Send</div>
+          <div class="check-desc">Full list run through ZeroBounce or NeverBounce. Remove hard bounces, catch-alls, role addresses, and spam traps. Expect 5–15% list shrink on a purchased list.</div>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon">✓</div>
+        <div>
+          <div class="check-title">DKIM, SPF, and DMARC Configured</div>
+          <div class="check-desc">All three DNS records set on sending domains before launch. Missing any one of these is the fastest way to hit spam folders at scale.</div>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon">✓</div>
+        <div>
+          <div class="check-title">Dedicated Sending Domains and IPs</div>
+          <div class="check-desc">Campaign runs on domains separate from your primary business domain. Reputation risk stays isolated. Shared IP pools are avoided.</div>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon">✓</div>
+        <div>
+          <div class="check-title">Complaint Rate Monitoring (Under 0.1%)</div>
+          <div class="check-desc">Google Postmaster Tools and Microsoft SNDS connected. If complaint rate hits 0.08%, the send pauses for review before continuing.</div>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon">✓</div>
+        <div>
+          <div class="check-title">ISP-Aware Throttling</div>
+          <div class="check-desc">Gmail, Outlook, Yahoo, and Apple Mail each have different rate limits. Sends are throttled per MX domain to avoid temporary deferrals at volume.</div>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon">✓</div>
+        <div>
+          <div class="check-title">Immediate Bounce and Unsub Processing</div>
+          <div class="check-desc">Hard bounces suppressed after first occurrence. Unsubscribes honored within 10 business days (CAN-SPAM) but processed in real time in practice.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPLIANCE -->
+  <section class="reveal">
+    <div class="section-label">CAN-SPAM Compliance</div>
+    <div class="section-title">Compliance Checklist — Verified Before Every Send</div>
+    <div class="section-sub">Not optional. Not a checkbox exercise. These are the requirements that keep the campaign legally clean.</div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Requirement</th>
+            <th>Implementation</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Accurate "From" header</td>
+            <td>Sender name and domain match a real, monitored mailbox</td>
+            <td><span class="pill pill-green">Required</span></td>
+          </tr>
+          <tr>
+            <td>Honest subject line</td>
+            <td>No deceptive subjects. Subject reviewed before send approval.</td>
+            <td><span class="pill pill-green">Required</span></td>
+          </tr>
+          <tr>
+            <td>Physical mailing address</td>
+            <td>Client's physical address included in footer of every email</td>
+            <td><span class="pill pill-green">Required</span></td>
+          </tr>
+          <tr>
+            <td>Clear opt-out mechanism</td>
+            <td>One-click unsubscribe link in every email. List-Unsubscribe header set.</td>
+            <td><span class="pill pill-green">Required</span></td>
+          </tr>
+          <tr>
+            <td>Opt-out honored within 10 days</td>
+            <td>Processed in real time via suppression list sync</td>
+            <td><span class="pill pill-green">Required</span></td>
+          </tr>
+          <tr>
+            <td>No harvested / scraped lists</td>
+            <td>List source documentation required before campaign begins</td>
+            <td><span class="pill pill-amber">Client confirms</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- INFRASTRUCTURE STACK -->
+  <section class="reveal">
+    <div class="section-label">Platform Stack</div>
+    <div class="section-title">Infrastructure Already In Place</div>
+    <div class="section-sub">No onboarding required. These systems are live and battle-tested on 100K+ send campaigns.</div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-icon">📧</div>
+        <h3>Email Infrastructure</h3>
+        <p>Dedicated IPs via Brevo, Mailgun, or Postmark depending on volume tier. Warmed sending pools with 90-day history. Pre-configured DKIM, SPF, DMARC on all sending domains.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔍</div>
+        <h3>List Validation</h3>
+        <p>ZeroBounce for validation and spam trap detection. NeverBounce as secondary check. Suppression list from prior campaigns applied before validation pass.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h3>Tracking + Reporting</h3>
+        <p>UTM parameters on all links. Open tracking pixel. Real-time dashboard: delivery rate, open rate, CTR, bounces, complaint rate, and unsubscribes updated hourly.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔁</div>
+        <h3>Automation + Suppression</h3>
+        <p>n8n handles real-time bounce processing, unsubscribe webhook handling, and suppression list updates. No manual steps between send events and list hygiene.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📱</div>
+        <h3>SMS (Optional Add-On)</h3>
+        <p>Twilio for SMS at scale with opt-out keyword handling (STOP). Combined email + SMS for opted-in contacts typically increases CTR by 30–40% over email alone.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌐</div>
+        <h3>Attribution Layer</h3>
+        <p>UTM source, medium, campaign, and content params passed to landing page on every click. GA4 or Pixel events confirm conversion attribution per batch and per day.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- REPORTING -->
+  <section class="reveal">
+    <div class="section-label">Reporting</div>
+    <div class="section-title">What Gets Reported and When</div>
+    <div class="section-sub">Basic reporting is included. You will always know exactly where the campaign stands.</div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Frequency</th>
+            <th>Delivery Method</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Delivery rate, bounce rate, complaint rate</td>
+            <td>Every 24h during send window</td>
+            <td><span class="pill pill-accent">Live dashboard + email</span></td>
+          </tr>
+          <tr>
+            <td>Open rate, CTR, unique clicks</td>
+            <td>Every 24h during send window</td>
+            <td><span class="pill pill-accent">Live dashboard</span></td>
+          </tr>
+          <tr>
+            <td>Unsubscribes processed</td>
+            <td>Real-time</td>
+            <td><span class="pill pill-blue">Suppression list</span></td>
+          </tr>
+          <tr>
+            <td>Landing page traffic (UTM-attributed)</td>
+            <td>Real-time via GA4 / Pixel</td>
+            <td><span class="pill pill-green">Client analytics</span></td>
+          </tr>
+          <tr>
+            <td>Final campaign summary report</td>
+            <td>48h after last send</td>
+            <td><span class="pill pill-amber">PDF + raw CSV</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- DELIVERABLES -->
+  <section class="reveal">
+    <div class="section-label">Scope of Work</div>
+    <div class="section-title">What Is Included</div>
+    <div class="deliverables">
+      <div>
+        <h4>Execution</h4>
+        <ul>
+          <li>Full list validation and hygiene pass</li>
+          <li>DKIM / SPF / DMARC verification</li>
+          <li>Batch schedule planning and approval</li>
+          <li>Email creative QA and spam score check</li>
+          <li>250,000 sends across 5-day window</li>
+          <li>Real-time deliverability monitoring</li>
+          <li>Bounce and unsubscribe processing</li>
+          <li>Optional SMS add-on for opted-in contacts</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Reporting + Compliance</h4>
+        <ul>
+          <li>Daily send performance update</li>
+          <li>Complaint rate monitoring with alerts</li>
+          <li>CAN-SPAM compliance pre-send checklist</li>
+          <li>UTM attribution on all links</li>
+          <li>Post-send conversion reporting (if pixel/GA4 shared)</li>
+          <li>Final summary report: delivery, opens, CTR, CVR</li>
+          <li>Suppression list returned post-campaign</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOOM -->
+  <section class="reveal">
+    <div class="loom-card">
+      <h3>See a Past Campaign Walkthrough</h3>
+      <p>Infrastructure setup, send schedule, deliverability monitoring, and final reporting from a similar 100K+ send.</p>
+      <a href="[LOOM_LINK]" class="btn btn-primary">▶ Watch Walkthrough</a>
+      <a href="https://blueprints-saif-shaikh-s-projects.vercel.app/bulk-email-campaign-250k.html" class="btn btn-outline">View Blueprint</a>
+    </div>
+  </section>
+
+  <footer>
+    Infrastructure-first email execution. Deliverability over volume, every time.
+  </footer>
+
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      darkMode: true,
+      background: '#111111',
+      primaryColor: '#1e1b4b',
+      primaryTextColor: '#a5b4fc',
+      primaryBorderColor: '#4338ca',
+      lineColor: '#374151',
+      secondaryColor: '#111111',
+      tertiaryColor: '#0a0a0a'
+    }
+  });
+
+  function showScenario(type) {
+    document.getElementById('funnel-warm').style.display = type === 'warm' ? 'flex' : 'none';
+    document.getElementById('funnel-cold').style.display = type === 'cold' ? 'flex' : 'none';
+    document.getElementById('tab-warm').classList.toggle('active', type === 'warm');
+    document.getElementById('tab-cold').classList.toggle('active', type === 'cold');
+    setTimeout(animateBars, 100);
+  }
+
+  function animateBars() {
+    document.querySelectorAll('.funnel-bar-fill').forEach(bar => {
+      bar.style.width = '0';
+      setTimeout(() => { bar.style.width = bar.dataset.width + '%'; }, 50);
+    });
+  }
+
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  reveals.forEach(el => observer.observe(el));
+
+  const funnelObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { animateBars(); funnelObserver.unobserve(e.target); }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.funnel').forEach(el => funnelObserver.observe(el));
+</script>
+</body>
+</html>
