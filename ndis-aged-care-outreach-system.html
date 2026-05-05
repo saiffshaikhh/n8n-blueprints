@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NDIS & Aged Care B2B Outreach System</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card: #111111;
+      --border: #1e1e1e;
+      --accent: #6366f1;
+      --teal: #14b8a6;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --text: #e5e7eb;
+      --muted: #6b7280;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #0a0f14 0%, #0d1520 55%, #0a0a0a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 60px 40px 52px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -40%; left: -20%;
+      width: 140%; height: 180%;
+      background:
+        radial-gradient(ellipse at 40% 55%, rgba(20,184,166,0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 30%, rgba(99,102,241,0.06) 0%, transparent 45%);
+      pointer-events: none;
+    }
+
+    .header-tag {
+      display: inline-block;
+      background: rgba(20,184,166,0.12);
+      border: 1px solid rgba(20,184,166,0.28);
+      color: #5eead4;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .header h1 {
+      font-size: clamp(24px, 3.5vw, 46px);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .header h1 span { color: var(--teal); }
+
+    .header p {
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 580px;
+      margin: 0 auto 32px;
+      position: relative;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: center;
+      gap: 44px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .stat { text-align: center; }
+    .stat-num { font-size: 30px; font-weight: 700; color: var(--teal); }
+    .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    /* ── Layout ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    .section {
+      padding: 60px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--teal);
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 36px;
+      max-width: 620px;
+    }
+
+    /* ── Grids ── */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+    @media (max-width: 768px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .badge-teal { background: rgba(20,184,166,0.12); color: #5eead4; border: 1px solid rgba(20,184,166,0.25); }
+    .badge-green { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+    .badge-amber { background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
+    .badge-accent { background: rgba(99,102,241,0.12); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.25); }
+    .badge-blue { background: rgba(59,130,246,0.12); color: var(--blue); border: 1px solid rgba(59,130,246,0.25); }
+
+    /* ── Mermaid ── */
+    .mermaid {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      overflow-x: auto;
+    }
+
+    /* ── Target Audience Cards ── */
+    .audience-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .audience-card:hover { border-color: var(--teal); }
+
+    .audience-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .audience-card.a1::before { background: var(--teal); }
+    .audience-card.a2::before { background: var(--blue); }
+    .audience-card.a3::before { background: var(--amber); }
+    .audience-card.a4::before { background: var(--accent); }
+
+    .audience-icon { font-size: 24px; margin-bottom: 10px; }
+    .audience-type { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .audience-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .audience-who { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .audience-count { font-size: 22px; font-weight: 700; }
+    .audience-count-label { font-size: 11px; color: var(--muted); }
+
+    /* ── Email sequence ── */
+    .email-sequence {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    .email-sequence::before {
+      content: '';
+      position: absolute;
+      left: 19px; top: 24px; bottom: 24px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--teal), rgba(20,184,166,0.1));
+    }
+
+    .email-step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 0 0 20px;
+    }
+
+    .email-step:last-child { padding-bottom: 0; }
+
+    .email-dot {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      border: 2px solid;
+      position: relative;
+      z-index: 1;
+      background: var(--bg);
+    }
+
+    .email-body {
+      flex: 1;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      transition: border-color 0.2s;
+    }
+
+    .email-body:hover { border-color: var(--teal); }
+
+    .email-timing { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--teal); margin-bottom: 4px; }
+    .email-subject { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .email-preview { font-size: 12px; color: var(--muted); font-style: italic; line-height: 1.5; }
+    .email-tags { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+
+    /* ── Call script ── */
+    .script-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 10px;
+    }
+
+    .script-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--teal); margin-bottom: 6px; }
+    .script-line { font-size: 13px; line-height: 1.7; }
+    .script-note { font-size: 11px; color: var(--muted); margin-top: 6px; font-style: italic; }
+
+    .objection-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 8px;
+    }
+
+    .obj-label {
+      width: 80px;
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 600;
+      padding-top: 1px;
+    }
+
+    .obj-text { font-size: 12px; color: var(--muted); }
+    .obj-response { font-size: 12px; color: var(--text); margin-top: 4px; }
+
+    /* ── Monthly plan ── */
+    .month-plan {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .month-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .month-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .month-title { font-size: 14px; font-weight: 600; }
+    .month-focus { font-size: 11px; color: var(--muted); }
+
+    .month-weeks { padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; }
+
+    .week-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .week-label { font-size: 11px; color: var(--teal); font-weight: 600; width: 60px; flex-shrink: 0; }
+    .week-activities { flex: 1; font-size: 12px; color: var(--muted); }
+    .week-numbers { display: flex; gap: 8px; flex-shrink: 0; }
+
+    .week-num {
+      text-align: center;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* ── Google Sheet mock ── */
+    .sheet-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .sheet-topbar {
+      background: #1a1a1a;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sheet-icon { font-size: 14px; }
+    .sheet-name { font-size: 12px; color: var(--muted); }
+    .sheet-tabs { display: flex; gap: 0; margin-left: 12px; }
+
+    .sheet-tab {
+      padding: 4px 12px;
+      font-size: 11px;
+      border-right: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .sheet-tab.active { background: rgba(255,255,255,0.06); color: var(--text); }
+
+    .sheet-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+
+    .sheet-table th {
+      text-align: left;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid rgba(30,30,30,0.5);
+      background: rgba(255,255,255,0.03);
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .sheet-table td {
+      padding: 8px 14px;
+      border-bottom: 1px solid rgba(30,30,30,0.5);
+      border-right: 1px solid rgba(30,30,30,0.3);
+      vertical-align: middle;
+    }
+
+    .sheet-table tr:last-child td { border-bottom: none; }
+
+    .status-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+    }
+
+    .sdot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Bar chart ── */
+    .bar-chart { margin-top: 16px; }
+    .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .bar-label { font-size: 11px; color: var(--muted); width: 160px; flex-shrink: 0; }
+    .bar-track { flex: 1; background: rgba(255,255,255,0.04); border-radius: 4px; height: 7px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 4px; width: 0%; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+    .bar-val { font-size: 11px; font-weight: 600; width: 44px; text-align: right; }
+
+    /* ── Reveal ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Footer ── */
+    .footer {
+      padding: 36px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-tag">NDIS &nbsp;&middot;&nbsp; B2B Outreach &nbsp;&middot;&nbsp; Referrals</div>
+  <h1>NDIS &amp; Aged Care <span>B2B Outreach System</span></h1>
+  <p>A complete, admin-ready outreach system targeting support coordinators, allied health professionals, hospitals, and community organisations to generate consistent referrals over 2-3 months.</p>
+  <div class="stat-row">
+    <div class="stat">
+      <div class="stat-num">300+</div>
+      <div class="stat-label">Target Contacts Built</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Email Touches</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">12</div>
+      <div class="stat-label">Week Activity Plan</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">1</div>
+      <div class="stat-label">Sheet to Track It All</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- SYSTEM OVERVIEW -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">System Architecture</div>
+      <div class="section-title">How the Full System Flows</div>
+      <div class="section-sub">Every component built to hand off to your admin and run without confusion. From first contact to active referral relationship.</div>
+    </div>
+    <div class="reveal mermaid">
+      %%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#14b8a6', 'primaryTextColor': '#e5e7eb', 'primaryBorderColor': '#1e1e1e', 'lineColor': '#14b8a6', 'secondaryColor': '#111111', 'tertiaryColor': '#0d1520', 'background': '#111111', 'mainBkg': '#111111', 'edgeLabelBackground': '#111111', 'clusterBkg': '#0d1520'}}}%%
+      flowchart LR
+        A["📋 Target List\nBuilt &amp; Verified"] -->|Batch 50/day| B["📧 Intro Email\nDay 1"]
+        B -->|No reply after 4 days| C["📧 Follow-up 1\nDay 5"]
+        C -->|No reply after 6 days| D["📧 Follow-up 2\nDay 11"]
+        D -->|No reply| E["📞 Call Script\nWeek 3+"]
+        B -->|Replied| F["✅ Active Referral\nRelationship"]
+        C -->|Replied| F
+        D -->|Replied| F
+        E -->|Connected| F
+        F -->|Track in Sheet| G["🗂 Google Sheet\nCRM Tracker"]
+        G -->|Monthly review| H["🔁 Re-engage\nDormant Contacts"]
+
+        classDef list fill:#0d1520,stroke:#14b8a6,color:#5eead4
+        classDef email fill:#111,stroke:#6366f1,color:#a5b4fc
+        classDef call fill:#111,stroke:#f59e0b,color:#fcd34d
+        classDef active fill:#0d1a0d,stroke:#22c55e,color:#86efac
+        classDef track fill:#111,stroke:#6b7280,color:#9ca3af
+
+        class A list
+        class B,C,D email
+        class E call
+        class F,H active
+        class G track
+    </div>
+  </section>
+
+  <!-- TARGET AUDIENCE -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Step 1 &mdash; Target List</div>
+      <div class="section-title">Who We're Targeting &amp; Why</div>
+      <div class="section-sub">Four referral source segments. Each has a different communication style and decision-making lens. Outreach is adapted per segment.</div>
+    </div>
+
+    <div class="grid-4 reveal" style="margin-bottom:24px;">
+      <div class="audience-card a1">
+        <div class="audience-icon">&#128101;</div>
+        <div class="audience-type" style="color:var(--teal);">Segment 1</div>
+        <div class="audience-title">Support Coordinators</div>
+        <div class="audience-who">NDIS-registered support coordination orgs and independent coordinators who directly place participants with providers.</div>
+        <div class="audience-count" style="color:var(--teal);">80-120</div>
+        <div class="audience-count-label">contacts targeted</div>
+      </div>
+      <div class="audience-card a2">
+        <div class="audience-icon">&#129657;</div>
+        <div class="audience-type" style="color:var(--blue);">Segment 2</div>
+        <div class="audience-title">Allied Health Providers</div>
+        <div class="audience-who">OTs, physiotherapists, psychologists, and speech pathologists operating in disability and aged care settings.</div>
+        <div class="audience-count" style="color:var(--blue);">80-100</div>
+        <div class="audience-count-label">contacts targeted</div>
+      </div>
+      <div class="audience-card a3">
+        <div class="audience-icon">&#127973;</div>
+        <div class="audience-type" style="color:var(--amber);">Segment 3</div>
+        <div class="audience-title">Hospitals &amp; Discharge Teams</div>
+        <div class="audience-who">Social workers and discharge planners in public and private hospitals who arrange post-acute care and support packages.</div>
+        <div class="audience-count" style="color:var(--amber);">40-60</div>
+        <div class="audience-count-label">contacts targeted</div>
+      </div>
+      <div class="audience-card a4">
+        <div class="audience-icon">&#127968;</div>
+        <div class="audience-type" style="color:#a5b4fc;">Segment 4</div>
+        <div class="audience-title">Community Organisations</div>
+        <div class="audience-who">Local community centres, disability advocacy groups, and aged care peak bodies who refer participants to support providers.</div>
+        <div class="audience-count" style="color:#a5b4fc;">60-80</div>
+        <div class="audience-count-label">contacts targeted</div>
+      </div>
+    </div>
+
+    <div class="grid-2 reveal">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div class="section-label" style="margin-bottom:12px;">What Each List Record Includes</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;gap:10px;font-size:13px;align-items:center;"><span style="color:var(--teal);">&#10003;</span> First name + surname</div>
+          <div style="display:flex;gap:10px;font-size:13px;align-items:center;"><span style="color:var(--teal);">&#10003;</span> Organisation name and type</div>
+          <div style="display:flex;gap:10px;font-size:13px;align-items:center;"><span style="color:var(--teal);">&#10003;</span> Verified work email address</div>
+          <div style="display:flex;gap:10px;font-size:13px;align-items:center;"><span style="color:var(--teal);">&#10003;</span> Phone number (where available)</div>
+          <div style="display:flex;gap:10px;font-size:13px;align-items:center;"><span style="color:var(--teal);">&#10003;</span> Suburb and state (AU)</div>
+          <div style="display:flex;gap:10px;font-size:13px;align-items:center;"><span style="color:var(--teal);">&#10003;</span> Segment tag (Coordinator / AH / Hospital / Org)</div>
+          <div style="display:flex;gap:10px;font-size:13px;align-items:center;"><span style="color:var(--teal);">&#10003;</span> Prioritised: high / medium / low referral potential</div>
+        </div>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div class="section-label" style="margin-bottom:12px;">Sourcing Methods</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:9px;border-bottom:1px solid var(--border);font-size:13px;">
+            <span>NDIS Provider Finder</span><span class="badge badge-teal">Primary source</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:9px;border-bottom:1px solid var(--border);font-size:13px;">
+            <span>LinkedIn (location + title filter)</span><span class="badge badge-accent">AU-specific</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:9px;border-bottom:1px solid var(--border);font-size:13px;">
+            <span>Hospital websites (social work depts)</span><span class="badge badge-amber">Manual verified</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:9px;border-bottom:1px solid var(--border);font-size:13px;">
+            <span>AHPRA professional registers</span><span class="badge badge-blue">Allied health</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;">
+            <span>Local council community directories</span><span class="badge badge-teal">Community orgs</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EMAIL SEQUENCE -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Step 2 &mdash; Email Outreach</div>
+      <div class="section-title">3-Touch Email Sequence</div>
+      <div class="section-sub">Professional, relationship-first tone. No spam language. Each email has one clear purpose and one clear ask.</div>
+    </div>
+
+    <div class="grid-2 reveal">
+      <div class="email-sequence">
+        <div class="email-step">
+          <div class="email-dot" style="border-color:var(--teal);color:var(--teal);">&#9993;</div>
+          <div class="email-body">
+            <div class="email-timing">Day 1 &mdash; Intro Email</div>
+            <div class="email-subject">Subject: Introducing [Your Organisation] &mdash; NDIS &amp; Aged Care Support</div>
+            <div class="email-preview">"Hi [Name], I'm reaching out on behalf of [Organisation]. We provide [core services] to NDIS participants and aged care recipients across [region]. Many of your clients may benefit from our support, and I'd love to explore whether a referral relationship makes sense for both of us. Would you be open to a brief 10-minute call this week?"</div>
+            <div class="email-tags">
+              <span class="badge badge-teal">Warm, professional tone</span>
+              <span class="badge badge-accent">One ask only</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="email-step">
+          <div class="email-dot" style="border-color:#a5b4fc;color:#a5b4fc;">&#9993;</div>
+          <div class="email-body">
+            <div class="email-timing">Day 5 &mdash; Follow-up 1</div>
+            <div class="email-subject">Subject: Following up &mdash; [Organisation Name]</div>
+            <div class="email-preview">"Hi [Name], I wanted to follow up on my previous message. We currently support [X] participants in [region] with [key service]. If you have clients who need [specific support type], we'd be glad to step in. Happy to send over our service overview or jump on a quick call at a time that suits you."</div>
+            <div class="email-tags">
+              <span class="badge badge-accent">Adds one proof point</span>
+              <span class="badge badge-amber">Offers resource</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="email-step">
+          <div class="email-dot" style="border-color:var(--amber);color:var(--amber);">&#9993;</div>
+          <div class="email-body">
+            <div class="email-timing">Day 11 &mdash; Follow-up 2 (Soft Close)</div>
+            <div class="email-subject">Subject: Last note from [Organisation]</div>
+            <div class="email-preview">"Hi [Name], I'll keep this brief. If you ever have a participant or client who needs [service type] and isn't sure where to turn, we're here. I'll stop following up after this &mdash; but please do reach out anytime. Wishing you and your clients well."</div>
+            <div class="email-tags">
+              <span class="badge badge-amber">Low pressure</span>
+              <span class="badge badge-teal">Leaves door open</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;align-self:start;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;">
+          <div class="section-label" style="margin-bottom:12px;">Email Rules for Your Admin</div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
+            <div style="display:flex;gap:8px;"><span style="color:var(--teal);">&#10003;</span> Send max 40-50 emails per day, per account</div>
+            <div style="display:flex;gap:8px;"><span style="color:var(--teal);">&#10003;</span> Personalise [Name] and [Organisation] in every send</div>
+            <div style="display:flex;gap:8px;"><span style="color:var(--teal);">&#10003;</span> Use a professional email address, not Gmail personal</div>
+            <div style="display:flex;gap:8px;"><span style="color:var(--teal);">&#10003;</span> Adjust subject lines slightly per segment (hospital vs coordinator)</div>
+            <div style="display:flex;gap:8px;"><span style="color:var(--green);">&#10003;</span> Update the tracking sheet same day as each send</div>
+            <div style="display:flex;gap:8px;"><span style="color:var(--green);">&#10003;</span> Reply to all responses within 24 hours</div>
+            <div style="display:flex;gap:8px;"><span style="color:var(--red);">&#10005;</span> Never use "I hope this email finds you well"</div>
+            <div style="display:flex;gap:8px;"><span style="color:var(--red);">&#10005;</span> Never attach files in the first email</div>
+          </div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;">
+          <div class="section-label" style="margin-bottom:6px;">Expected Email Performance</div>
+          <div class="bar-chart">
+            <div class="bar-row">
+              <div class="bar-label">Open Rate</div>
+              <div class="bar-track"><div class="bar-fill" data-width="38" style="background:var(--teal);"></div></div>
+              <div class="bar-val" style="color:var(--teal);">38%</div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">Reply Rate</div>
+              <div class="bar-track"><div class="bar-fill" data-width="12" style="background:var(--green);"></div></div>
+              <div class="bar-val" style="color:var(--green);">12%</div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">Referral Conversations</div>
+              <div class="bar-track"><div class="bar-fill" data-width="6" style="background:var(--accent);"></div></div>
+              <div class="bar-val" style="color:#a5b4fc);">6%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALL SCRIPT -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Step 3 &mdash; Call Script</div>
+      <div class="section-title">Phone Outreach Script</div>
+      <div class="section-sub">Simple enough for an admin to follow confidently. Covers introduction, services, the ask, and the three most common objections.</div>
+    </div>
+
+    <div class="grid-2 reveal">
+      <div>
+        <div class="script-section" style="border-top: 3px solid var(--teal);">
+          <div class="script-label">Opening (15 seconds)</div>
+          <div class="script-line">"Hi, is that [Name]? My name is [Your Name] calling from [Organisation]. Do you have two minutes? I'm reaching out because we provide NDIS and aged care support services in [region] and I wanted to introduce ourselves in case any of your clients might benefit."</div>
+        </div>
+        <div class="script-section" style="border-top: 3px solid #a5b4fc;">
+          <div class="script-label">Services Explanation (30 seconds)</div>
+          <div class="script-line">"We specialise in [core service 1] and [core service 2] for NDIS participants and aged care recipients. We work with support coordinators and allied health professionals regularly and find that a good referral relationship means your clients get the right support faster, and you have a trusted provider you can count on."</div>
+        </div>
+        <div class="script-section" style="border-top: 3px solid var(--green);">
+          <div class="script-label">The Ask (15 seconds)</div>
+          <div class="script-line">"Would you be open to a brief 15-minute catch-up this week so I can share a bit more about what we offer? If it's not relevant to your clients right now, no problem at all &mdash; I just want to make sure you have us in mind if the situation changes."</div>
+          <div class="script-note">Goal: book a call or send an email. Not to close on the phone.</div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Objection Handling</div>
+
+        <div class="objection-row">
+          <div class="obj-label" style="color:var(--red);">Objection</div>
+          <div style="flex:1;">
+            <div class="obj-text">"We already have providers we work with."</div>
+            <div class="obj-response">"That's great to hear &mdash; we're not looking to replace anyone. We just find that having one more trusted option means your clients are never left without support when capacity is stretched. Would it be okay if I sent through a brief overview so you have our details on file?"</div>
+          </div>
+        </div>
+
+        <div class="objection-row">
+          <div class="obj-label" style="color:var(--red);">Objection</div>
+          <div style="flex:1;">
+            <div class="obj-text">"I don't have time right now."</div>
+            <div class="obj-response">"Completely understand &mdash; is there a better time this week or next? Even five minutes would be enough. Alternatively, I can just send an email with our service overview and you can have a look when it suits."</div>
+          </div>
+        </div>
+
+        <div class="objection-row">
+          <div class="obj-label" style="color:var(--red);">Objection</div>
+          <div style="flex:1;">
+            <div class="obj-text">"Send me an email instead."</div>
+            <div class="obj-response">"Of course &mdash; what's the best email address for you? I'll keep it short and include our service summary and contact details. Would it be okay if I followed up in a week or two to see if it's relevant to any of your clients?"</div>
+          </div>
+        </div>
+
+        <div class="objection-row">
+          <div class="obj-label" style="color:var(--red);">Objection</div>
+          <div style="flex:1;">
+            <div class="obj-text">"We don't take referral calls."</div>
+            <div class="obj-response">"No problem at all &mdash; I appreciate you letting me know. I'll leave our details with you just in case. If you ever have a client who needs [service], feel free to reach out to us directly. Thank you for your time."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2-3 MONTH ACTIVITY PLAN -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Step 4 &mdash; Activity Plan</div>
+      <div class="section-title">2-3 Month Admin-Ready Outreach Plan</div>
+      <div class="section-sub">Clear daily and weekly targets. Your admin knows exactly what to do each day, with no ambiguity.</div>
+    </div>
+
+    <div class="month-plan reveal">
+
+      <div class="month-card">
+        <div class="month-header">
+          <div>
+            <div class="month-title">Month 1 &mdash; Foundation &amp; First Contact</div>
+            <div class="month-focus">Build the list. Send intro emails. No calls yet.</div>
+          </div>
+          <span class="badge badge-teal">Weeks 1-4</span>
+        </div>
+        <div class="month-weeks">
+          <div class="week-row">
+            <div class="week-label">Week 1</div>
+            <div class="week-activities">Finalise target list (300+ contacts). Set up tracking sheet. Send intro emails to Segment 1 (Support Coordinators).</div>
+            <div class="week-numbers">
+              <div class="week-num" style="background:rgba(20,184,166,0.1);color:var(--teal);">50 emails</div>
+              <div class="week-num" style="background:rgba(107,114,128,0.1);color:var(--muted);">0 calls</div>
+            </div>
+          </div>
+          <div class="week-row">
+            <div class="week-label">Week 2</div>
+            <div class="week-activities">Send intro emails to Segment 2 (Allied Health). Send Follow-up 1 to Week 1 non-responders.</div>
+            <div class="week-numbers">
+              <div class="week-num" style="background:rgba(20,184,166,0.1);color:var(--teal);">80 emails</div>
+              <div class="week-num" style="background:rgba(107,114,128,0.1);color:var(--muted);">0 calls</div>
+            </div>
+          </div>
+          <div class="week-row">
+            <div class="week-label">Week 3</div>
+            <div class="week-activities">Send intro emails to Segments 3 and 4. Send Follow-up 1 to Week 2 non-responders. Begin calls to Week 1 no-reply contacts.</div>
+            <div class="week-numbers">
+              <div class="week-num" style="background:rgba(20,184,166,0.1);color:var(--teal);">60 emails</div>
+              <div class="week-num" style="background:rgba(245,158,11,0.1);color:var(--amber);">20 calls</div>
+            </div>
+          </div>
+          <div class="week-row">
+            <div class="week-label">Week 4</div>
+            <div class="week-activities">Send Follow-up 2 to Weeks 1-2 non-responders. Continue calls. Log all replies and outcomes in tracker.</div>
+            <div class="week-numbers">
+              <div class="week-num" style="background:rgba(20,184,166,0.1);color:var(--teal);">50 emails</div>
+              <div class="week-num" style="background:rgba(245,158,11,0.1);color:var(--amber);">25 calls</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="month-card">
+        <div class="month-header">
+          <div>
+            <div class="month-title">Month 2 &mdash; Full Cadence &amp; Relationship Building</div>
+            <div class="month-focus">Calls and emails running in parallel. Warm contacts nurtured. New batches added weekly.</div>
+          </div>
+          <span class="badge badge-accent">Weeks 5-8</span>
+        </div>
+        <div class="month-weeks">
+          <div class="week-row">
+            <div class="week-label">Wk 5-6</div>
+            <div class="week-activities">Fresh batch of 50 new contacts added weekly. Continue calls to all previous non-responders. Follow up any meeting requests from Month 1.</div>
+            <div class="week-numbers">
+              <div class="week-num" style="background:rgba(20,184,166,0.1);color:var(--teal);">50 emails</div>
+              <div class="week-num" style="background:rgba(245,158,11,0.1);color:var(--amber);">30 calls</div>
+            </div>
+          </div>
+          <div class="week-row">
+            <div class="week-label">Wk 7-8</div>
+            <div class="week-activities">Re-engage contacts who opened but didn't reply. Send "checking in" email to active relationships. Track referrals received and source them back to contact.</div>
+            <div class="week-numbers">
+              <div class="week-num" style="background:rgba(20,184,166,0.1);color:var(--teal);">40 emails</div>
+              <div class="week-num" style="background:rgba(245,158,11,0.1);color:var(--amber);">30 calls</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="month-card">
+        <div class="month-header">
+          <div>
+            <div class="month-title">Month 3 &mdash; Referral Relationships &amp; Re-engagement</div>
+            <div class="month-focus">Warm contacts become active referrers. Dormant contacts get one final attempt. System self-sustains.</div>
+          </div>
+          <span class="badge badge-green">Weeks 9-12</span>
+        </div>
+        <div class="month-weeks">
+          <div class="week-row">
+            <div class="week-label">Wk 9-10</div>
+            <div class="week-activities">Quarterly check-in email sent to all active relationships. Re-engagement batch sent to all Month 1-2 no-reply contacts. Review which segments are converting best.</div>
+            <div class="week-numbers">
+              <div class="week-num" style="background:rgba(20,184,166,0.1);color:var(--teal);">60 emails</div>
+              <div class="week-num" style="background:rgba(245,158,11,0.1);color:var(--amber);">20 calls</div>
+            </div>
+          </div>
+          <div class="week-row">
+            <div class="week-label">Wk 11-12</div>
+            <div class="week-activities">Focus calls on highest-converting segment. Archive unresponsive contacts. Build Month 4+ pipeline. Report referrals received vs target.</div>
+            <div class="week-numbers">
+              <div class="week-num" style="background:rgba(20,184,166,0.1);color:var(--teal);">30 emails</div>
+              <div class="week-num" style="background:rgba(245,158,11,0.1);color:var(--amber);">25 calls</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- TRACKING SYSTEM -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Step 5 &mdash; Tracking System</div>
+      <div class="section-title">Google Sheet CRM Structure</div>
+      <div class="section-sub">One sheet. Every contact, every status, every next action. Your admin updates it in under 5 minutes a day.</div>
+    </div>
+
+    <div class="sheet-wrap reveal">
+      <div class="sheet-topbar">
+        <div class="sheet-icon">&#128202;</div>
+        <div class="sheet-name">NDIS Outreach Tracker.xlsx</div>
+        <div class="sheet-tabs">
+          <div class="sheet-tab active">All Contacts</div>
+          <div class="sheet-tab">Active</div>
+          <div class="sheet-tab">Referrals</div>
+          <div class="sheet-tab">Re-engage</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="sheet-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Organisation</th>
+              <th>Segment</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Intro Sent</th>
+              <th>FU 1 Sent</th>
+              <th>FU 2 Sent</th>
+              <th>Called</th>
+              <th>Status</th>
+              <th>Next Action</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--muted);">1</td>
+              <td style="font-weight:500;">Sarah Mitchell</td>
+              <td style="color:var(--muted);">Ability Connect</td>
+              <td><span class="badge badge-teal">Coordinator</span></td>
+              <td style="color:var(--muted);font-size:11px;">s.mitchell@...</td>
+              <td style="color:var(--muted);">0412 xxx xxx</td>
+              <td style="text-align:center;color:var(--green);">&#10003;</td>
+              <td style="text-align:center;color:var(--green);">&#10003;</td>
+              <td style="text-align:center;color:var(--muted);">-</td>
+              <td style="text-align:center;color:var(--muted);">-</td>
+              <td><div class="status-dot"><div class="sdot" style="background:var(--amber);"></div>Replied</div></td>
+              <td style="font-size:11px;color:var(--teal);">Book call</td>
+              <td style="font-size:11px;color:var(--muted);">Interested, asked for overview</td>
+            </tr>
+            <tr>
+              <td style="color:var(--muted);">2</td>
+              <td style="font-weight:500;">Dr. James Okafor</td>
+              <td style="color:var(--muted);">Allied Therapy Group</td>
+              <td><span class="badge badge-blue">Allied Health</span></td>
+              <td style="color:var(--muted);font-size:11px;">j.okafor@...</td>
+              <td style="color:var(--muted);">0398 xxx xxx</td>
+              <td style="text-align:center;color:var(--green);">&#10003;</td>
+              <td style="text-align:center;color:var(--muted);">-</td>
+              <td style="text-align:center;color:var(--muted);">-</td>
+              <td style="text-align:center;color:var(--muted);">-</td>
+              <td><div class="status-dot"><div class="sdot" style="background:var(--muted);"></div>No reply</div></td>
+              <td style="font-size:11px;color:var(--teal);">Send FU 1</td>
+              <td style="font-size:11px;color:var(--muted);">Day 5 follow-up due</td>
+            </tr>
+            <tr>
+              <td style="color:var(--muted);">3</td>
+              <td style="font-weight:500;">Pauline Kerr</td>
+              <td style="color:var(--muted);">Royal Melbourne Hospital</td>
+              <td><span class="badge badge-amber">Hospital</span></td>
+              <td style="color:var(--muted);font-size:11px;">p.kerr@...</td>
+              <td style="color:var(--muted);">03 9342 xxxx</td>
+              <td style="text-align:center;color:var(--green);">&#10003;</td>
+              <td style="text-align:center;color:var(--green);">&#10003;</td>
+              <td style="text-align:center;color:var(--green);">&#10003;</td>
+              <td style="text-align:center;color:var(--amber);">Att.</td>
+              <td><div class="status-dot"><div class="sdot" style="background:var(--red);"></div>No response</div></td>
+              <td style="font-size:11px;color:var(--muted);">Archive in Wk 12</td>
+              <td style="font-size:11px;color:var(--muted);">3 touches + 1 call, no response</td>
+            </tr>
+            <tr>
+              <td style="color:var(--muted);">4</td>
+              <td style="font-weight:500;">Maria Santos</td>
+              <td style="color:var(--muted);">Community Bridges Inc</td>
+              <td><span class="badge badge-accent">Community</span></td>
+              <td style="color:var(--muted);font-size:11px;">m.santos@...</td>
+              <td style="color:var(--muted);">0421 xxx xxx</td>
+              <td style="text-align:center;color:var(--green);">&#10003;</td>
+              <td style="text-align:center;color:var(--green);">&#10003;</td>
+              <td style="text-align:center;color:var(--muted);">-</td>
+              <td style="text-align:center;color:var(--green);">&#10003;</td>
+              <td><div class="status-dot"><div class="sdot" style="background:var(--green);"></div>Active</div></td>
+              <td style="font-size:11px;color:var(--teal);">Monthly check-in</td>
+              <td style="font-size:11px;color:var(--muted);">Referred 1 participant already</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="footer">
+  Built by Saif Shaikh &nbsp;&middot;&nbsp; NDIS &amp; Aged Care B2B Outreach System &nbsp;&middot;&nbsp; Target List &middot; Email Sequence &middot; Call Script &middot; Tracking
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#14b8a6',
+      primaryTextColor: '#e5e7eb',
+      primaryBorderColor: '#1e1e1e',
+      lineColor: '#14b8a6',
+      secondaryColor: '#111111',
+      tertiaryColor: '#0d1520',
+      background: '#111111',
+      mainBkg: '#111111',
+      edgeLabelBackground: '#111111',
+      clusterBkg: '#0d1520'
+    }
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (el.isIntersecting) {
+        el.target.classList.add('visible');
+        el.target.querySelectorAll('.bar-fill').forEach(bar => {
+          bar.style.width = bar.dataset.width + '%';
+        });
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
