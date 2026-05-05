@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Full B2B Outbound System Build</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card: #111111;
+      --border: #1e1e1e;
+      --accent: #6366f1;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --text: #e5e7eb;
+      --muted: #6b7280;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #0f0f23 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 64px 40px 56px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at center, rgba(99,102,241,0.08) 0%, transparent 60%);
+      animation: pulse 8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 1; }
+    }
+
+    .header-tag {
+      display: inline-block;
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.3);
+      color: #a5b4fc;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .header h1 {
+      font-size: clamp(28px, 4vw, 50px);
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .header h1 span { color: var(--accent); }
+
+    .header p {
+      color: var(--muted);
+      font-size: 15px;
+      max-width: 580px;
+      margin: 0 auto 36px;
+      position: relative;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .stat { text-align: center; }
+    .stat-num { font-size: 34px; font-weight: 700; color: var(--accent); }
+    .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    /* Layout */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    .section {
+      padding: 64px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      margin-bottom: 40px;
+      max-width: 600px;
+      font-size: 14px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .card-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .card-sub { font-size: 13px; color: var(--muted); }
+
+    /* Grid */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge-green { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+    .badge-amber { background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+    .badge-accent { background: rgba(99,102,241,0.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.3); }
+    .badge-red { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+
+    /* Mermaid */
+    .mermaid {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      overflow-x: auto;
+    }
+
+    /* Sequence Timeline */
+    .sequence-timeline {
+      position: relative;
+      padding-left: 36px;
+    }
+
+    .sequence-timeline::before {
+      content: '';
+      position: absolute;
+      left: 11px; top: 8px; bottom: 8px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), rgba(99,102,241,0.1));
+    }
+
+    .touch {
+      position: relative;
+      margin-bottom: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 22px;
+      transition: border-color 0.2s;
+    }
+
+    .touch:hover { border-color: var(--accent); }
+
+    .touch::before {
+      content: '';
+      position: absolute;
+      left: -28px; top: 22px;
+      width: 12px; height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+    }
+
+    .touch-day { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 4px; }
+    .touch-subject { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .touch-preview { font-size: 13px; color: var(--muted); font-style: italic; line-height: 1.5; }
+    .touch-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+    /* Bar chart */
+    .bar-chart { margin-top: 20px; }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .bar-label { font-size: 12px; color: var(--muted); width: 150px; flex-shrink: 0; }
+
+    .bar-track {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      width: 0%;
+      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .bar-val { font-size: 12px; font-weight: 600; width: 40px; text-align: right; }
+
+    /* Tool cards */
+    .tool-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .tool-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .tool-name { font-size: 15px; font-weight: 600; }
+    .tool-role { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); }
+    .tool-why { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+    /* DNS table */
+    .dns-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+    .dns-table th {
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .dns-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(30,30,30,0.5);
+      vertical-align: middle;
+    }
+
+    .dns-table tr:last-child td { border-bottom: none; }
+
+    .dns-table code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      background: rgba(255,255,255,0.05);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: #a5b4fc;
+    }
+
+    /* Warmup bar visual */
+    .warmup-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 5px;
+      height: 70px;
+      margin-top: 20px;
+      padding: 0 4px;
+    }
+
+    .warmup-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .warmup-bar {
+      width: 100%;
+      border-radius: 3px 3px 0 0;
+      background: linear-gradient(to top, var(--accent), #818cf8);
+      height: 0px;
+    }
+
+    .warmup-num { font-size: 9px; color: var(--accent); font-weight: 600; }
+
+    /* HubSpot pipeline stages */
+    .pipeline-stages {
+      display: flex;
+      overflow-x: auto;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .stage {
+      flex: 1;
+      min-width: 110px;
+      padding: 18px 12px;
+      text-align: center;
+      background: var(--card);
+      border-right: 1px solid var(--border);
+      position: relative;
+    }
+
+    .stage:last-child { border-right: none; }
+    .stage-num { font-size: 24px; font-weight: 700; color: var(--accent); }
+    .stage-name { font-size: 11px; color: var(--text); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+    .stage-trigger { font-size: 10px; color: #4b5563; margin-top: 6px; }
+
+    /* LinkedIn cards */
+    .li-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+
+    .li-card:hover { border-color: rgba(10,102,194,0.5); }
+
+    .li-step {
+      width: 32px; height: 32px;
+      background: rgba(10,102,194,0.12);
+      border: 1px solid rgba(10,102,194,0.25);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: #60a5fa;
+      flex-shrink: 0;
+    }
+
+    .li-content { flex: 1; }
+    .li-timing { font-size: 11px; color: #3b82f6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+    .li-type { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .li-copy { font-size: 12px; color: var(--muted); font-style: italic; line-height: 1.5; }
+
+    /* Inbound nurture */
+    .nurture-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nurture-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .nurture-card.green::before { background: var(--green); }
+    .nurture-card.amber::before { background: var(--amber); }
+    .nurture-card.accent::before { background: var(--accent); }
+
+    .nurture-step { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; }
+    .nurture-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .nurture-body { font-size: 12px; color: var(--muted); line-height: 1.6; font-style: italic; }
+
+    /* Apollo filters */
+    .apollo-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+
+    .filter-pill {
+      background: rgba(99,102,241,0.08);
+      border: 1px solid rgba(99,102,241,0.22);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      color: #a5b4fc;
+    }
+
+    /* Checklist */
+    .checklist { display: flex; flex-direction: column; gap: 10px; }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+    }
+
+    .check-icon {
+      width: 22px; height: 22px;
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      color: var(--green);
+    }
+
+    .check-text { font-size: 13px; font-weight: 500; }
+    .check-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* Reveal animation */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* Footer */
+    .footer {
+      padding: 40px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-tag">Cold Email &nbsp;&middot;&nbsp; LinkedIn &nbsp;&middot;&nbsp; HubSpot</div>
+  <h1>Full B2B <span>Outbound System</span> Build</h1>
+  <p>5-touch cold email, 4-touch LinkedIn DM, 3-touch inbound nurture, Apollo lead engine, deliverability infrastructure, and HubSpot CRM — all handed over with a walkthrough.</p>
+  <div class="stat-row">
+    <div class="stat">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Email Touches</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">21</div>
+      <div class="stat-label">Day Sequence</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">4</div>
+      <div class="stat-label">LinkedIn DMs</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Inbound Nurture</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">14</div>
+      <div class="stat-label">Days to Live</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- TECH STACK -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Infrastructure</div>
+      <div class="section-title">Tool Stack Recommendation</div>
+      <div class="section-sub">Every tool selected for deliverability, ease of use post-handover, and direct HubSpot compatibility.</div>
+    </div>
+    <div class="grid-3 reveal" style="margin-bottom:16px;">
+      <div class="tool-card">
+        <div class="tool-icon" style="background:rgba(34,197,94,0.1);">📧</div>
+        <div class="tool-role">Cold Email Sending</div>
+        <div class="tool-name">Instantly.ai</div>
+        <div class="tool-why">Built-in warmup network, unlimited sending accounts, auto-rotation across domains, unified reply inbox your team can manage without technical help.</div>
+        <div style="margin-top:10px;"><span class="badge badge-green">Recommended</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon" style="background:rgba(10,102,194,0.1);">💼</div>
+        <div class="tool-role">LinkedIn Outreach</div>
+        <div class="tool-name">Expandi.io</div>
+        <div class="tool-why">Cloud-based, no Chrome extension required. Respects per-account daily limits, supports connection + DM sequences, safe for LinkedIn ToS.</div>
+        <div style="margin-top:10px;"><span class="badge badge-green">Recommended</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon" style="background:rgba(245,158,11,0.1);">🎯</div>
+        <div class="tool-role">Lead Generation Engine</div>
+        <div class="tool-name">Apollo.io</div>
+        <div class="tool-why">270M+ verified contact database. Direct Instantly integration for automatic lead-to-sequence enrollment. Native HubSpot sync on reply.</div>
+        <div style="margin-top:10px;"><span class="badge badge-green">Recommended</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon" style="background:rgba(255,123,0,0.1);">🏠</div>
+        <div class="tool-role">CRM</div>
+        <div class="tool-name">HubSpot</div>
+        <div class="tool-why">Already in use. Apollo and Instantly both have native connectors. Replies auto-create contacts, log activity, and move deal stages.</div>
+        <div style="margin-top:10px;"><span class="badge badge-accent">Already Owned</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon" style="background:rgba(99,102,241,0.1);">🌐</div>
+        <div class="tool-role">Sending Domains</div>
+        <div class="tool-name">3-5 Secondary Domains</div>
+        <div class="tool-why">Never send from your primary domain. Variations like getcompany.com, trycompany.io rotate across Instantly accounts, protecting your main.</div>
+        <div style="margin-top:10px;"><span class="badge badge-amber">Procured on setup</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-icon" style="background:rgba(239,68,68,0.1);">🔥</div>
+        <div class="tool-role">Email Warmup</div>
+        <div class="tool-name">Instantly Warmup Network</div>
+        <div class="tool-why">Included in Instantly. AI-driven, 450K+ mailbox pool. Each new domain runs 14 days of warmup before cold sends begin.</div>
+        <div style="margin-top:10px;"><span class="badge badge-green">Included</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SYSTEM ARCHITECTURE -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">System Design</div>
+      <div class="section-title">Full Stack Architecture</div>
+      <div class="section-sub">How every component connects from lead sourcing to CRM activity log.</div>
+    </div>
+    <div class="reveal mermaid">
+      %%{init: {'theme': 'dark', 'themeVariables': {'primaryColor': '#6366f1', 'primaryTextColor': '#e5e7eb', 'primaryBorderColor': '#1e1e1e', 'lineColor': '#6366f1', 'secondaryColor': '#111111', 'tertiaryColor': '#1a1a2e', 'background': '#111111', 'mainBkg': '#111111', 'edgeLabelBackground': '#111111', 'clusterBkg': '#1a1a2e'}}}%%
+      flowchart LR
+        A[("🎯 Apollo\nLead Engine")] -->|Auto-enroll ICP match| B["📧 Instantly\n5-Touch Cold Email"]
+        A -->|Export CSV| C["💼 Expandi\n4-Touch LinkedIn"]
+        B -->|Positive reply| D["🟠 HubSpot CRM\nDeal Created"]
+        B -->|Sequence ends, no reply| C
+        C -->|Connected + DMs| D
+        E["🌐 Inbound Lead\nWebsite / Content"] -->|Form submit| F["📨 3-Touch\nNurture Sequence"]
+        F --> D
+        D -->|Stage: Interested| G["📞 Sales Handoff\nCall Booked"]
+
+        classDef trigger fill:#1a1a2e,stroke:#6366f1,color:#a5b4fc
+        classDef send fill:#111,stroke:#22c55e,color:#86efac
+        classDef crm fill:#1a2e1a,stroke:#22c55e,color:#86efac
+        classDef util fill:#111,stroke:#6b7280,color:#9ca3af
+
+        class A trigger
+        class B,C,F send
+        class D,G crm
+        class E util
+    </div>
+  </section>
+
+  <!-- DELIVERABILITY -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Deliverability</div>
+      <div class="section-title">Domain & Sending Infrastructure</div>
+      <div class="section-sub">Every DNS record configured. Warmup running before a single cold email is sent.</div>
+    </div>
+
+    <div class="grid-2 reveal" style="margin-bottom:28px;">
+      <div class="card">
+        <div class="card-title">DNS Records Configured</div>
+        <table class="dns-table" style="margin-top:16px;">
+          <thead>
+            <tr>
+              <th>Record</th>
+              <th>Purpose</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>SPF</code></td>
+              <td style="font-size:12px;color:var(--muted);">Authorizes sending servers</td>
+              <td><span class="badge badge-green">Configured</span></td>
+            </tr>
+            <tr>
+              <td><code>DKIM</code></td>
+              <td style="font-size:12px;color:var(--muted);">Cryptographic signature on each send</td>
+              <td><span class="badge badge-green">Configured</span></td>
+            </tr>
+            <tr>
+              <td><code>DMARC</code></td>
+              <td style="font-size:12px;color:var(--muted);">Policy enforcement + reporting</td>
+              <td><span class="badge badge-green">Configured</span></td>
+            </tr>
+            <tr>
+              <td><code>MX</code></td>
+              <td style="font-size:12px;color:var(--muted);">Receives replies cleanly</td>
+              <td><span class="badge badge-green">Configured</span></td>
+            </tr>
+            <tr>
+              <td><code>CNAME</code></td>
+              <td style="font-size:12px;color:var(--muted);">Click tracking pixel</td>
+              <td><span class="badge badge-amber">Optional</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-title">21-Day Warmup Ramp</div>
+        <div class="card-sub" style="margin-bottom:4px;">Daily volume per domain before cold outreach begins.</div>
+        <div class="warmup-chart" id="warmupChart"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--muted);padding:0 2px;">
+          <span>Day 1</span><span>Day 7</span><span>Day 14</span><span>Day 21</span>
+        </div>
+        <div style="margin-top:18px;display:flex;gap:28px;">
+          <div>
+            <div style="font-size:22px;font-weight:700;color:var(--green);">40</div>
+            <div style="font-size:11px;color:var(--muted);">Max sends/domain/day</div>
+          </div>
+          <div>
+            <div style="font-size:22px;font-weight:700;color:var(--accent);">14</div>
+            <div style="font-size:11px;color:var(--muted);">Days before first cold send</div>
+          </div>
+          <div>
+            <div style="font-size:22px;font-weight:700;color:var(--amber);">3-5</div>
+            <div style="font-size:11px;color:var(--muted);">Domains rotating</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card reveal">
+      <div class="card-title">Target Deliverability Benchmarks</div>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">Inbox Placement Rate</div>
+          <div class="bar-track"><div class="bar-fill" data-width="92" style="background:var(--green);"></div></div>
+          <div class="bar-val" style="color:var(--green);">&gt;92%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Open Rate (target)</div>
+          <div class="bar-track"><div class="bar-fill" data-width="45" style="background:var(--accent);"></div></div>
+          <div class="bar-val" style="color:var(--accent);">45%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Reply Rate (target)</div>
+          <div class="bar-track"><div class="bar-fill" data-width="8" style="background:var(--amber);"></div></div>
+          <div class="bar-val" style="color:var(--amber);">8%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Bounce Rate</div>
+          <div class="bar-track"><div class="bar-fill" data-width="3" style="background:var(--red);"></div></div>
+          <div class="bar-val" style="color:var(--red);">&lt;3%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Spam Complaint Rate</div>
+          <div class="bar-track"><div class="bar-fill" data-width="2" style="background:var(--red);"></div></div>
+          <div class="bar-val" style="color:var(--red);">&lt;0.1%</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLD EMAIL SEQUENCE -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Cold Outbound</div>
+      <div class="section-title">5-Touch 21-Day Cold Email Sequence</div>
+      <div class="section-sub">Short, human, pain-first copy. Each touch uses a different angle. No "just following up" language.</div>
+    </div>
+
+    <div class="sequence-timeline reveal">
+      <div class="touch">
+        <div class="touch-day">Day 1 &mdash; Touch 1 &mdash; Pattern Interrupt</div>
+        <div class="touch-subject">Subject: quick q re [company] outbound</div>
+        <div class="touch-preview">"[First name] &mdash; noticed [specific signal about their role or company]. Most [title]s I talk to hit a wall around [core pain point]. Worth 10 min to talk through it?"</div>
+        <div class="touch-meta">
+          <span class="badge badge-accent">Personalized opener</span>
+          <span class="badge badge-green">Pain-first</span>
+          <span class="badge badge-amber">Single CTA</span>
+        </div>
+      </div>
+      <div class="touch">
+        <div class="touch-day">Day 4 &mdash; Touch 2 &mdash; Social Proof</div>
+        <div class="touch-subject">Subject: what worked for [similar company]</div>
+        <div class="touch-preview">"Didn't hear back. Figured I'd share one thing that moved the needle for [company in same space] &mdash; not a pitch, just a data point you might find useful."</div>
+        <div class="touch-meta">
+          <span class="badge badge-accent">Social proof</span>
+          <span class="badge badge-green">Value-first</span>
+        </div>
+      </div>
+      <div class="touch">
+        <div class="touch-day">Day 8 &mdash; Touch 3 &mdash; Outcome Reframe</div>
+        <div class="touch-subject">Subject: [specific result] in [timeframe]?</div>
+        <div class="touch-preview">"[First name] &mdash; if [specific outcome] was handled in the next 30 days, what does that change for Q[X]? Genuinely asking."</div>
+        <div class="touch-meta">
+          <span class="badge badge-accent">Outcome reframe</span>
+          <span class="badge badge-amber">Question only</span>
+        </div>
+      </div>
+      <div class="touch">
+        <div class="touch-day">Day 14 &mdash; Touch 4 &mdash; Resource Offer</div>
+        <div class="touch-subject">Subject: something that might help</div>
+        <div class="touch-preview">"Built a quick [blueprint / doc / breakdown] around the [pain] problem most [title]s deal with. Happy to send it over &mdash; no strings."</div>
+        <div class="touch-meta">
+          <span class="badge badge-green">Low friction offer</span>
+          <span class="badge badge-accent">Value delivery</span>
+        </div>
+      </div>
+      <div class="touch">
+        <div class="touch-day">Day 21 &mdash; Touch 5 &mdash; Breakup</div>
+        <div class="touch-subject">Subject: closing the loop</div>
+        <div class="touch-preview">"Going to stop reaching out after this one. If timing changes, you know where to find me &mdash; [first name]."</div>
+        <div class="touch-meta">
+          <span class="badge badge-red">Breakup email</span>
+          <span class="badge badge-amber">Creates urgency</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- APOLLO SETUP -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Lead Engine</div>
+      <div class="section-title">Apollo.io ICP Configuration</div>
+      <div class="section-sub">Audience filters saved and active. New matched leads auto-enroll into Instantly sequences with zero manual work.</div>
+    </div>
+    <div class="grid-2 reveal">
+      <div class="card">
+        <div class="card-title">ICP Filter Setup</div>
+        <div class="card-sub">Configured based on your target audience brief during onboarding call.</div>
+        <div class="apollo-filters">
+          <span class="filter-pill">Title: VP Sales, Head of Growth, Founder, CEO</span>
+          <span class="filter-pill">Company Size: 10-500 employees</span>
+          <span class="filter-pill">Industry: [Your Target Industry]</span>
+          <span class="filter-pill">Geography: US / UK / DACH</span>
+          <span class="filter-pill">Tech Stack: HubSpot, Salesforce</span>
+          <span class="filter-pill">Funding: Series A-C</span>
+          <span class="filter-pill">Email: Verified only</span>
+          <span class="filter-pill">LinkedIn: Profile present</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Auto-Enrollment Flow</div>
+        <div class="card-sub" style="margin-bottom:16px;">Zero manual intervention once configured.</div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px;">
+            <div style="width:28px;height:28px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#a5b4fc;flex-shrink:0;">1</div>
+            <span>Apollo saved search runs daily against ICP filters</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px;">
+            <div style="width:28px;height:28px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#a5b4fc;flex-shrink:0;">2</div>
+            <span>New matches auto-pushed to Instantly sequence</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px;">
+            <div style="width:28px;height:28px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#a5b4fc;flex-shrink:0;">3</div>
+            <span>Duplicate check runs &mdash; no lead gets contacted twice</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;font-size:13px;">
+            <div style="width:28px;height:28px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#a5b4fc;flex-shrink:0;">4</div>
+            <span>Reply detected &rarr; HubSpot contact created, deal stage updated</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LINKEDIN OUTREACH -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">LinkedIn</div>
+      <div class="section-title">4-Touch LinkedIn DM Sequence</div>
+      <div class="section-sub">Expandi configured with your ICP. Connection request plus three follow-up DMs loaded and ready.</div>
+    </div>
+    <div class="reveal">
+      <div class="li-card">
+        <div class="li-step">1</div>
+        <div class="li-content">
+          <div class="li-timing">Day 0 &mdash; Connection Request (300 char note)</div>
+          <div class="li-type">Personalized opener referencing their content or role</div>
+          <div class="li-copy">"[First name] &mdash; saw your post on [topic]. Working on something in the same space. Would love to connect."</div>
+        </div>
+      </div>
+      <div class="li-card">
+        <div class="li-step">2</div>
+        <div class="li-content">
+          <div class="li-timing">Day 2 &mdash; First DM (fires on accept)</div>
+          <div class="li-type">Thank you + growth signal observation</div>
+          <div class="li-copy">"Thanks for connecting. Noticed [company] is [signal &mdash; hiring, expanding, raising]. Curious &mdash; how are you handling [specific pain] as you scale?"</div>
+        </div>
+      </div>
+      <div class="li-card">
+        <div class="li-step">3</div>
+        <div class="li-content">
+          <div class="li-timing">Day 5 &mdash; Value DM</div>
+          <div class="li-type">Resource or insight drop &mdash; no ask</div>
+          <div class="li-copy">"Built a quick [framework / breakdown] on [pain topic] that's been getting traction with teams like yours. Happy to share &mdash; no strings."</div>
+        </div>
+      </div>
+      <div class="li-card">
+        <div class="li-step">4</div>
+        <div class="li-content">
+          <div class="li-timing">Day 10 &mdash; Direct Ask</div>
+          <div class="li-type">Clear CTA, low friction, time-specific</div>
+          <div class="li-copy">"[First name] &mdash; open to 15 min this week? Have something specific in mind for [company] I think is worth talking through."</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INBOUND NURTURE -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Inbound Flow</div>
+      <div class="section-title">3-Touch Inbound Nurture Sequence</div>
+      <div class="section-sub">For leads who come through content, website, or opt-in. Already warm &mdash; sequence reflects that.</div>
+    </div>
+    <div class="grid-3 reveal">
+      <div class="nurture-card green">
+        <div class="nurture-step">Email 1 &mdash; Day 0</div>
+        <div class="nurture-title">Immediate Delivery + Expectation Set</div>
+        <div class="nurture-body">"Here's what you requested plus a quick note on what comes next. No spam &mdash; just relevant content on [topic]."</div>
+        <div style="margin-top:16px;"><span class="badge badge-green">Triggered on form submit</span></div>
+      </div>
+      <div class="nurture-card amber">
+        <div class="nurture-step">Email 2 &mdash; Day 3</div>
+        <div class="nurture-title">Proof + Problem Deepening</div>
+        <div class="nurture-body">"Most [role]s who download this tell us their real challenge isn't [surface problem] &mdash; it's [deeper pain]. Here's how [company] solved it."</div>
+        <div style="margin-top:16px;"><span class="badge badge-amber">Case study / social proof</span></div>
+      </div>
+      <div class="nurture-card accent">
+        <div class="nurture-step">Email 3 &mdash; Day 7</div>
+        <div class="nurture-title">Direct Offer + CTA</div>
+        <div class="nurture-body">"If this is a live priority, here's the fastest way to get a plan built around your specific situation: [CTA &mdash; book call / reply / link]."</div>
+        <div style="margin-top:16px;"><span class="badge badge-accent">Primary conversion point</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HUBSPOT INTEGRATION -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">CRM</div>
+      <div class="section-title">HubSpot Integration &amp; Pipeline</div>
+      <div class="section-sub">Every touchpoint across email and LinkedIn logs automatically. No manual data entry for your team.</div>
+    </div>
+
+    <div class="reveal" style="margin-bottom:28px;">
+      <div class="pipeline-stages">
+        <div class="stage">
+          <div class="stage-num">01</div>
+          <div class="stage-name">Lead In</div>
+          <div class="stage-trigger">Apollo import</div>
+        </div>
+        <div class="stage">
+          <div class="stage-num">02</div>
+          <div class="stage-name">Emailed</div>
+          <div class="stage-trigger">Seq enrolled</div>
+        </div>
+        <div class="stage">
+          <div class="stage-num">03</div>
+          <div class="stage-name">Replied</div>
+          <div class="stage-trigger">Reply detected</div>
+        </div>
+        <div class="stage">
+          <div class="stage-num">04</div>
+          <div class="stage-name">Interested</div>
+          <div class="stage-trigger">Positive reply</div>
+        </div>
+        <div class="stage">
+          <div class="stage-num">05</div>
+          <div class="stage-name">Call Booked</div>
+          <div class="stage-trigger">Cal link clicked</div>
+        </div>
+        <div class="stage">
+          <div class="stage-num">06</div>
+          <div class="stage-name">Closed Won</div>
+          <div class="stage-trigger">Deal signed</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2 reveal">
+      <div class="card">
+        <div class="card-title">What Gets Logged Automatically</div>
+        <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;"><span style="color:var(--green);font-size:15px;">&#10003;</span> Every email sent, opened, clicked, replied</div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;"><span style="color:var(--green);font-size:15px;">&#10003;</span> LinkedIn connection accepted / DM replied</div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;"><span style="color:var(--green);font-size:15px;">&#10003;</span> Sequence step completions and exits</div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;"><span style="color:var(--green);font-size:15px;">&#10003;</span> Reply sentiment tag (positive / negative / OOO)</div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;"><span style="color:var(--green);font-size:15px;">&#10003;</span> Inbound form submissions and nurture enrollments</div>
+          <div style="display:flex;gap:10px;align-items:center;font-size:13px;"><span style="color:var(--green);font-size:15px;">&#10003;</span> Deal stage changes triggered on reply type</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Custom Properties Built in HubSpot</div>
+        <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;padding-bottom:9px;border-bottom:1px solid var(--border);">
+            <span>Lead Source</span><span class="badge badge-accent">Cold / LinkedIn / Inbound</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;padding-bottom:9px;border-bottom:1px solid var(--border);">
+            <span>Sequence Name</span><span style="color:var(--muted);font-size:12px;">Which sequence enrolled</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;padding-bottom:9px;border-bottom:1px solid var(--border);">
+            <span>Last Touched</span><span style="color:var(--muted);font-size:12px;">Auto-updated on send</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;padding-bottom:9px;border-bottom:1px solid var(--border);">
+            <span>Reply Type</span><span class="badge badge-green">Positive / Negative / OOO</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;">
+            <span>Sending Domain</span><span style="color:var(--muted);font-size:12px;">Which domain used</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HANDOVER -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Handover</div>
+      <div class="section-title">10-15 Min Walkthrough Included</div>
+      <div class="section-sub">Recorded Loom plus live call. Your team leaves knowing exactly how to run this without outside help.</div>
+    </div>
+    <div class="checklist reveal">
+      <div class="check-item">
+        <div class="check-icon">&#10003;</div>
+        <div>
+          <div class="check-text">How to enroll new contacts into sequences</div>
+          <div class="check-detail">Manual enroll via Apollo saved search + bulk CSV upload walkthrough in Instantly</div>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon">&#10003;</div>
+        <div>
+          <div class="check-text">How to edit email and LinkedIn copy</div>
+          <div class="check-detail">Where to find each touch in Instantly and Expandi, how to A/B test subject lines</div>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon">&#10003;</div>
+        <div>
+          <div class="check-text">How to monitor performance</div>
+          <div class="check-detail">Instantly analytics dashboard, HubSpot deal pipeline view, what numbers to watch weekly</div>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon">&#10003;</div>
+        <div>
+          <div class="check-text">How to manage and route replies</div>
+          <div class="check-detail">Instantly unified inbox, tagging positive replies, pushing to HubSpot deal stages</div>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon">&#10003;</div>
+        <div>
+          <div class="check-text">How to add new sending domains</div>
+          <div class="check-detail">DNS setup checklist and warmup activation steps &mdash; fully replicable by your team</div>
+        </div>
+      </div>
+      <div class="check-item">
+        <div class="check-icon">&#10003;</div>
+        <div>
+          <div class="check-text">Ongoing maintenance checklist</div>
+          <div class="check-detail">Weekly domain health checks, monthly list cleaning, warmup score monitoring</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="footer">
+  Built by Saif Shaikh &nbsp;&middot;&nbsp; Full B2B Outbound System Build &nbsp;&middot;&nbsp; Cold Email &middot; LinkedIn &middot; HubSpot
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#6366f1',
+      primaryTextColor: '#e5e7eb',
+      primaryBorderColor: '#1e1e1e',
+      lineColor: '#6366f1',
+      secondaryColor: '#111111',
+      tertiaryColor: '#1a1a2e',
+      background: '#111111',
+      mainBkg: '#111111',
+      edgeLabelBackground: '#111111',
+      clusterBkg: '#1a1a2e'
+    }
+  });
+
+  // Scroll reveal + bar animation
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (el.isIntersecting) {
+        el.target.classList.add('visible');
+        el.target.querySelectorAll('.bar-fill').forEach(bar => {
+          bar.style.width = bar.dataset.width + '%';
+        });
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Warmup bar chart
+  const warmupData = [2, 5, 8, 10, 12, 15, 17, 20, 22, 24, 26, 28, 30, 32, 33, 35, 36, 37, 38, 40, 40];
+  const chart = document.getElementById('warmupChart');
+  if (chart) {
+    warmupData.forEach((val) => {
+      const col = document.createElement('div');
+      col.className = 'warmup-col';
+      col.innerHTML = `<div class="warmup-bar" data-h="${(val / 40) * 60}"></div><div class="warmup-num">${val}</div>`;
+      chart.appendChild(col);
+    });
+
+    const warmupObs = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        chart.querySelectorAll('.warmup-bar').forEach((bar, i) => {
+          setTimeout(() => {
+            bar.style.transition = 'height 1s cubic-bezier(0.4,0,0.2,1)';
+            bar.style.height = bar.dataset.h + 'px';
+          }, i * 30);
+        });
+      }
+    }, { threshold: 0.3 });
+
+    warmupObs.observe(chart);
+  }
+</script>
+</body>
+</html>
