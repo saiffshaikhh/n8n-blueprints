@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GHL CRM & Automation Operations</title>
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --surface: #111111;
+      --card: #161616;
+      --border: #222222;
+      --border2: #2a2a2a;
+      --accent: #6366f1;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --text: #e5e7eb;
+      --muted: #6b7280;
+      --muted2: #4b5563;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.6;
+    }
+
+    /* ── GHL App Chrome ── */
+    .app-chrome {
+      background: #0a0a0a;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .chrome-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .win-dots { display: flex; gap: 6px; }
+
+    .win-dot {
+      width: 11px; height: 11px;
+      border-radius: 50%;
+    }
+
+    .win-dot.red { background: #ef4444; }
+    .win-dot.amber { background: #f59e0b; }
+    .win-dot.green { background: #22c55e; }
+
+    .chrome-breadcrumb {
+      font-size: 12px;
+      color: var(--muted);
+      margin-left: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .crumb-sep { color: var(--border2); }
+    .crumb-active { color: var(--text); font-weight: 500; }
+
+    .chrome-tabs {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      padding: 0 20px;
+      overflow-x: auto;
+    }
+
+    .chrome-tab {
+      padding: 8px 18px;
+      font-size: 12px;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .chrome-tab.active {
+      color: var(--text);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #0d0d1a 0%, #111120 60%, #0d0d0d 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 56px 40px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -30%; left: -20%;
+      width: 140%; height: 160%;
+      background: radial-gradient(ellipse at 35% 55%, rgba(99,102,241,0.07) 0%, transparent 55%),
+                  radial-gradient(ellipse at 75% 35%, rgba(34,197,94,0.04) 0%, transparent 45%);
+      pointer-events: none;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background: rgba(99,102,241,0.13);
+      border: 1px solid rgba(99,102,241,0.28);
+      color: #a5b4fc;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .hero h1 {
+      font-size: clamp(24px, 3.5vw, 44px);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .hero h1 span { color: var(--accent); }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 560px;
+      margin: 0 auto 32px;
+      position: relative;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: center;
+      gap: 44px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .stat { text-align: center; }
+    .stat-num { font-size: 30px; font-weight: 700; color: var(--accent); }
+    .stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    /* ── Layout ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    .section {
+      padding: 56px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 36px;
+      max-width: 600px;
+    }
+
+    /* ── Grids ── */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .badge-green { background: rgba(34,197,94,0.12); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+    .badge-amber { background: rgba(245,158,11,0.12); color: var(--amber); border: 1px solid rgba(245,158,11,0.25); }
+    .badge-accent { background: rgba(99,102,241,0.12); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.25); }
+    .badge-red { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
+    .badge-blue { background: rgba(59,130,246,0.12); color: var(--blue); border: 1px solid rgba(59,130,246,0.25); }
+
+    /* ── Pipeline Kanban ── */
+    .kanban {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .kanban-col {
+      min-width: 200px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .kanban-header {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .kanban-stage-name { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .kanban-count {
+      background: rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 1px 8px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .kanban-cards { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+
+    .k-card {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .k-card-name { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+    .k-card-co { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+    .k-card-meta { display: flex; align-items: center; justify-content: space-between; }
+    .k-card-val { font-size: 11px; color: var(--green); font-weight: 600; }
+    .k-card-age { font-size: 10px; color: var(--muted2); }
+
+    .k-card-tag {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 8px;
+      font-size: 10px;
+      margin-top: 6px;
+    }
+
+    .k-card-add {
+      border: 1px dashed var(--border2);
+      border-radius: 8px;
+      padding: 8px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted2);
+    }
+
+    /* ── Workflow Steps ── */
+    .wf-builder {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .wf-step {
+      display: flex;
+      gap: 0;
+      align-items: stretch;
+    }
+
+    .wf-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 48px;
+      flex-shrink: 0;
+    }
+
+    .wf-node {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 14px;
+    }
+
+    .wf-line {
+      width: 2px;
+      background: var(--border2);
+      flex: 1;
+      margin: 2px auto 0;
+    }
+
+    .wf-step:last-child .wf-line { display: none; }
+
+    .wf-body {
+      flex: 1;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin: 8px 0;
+    }
+
+    .wf-type { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 4px; }
+    .wf-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .wf-detail { font-size: 12px; color: var(--muted); }
+
+    /* ── Workflow Library ── */
+    .wf-lib { display: flex; flex-direction: column; gap: 10px; }
+
+    .wf-lib-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      transition: border-color 0.2s;
+    }
+
+    .wf-lib-item:hover { border-color: var(--accent); }
+
+    .wf-icon {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .wf-lib-content { flex: 1; }
+    .wf-lib-name { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+    .wf-lib-desc { font-size: 12px; color: var(--muted); }
+    .wf-lib-tags { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+
+    /* ── SMS/Email matrix ── */
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .matrix-table th {
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .matrix-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid rgba(34,34,34,0.6);
+      vertical-align: middle;
+    }
+
+    .matrix-table tr:last-child td { border-bottom: none; }
+
+    .matrix-table code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      background: rgba(255,255,255,0.05);
+      padding: 1px 6px;
+      border-radius: 4px;
+      color: #a5b4fc;
+    }
+
+    /* ── Integration web ── */
+    .integration-map {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .integration-map { grid-template-columns: 1fr 1fr; }
+    }
+
+    .int-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .int-icon { font-size: 20px; margin-bottom: 4px; }
+    .int-name { font-size: 13px; font-weight: 600; }
+    .int-role { font-size: 11px; color: var(--muted); }
+    .int-method { font-size: 11px; color: var(--accent); margin-top: 4px; }
+
+    /* ── Dashboard mock ── */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 700px) {
+      .dash-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .dash-stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .dash-stat-num {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .dash-stat-label { font-size: 11px; color: var(--muted); }
+    .dash-stat-trend { font-size: 11px; margin-top: 6px; }
+
+    /* ── Bar chart ── */
+    .bar-chart { margin-top: 16px; }
+    .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .bar-label { font-size: 11px; color: var(--muted); width: 160px; flex-shrink: 0; }
+    .bar-track { flex: 1; background: rgba(255,255,255,0.04); border-radius: 4px; height: 7px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 4px; width: 0%; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+    .bar-val { font-size: 11px; font-weight: 600; width: 36px; text-align: right; }
+
+    /* ── Reveal ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Footer ── */
+    .footer {
+      padding: 36px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<!-- GHL APP CHROME -->
+<div class="app-chrome">
+  <div class="chrome-titlebar">
+    <div class="win-dots">
+      <div class="win-dot red"></div>
+      <div class="win-dot amber"></div>
+      <div class="win-dot green"></div>
+    </div>
+    <div class="chrome-breadcrumb">
+      <span>GoHighLevel</span>
+      <span class="crumb-sep">&#8250;</span>
+      <span>CRM &amp; Automations</span>
+      <span class="crumb-sep">&#8250;</span>
+      <span class="crumb-active">Operations Overview</span>
+    </div>
+  </div>
+  <div class="chrome-tabs">
+    <div class="chrome-tab active">Pipeline</div>
+    <div class="chrome-tab">Workflows</div>
+    <div class="chrome-tab">Contacts</div>
+    <div class="chrome-tab">Email / SMS</div>
+    <div class="chrome-tab">Integrations</div>
+    <div class="chrome-tab">Reporting</div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">GHL &nbsp;&middot;&nbsp; Workflows &nbsp;&middot;&nbsp; SMS &nbsp;&middot;&nbsp; Funnels</div>
+  <h1>GHL CRM &amp; <span>Automation Operations</span></h1>
+  <p>Full GoHighLevel ownership &mdash; pipelines, workflow automation, email and SMS management, Zapier integrations, and reporting. Built to move fast and take initiative without hand-holding.</p>
+  <div class="stat-row">
+    <div class="stat">
+      <div class="stat-num">CRM</div>
+      <div class="stat-label">Built from scratch</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">8+</div>
+      <div class="stat-label">Workflow Types Built</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">A2P</div>
+      <div class="stat-label">SMS Setup Handled</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Data Accuracy Focus</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- PIPELINE -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Pipeline Management</div>
+      <div class="section-title">Pipeline Architecture &amp; Lead Flow</div>
+      <div class="section-sub">Pipelines built with clear stage logic, entry triggers, and automated actions at each move. Lead flow clean, organized, and visible at a glance.</div>
+    </div>
+
+    <div class="kanban reveal">
+
+      <div class="kanban-col">
+        <div class="kanban-header">
+          <div class="kanban-stage-name" style="color:#6b7280;">New Lead</div>
+          <div class="kanban-count">12</div>
+        </div>
+        <div class="kanban-cards">
+          <div class="k-card">
+            <div class="k-card-name">Marcus Reilly</div>
+            <div class="k-card-co">Apex Home Services</div>
+            <div class="k-card-meta">
+              <span class="k-card-val">$4,800</span>
+              <span class="k-card-age">2h ago</span>
+            </div>
+            <div class="k-card-tag" style="background:rgba(99,102,241,0.1);color:#a5b4fc;">Facebook Ad</div>
+          </div>
+          <div class="k-card">
+            <div class="k-card-name">Priya Nair</div>
+            <div class="k-card-co">Summit Roofing</div>
+            <div class="k-card-meta">
+              <span class="k-card-val">$7,200</span>
+              <span class="k-card-age">4h ago</span>
+            </div>
+            <div class="k-card-tag" style="background:rgba(59,130,246,0.1);color:var(--blue);">Google LSA</div>
+          </div>
+          <div class="k-card-add">+ 10 more</div>
+        </div>
+      </div>
+
+      <div class="kanban-col">
+        <div class="kanban-header">
+          <div class="kanban-stage-name" style="color:#3b82f6;">Attempted</div>
+          <div class="kanban-count">8</div>
+        </div>
+        <div class="kanban-cards">
+          <div class="k-card">
+            <div class="k-card-name">Derek Walsh</div>
+            <div class="k-card-co">Clear Vision Solar</div>
+            <div class="k-card-meta">
+              <span class="k-card-val">$11,400</span>
+              <span class="k-card-age">1d ago</span>
+            </div>
+            <div class="k-card-tag" style="background:rgba(245,158,11,0.1);color:var(--amber);">3 attempts</div>
+          </div>
+          <div class="k-card-add">+ 7 more</div>
+        </div>
+      </div>
+
+      <div class="kanban-col">
+        <div class="kanban-header">
+          <div class="kanban-stage-name" style="color:#f59e0b;">Contacted</div>
+          <div class="kanban-count">6</div>
+        </div>
+        <div class="kanban-cards">
+          <div class="k-card">
+            <div class="k-card-name">Leila Torres</div>
+            <div class="k-card-co">Prime HVAC</div>
+            <div class="k-card-meta">
+              <span class="k-card-val">$3,600</span>
+              <span class="k-card-age">3h ago</span>
+            </div>
+            <div class="k-card-tag" style="background:rgba(34,197,94,0.1);color:var(--green);">SMS replied</div>
+          </div>
+          <div class="k-card-add">+ 5 more</div>
+        </div>
+      </div>
+
+      <div class="kanban-col">
+        <div class="kanban-header">
+          <div class="kanban-stage-name" style="color:#22c55e;">Appt Booked</div>
+          <div class="kanban-count">4</div>
+        </div>
+        <div class="kanban-cards">
+          <div class="k-card">
+            <div class="k-card-name">James Booth</div>
+            <div class="k-card-co">Horizon Electric</div>
+            <div class="k-card-meta">
+              <span class="k-card-val">$9,000</span>
+              <span class="k-card-age">Tmrw 2pm</span>
+            </div>
+            <div class="k-card-tag" style="background:rgba(34,197,94,0.12);color:var(--green);">Confirmed</div>
+          </div>
+          <div class="k-card-add">+ 3 more</div>
+        </div>
+      </div>
+
+      <div class="kanban-col">
+        <div class="kanban-header">
+          <div class="kanban-stage-name" style="color:#a5b4fc;">Showed</div>
+          <div class="kanban-count">3</div>
+        </div>
+        <div class="kanban-cards">
+          <div class="k-card">
+            <div class="k-card-name">Sandra Fitch</div>
+            <div class="k-card-co">BlueLine Plumbing</div>
+            <div class="k-card-meta">
+              <span class="k-card-val">$6,500</span>
+              <span class="k-card-age">Today</span>
+            </div>
+            <div class="k-card-tag" style="background:rgba(99,102,241,0.12);color:#a5b4fc;">Proposal sent</div>
+          </div>
+          <div class="k-card-add">+ 2 more</div>
+        </div>
+      </div>
+
+      <div class="kanban-col">
+        <div class="kanban-header">
+          <div class="kanban-stage-name" style="color:#22c55e;">Closed Won</div>
+          <div class="kanban-count">9</div>
+        </div>
+        <div class="kanban-cards">
+          <div class="k-card">
+            <div class="k-card-name">Tom Greaves</div>
+            <div class="k-card-co">Vantage HVAC</div>
+            <div class="k-card-meta">
+              <span class="k-card-val">$14,200</span>
+              <span class="k-card-age">Yesterday</span>
+            </div>
+            <div class="k-card-tag" style="background:rgba(34,197,94,0.15);color:var(--green);">&#10003; Won</div>
+          </div>
+          <div class="k-card-add">+ 8 more</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WORKFLOW LIBRARY -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Automations</div>
+      <div class="section-title">Workflow Library Built</div>
+      <div class="section-sub">Every workflow listed here is built, tested, and organized cleanly inside GHL. No bloat, no broken triggers.</div>
+    </div>
+
+    <div class="wf-lib reveal">
+      <div class="wf-lib-item">
+        <div class="wf-icon" style="background:rgba(239,68,68,0.1);">📲</div>
+        <div class="wf-lib-content">
+          <div class="wf-lib-name">Missed Call Text Back</div>
+          <div class="wf-lib-desc">Call missed &rarr; SMS fires within 60 seconds &rarr; if no reply in 10 min &rarr; second SMS &rarr; internal notification to rep.</div>
+          <div class="wf-lib-tags">
+            <span class="badge badge-red">High Priority</span>
+            <span class="badge badge-accent">Trigger: Missed Call</span>
+            <span class="badge badge-amber">Wait Steps Included</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="wf-lib-item">
+        <div class="wf-icon" style="background:rgba(34,197,94,0.1);">📅</div>
+        <div class="wf-lib-content">
+          <div class="wf-lib-name">Booking Confirmation + Reminders</div>
+          <div class="wf-lib-desc">Appointment booked &rarr; immediate confirmation SMS + email &rarr; 24h reminder &rarr; 2h reminder &rarr; no-show trigger if not checked in.</div>
+          <div class="wf-lib-tags">
+            <span class="badge badge-green">Trigger: Calendar Event</span>
+            <span class="badge badge-accent">3-touch reminder chain</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="wf-lib-item">
+        <div class="wf-icon" style="background:rgba(99,102,241,0.1);">🔁</div>
+        <div class="wf-lib-content">
+          <div class="wf-lib-name">Lead Nurture Sequence</div>
+          <div class="wf-lib-desc">New lead enters pipeline &rarr; 5-touch SMS + email drip over 14 days &rarr; tags added based on engagement &rarr; hot leads flagged for manual outreach.</div>
+          <div class="wf-lib-tags">
+            <span class="badge badge-accent">Trigger: Opportunity Created</span>
+            <span class="badge badge-amber">14-day drip</span>
+            <span class="badge badge-green">Tag-based branching</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="wf-lib-item">
+        <div class="wf-icon" style="background:rgba(245,158,11,0.1);">&#9889;</div>
+        <div class="wf-lib-content">
+          <div class="wf-lib-name">Speed-to-Lead Follow-Up</div>
+          <div class="wf-lib-desc">Lead comes in from any source &rarr; SMS fires within 90 seconds &rarr; email simultaneously &rarr; if no response in 5 min &rarr; rep assigned and pinged.</div>
+          <div class="wf-lib-tags">
+            <span class="badge badge-red">Sub-90s response time</span>
+            <span class="badge badge-accent">All lead sources</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="wf-lib-item">
+        <div class="wf-icon" style="background:rgba(59,130,246,0.1);">&#128257;</div>
+        <div class="wf-lib-content">
+          <div class="wf-lib-name">Reactivation Campaign</div>
+          <div class="wf-lib-desc">Contacts with no activity in 30 days &rarr; 3-touch reactivation SMS/email &rarr; responded leads moved back to active pipeline &rarr; non-responders archived with tag.</div>
+          <div class="wf-lib-tags">
+            <span class="badge badge-blue">Trigger: Last Activity Date</span>
+            <span class="badge badge-amber">30-day dormancy</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="wf-lib-item">
+        <div class="wf-icon" style="background:rgba(34,197,94,0.1);">&#128203;</div>
+        <div class="wf-lib-content">
+          <div class="wf-lib-name">No-Show Recovery</div>
+          <div class="wf-lib-desc">Appointment not checked in 15 min after start time &rarr; rep notified &rarr; SMS sent to contact &rarr; opportunity stage moved to No-Show &rarr; re-book drip starts.</div>
+          <div class="wf-lib-tags">
+            <span class="badge badge-red">Trigger: No Check-In</span>
+            <span class="badge badge-green">Auto re-book sequence</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="wf-lib-item">
+        <div class="wf-icon" style="background:rgba(239,68,68,0.1);">&#127942;</div>
+        <div class="wf-lib-content">
+          <div class="wf-lib-name">Post-Close Referral Request</div>
+          <div class="wf-lib-desc">Opportunity moves to Closed Won &rarr; 3-day delay &rarr; SMS/email requesting review and referral &rarr; responses tagged for follow-up.</div>
+          <div class="wf-lib-tags">
+            <span class="badge badge-green">Trigger: Stage Change</span>
+            <span class="badge badge-accent">Review + referral</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="wf-lib-item">
+        <div class="wf-icon" style="background:rgba(99,102,241,0.1);">&#128276;</div>
+        <div class="wf-lib-content">
+          <div class="wf-lib-name">Internal Notifications + Assignments</div>
+          <div class="wf-lib-desc">Key events trigger Slack/email alerts to reps. Hot lead tag applied &rarr; rep notified immediately. Stage moves past 48h with no action &rarr; manager alerted.</div>
+          <div class="wf-lib-tags">
+            <span class="badge badge-blue">Slack webhook</span>
+            <span class="badge badge-amber">Stale deal detection</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED WORKFLOW: MISSED CALL TEXT BACK -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Workflow Deep Dive</div>
+      <div class="section-title">Missed Call Text Back &mdash; Step by Step</div>
+      <div class="section-sub">Their most valuable workflow, built right. Every branch covered, every wait step set precisely.</div>
+    </div>
+
+    <div class="grid-2 reveal">
+      <div class="wf-builder">
+        <div class="wf-step">
+          <div class="wf-connector">
+            <div class="wf-node" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);">&#128222;</div>
+            <div class="wf-line"></div>
+          </div>
+          <div class="wf-body">
+            <div class="wf-type">Trigger</div>
+            <div class="wf-name">Missed Call Detected</div>
+            <div class="wf-detail">Fires the instant a call goes unanswered on any connected number.</div>
+          </div>
+        </div>
+        <div class="wf-step">
+          <div class="wf-connector">
+            <div class="wf-node" style="background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.3);">&#128172;</div>
+            <div class="wf-line"></div>
+          </div>
+          <div class="wf-body">
+            <div class="wf-type">Action &mdash; Immediate</div>
+            <div class="wf-name">Send SMS #1</div>
+            <div class="wf-detail">"Hey [name], sorry we missed you! What's the best time to reach you?" &mdash; fires within 60s.</div>
+          </div>
+        </div>
+        <div class="wf-step">
+          <div class="wf-connector">
+            <div class="wf-node" style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);">&#9201;</div>
+            <div class="wf-line"></div>
+          </div>
+          <div class="wf-body">
+            <div class="wf-type">Wait</div>
+            <div class="wf-name">10 Minutes &mdash; Check for Reply</div>
+            <div class="wf-detail">If replied &rarr; exit workflow, tag as Responded, move stage. If no reply &rarr; continue.</div>
+          </div>
+        </div>
+        <div class="wf-step">
+          <div class="wf-connector">
+            <div class="wf-node" style="background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.3);">&#128172;</div>
+            <div class="wf-line"></div>
+          </div>
+          <div class="wf-body">
+            <div class="wf-type">Action</div>
+            <div class="wf-name">Send SMS #2 + Rep Notification</div>
+            <div class="wf-detail">Second SMS sent. Slack/email ping fires to assigned rep with lead name and number.</div>
+          </div>
+        </div>
+        <div class="wf-step">
+          <div class="wf-connector">
+            <div class="wf-node" style="background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);">&#9201;</div>
+            <div class="wf-line"></div>
+          </div>
+          <div class="wf-body">
+            <div class="wf-type">Wait</div>
+            <div class="wf-name">1 Hour &mdash; Final Check</div>
+            <div class="wf-detail">If still no reply &rarr; opportunity stage updated to Attempted. Task created for rep to call manually.</div>
+          </div>
+        </div>
+        <div class="wf-step">
+          <div class="wf-connector">
+            <div class="wf-node" style="background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.3);">&#10003;</div>
+          </div>
+          <div class="wf-body">
+            <div class="wf-type">Exit</div>
+            <div class="wf-name">Tag Applied + Stage Updated</div>
+            <div class="wf-detail">Tags: Missed Call, Attempted. Pipeline stage reflects status. No lead falls through.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px;align-self:start;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;">
+          <div class="section-label" style="margin-bottom:10px;">Workflow Organization Rules</div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;">
+            <div style="display:flex;gap:8px;"><span style="color:var(--green);">&#10003;</span> All workflows named: [Source] &rarr; [Action] &rarr; [Trigger]</div>
+            <div style="display:flex;gap:8px;"><span style="color:var(--green);">&#10003;</span> Folders by function: Nurture / Booking / Ops / Reactivation</div>
+            <div style="display:flex;gap:8px;"><span style="color:var(--green);">&#10003;</span> Every workflow has a published note with last-edited date</div>
+            <div style="display:flex;gap:8px;"><span style="color:var(--green);">&#10003;</span> Broken workflows audited weekly, fixed same day</div>
+            <div style="display:flex;gap:8px;"><span style="color:var(--green);">&#10003;</span> Test mode run before any workflow goes live</div>
+            <div style="display:flex;gap:8px;"><span style="color:var(--green);">&#10003;</span> Duplicate workflows removed and archived, not deleted</div>
+          </div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;">
+          <div class="section-label" style="margin-bottom:10px;">Tag + Custom Field Architecture</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <span style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);color:var(--blue);padding:3px 10px;border-radius:8px;font-size:11px;">Source: FB / Google / LSA</span>
+            <span style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);color:#a5b4fc;padding:3px 10px;border-radius:8px;font-size:11px;">Status: Hot / Warm / Cold</span>
+            <span style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);color:var(--green);padding:3px 10px;border-radius:8px;font-size:11px;">Responded: Yes / No</span>
+            <span style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);color:var(--amber);padding:3px 10px;border-radius:8px;font-size:11px;">Appt: Booked / Showed / No-Show</span>
+            <span style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:var(--red);padding:3px 10px;border-radius:8px;font-size:11px;">Missed Call</span>
+            <span style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);color:#a5b4fc;padding:3px 10px;border-radius:8px;font-size:11px;">Reactivation: Sent / Won Back</span>
+            <span style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);color:var(--green);padding:3px 10px;border-radius:8px;font-size:11px;">Closed Won</span>
+            <span style="background:rgba(107,114,128,0.1);border:1px solid rgba(107,114,128,0.2);color:var(--muted);padding:3px 10px;border-radius:8px;font-size:11px;">DNC</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EMAIL + SMS MANAGEMENT -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Email &amp; SMS</div>
+      <div class="section-title">Email Deliverability &amp; SMS Error Management</div>
+      <div class="section-sub">The nuances of GHL email and SMS delivery understood and handled. Issues diagnosed and fixed, not escalated.</div>
+    </div>
+
+    <div class="grid-2 reveal">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div class="section-label" style="margin-bottom:12px;">Email Deliverability</div>
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Issue</th>
+              <th>Cause</th>
+              <th>Fix</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Emails landing in spam</td>
+              <td style="color:var(--muted);">SPF/DKIM missing</td>
+              <td><span class="badge badge-green">DNS config + warmup</span></td>
+            </tr>
+            <tr>
+              <td>Low open rates</td>
+              <td style="color:var(--muted);">Sender reputation</td>
+              <td><span class="badge badge-amber">Domain rotation + warmup</span></td>
+            </tr>
+            <tr>
+              <td>High bounce rate</td>
+              <td style="color:var(--muted);">Dirty contact list</td>
+              <td><span class="badge badge-green">List clean + verify</span></td>
+            </tr>
+            <tr>
+              <td>Workflow emails not sending</td>
+              <td style="color:var(--muted);">SMTP misconfigured</td>
+              <td><span class="badge badge-accent">Re-auth sending domain</span></td>
+            </tr>
+            <tr>
+              <td>Links not tracked</td>
+              <td style="color:var(--muted);">Tracking not enabled</td>
+              <td><span class="badge badge-green">CNAME + settings check</span></td>
+            </tr>
+            <tr>
+              <td>Unsubscribes not honoured</td>
+              <td style="color:var(--muted);">Workflow bypass</td>
+              <td><span class="badge badge-red">DNC tag + filter added</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div class="section-label" style="margin-bottom:12px;">SMS Error Codes &amp; A2P</div>
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Error</th>
+              <th>Meaning</th>
+              <th>Resolution</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>30003</code></td>
+              <td style="color:var(--muted);">Unreachable number</td>
+              <td><span class="badge badge-amber">Tag invalid, remove</span></td>
+            </tr>
+            <tr>
+              <td><code>30004</code></td>
+              <td style="color:var(--muted);">Message blocked</td>
+              <td><span class="badge badge-red">A2P review + reroute</span></td>
+            </tr>
+            <tr>
+              <td><code>30005</code></td>
+              <td style="color:var(--muted);">Unknown destination</td>
+              <td><span class="badge badge-amber">Landline check + skip</span></td>
+            </tr>
+            <tr>
+              <td><code>30007</code></td>
+              <td style="color:var(--muted);">Carrier filtering</td>
+              <td><span class="badge badge-accent">Rewrite copy + requeue</span></td>
+            </tr>
+            <tr>
+              <td><code>30008</code></td>
+              <td style="color:var(--muted);">Opt-out / STOP</td>
+              <td><span class="badge badge-red">Auto-DNC tag applied</span></td>
+            </tr>
+            <tr>
+              <td>A2P Registration</td>
+              <td style="color:var(--muted);">10DLC required</td>
+              <td><span class="badge badge-green">Brand + campaign filed</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);">A2P 10DLC brand registration, campaign setup, and number vetting handled in-platform and via Twilio console where needed.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTEGRATIONS -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Integrations</div>
+      <div class="section-title">Tool Connections &amp; Lead Routing</div>
+      <div class="section-sub">Leads pass correctly between every platform. Issues diagnosed and solved independently. No lead drops.</div>
+    </div>
+    <div class="integration-map reveal">
+      <div class="int-card">
+        <div class="int-icon">&#127381;</div>
+        <div class="int-name">Facebook Ads</div>
+        <div class="int-role">Lead form submissions</div>
+        <div class="int-method">Native GHL integration + webhook fallback</div>
+      </div>
+      <div class="int-card">
+        <div class="int-icon">&#128269;</div>
+        <div class="int-name">Google LSA / Ads</div>
+        <div class="int-role">Inbound call + form leads</div>
+        <div class="int-method">Zapier &rarr; GHL contact create</div>
+      </div>
+      <div class="int-card">
+        <div class="int-icon">&#128197;</div>
+        <div class="int-name">Calendly / Cal.com</div>
+        <div class="int-role">Booking sync</div>
+        <div class="int-method">Webhook &rarr; opportunity stage update</div>
+      </div>
+      <div class="int-card">
+        <div class="int-icon">&#9889;</div>
+        <div class="int-name">Zapier</div>
+        <div class="int-role">Cross-platform routing</div>
+        <div class="int-method">Multi-step zaps with error alerts</div>
+      </div>
+      <div class="int-card">
+        <div class="int-icon">&#128241;</div>
+        <div class="int-name">Twilio / LC Phone</div>
+        <div class="int-role">SMS + call infrastructure</div>
+        <div class="int-method">Direct GHL + A2P registration</div>
+      </div>
+      <div class="int-card">
+        <div class="int-icon">&#128640;</div>
+        <div class="int-name">Custom Webhooks</div>
+        <div class="int-role">Any tool with an API</div>
+        <div class="int-method">GHL webhook &rarr; POST &rarr; receive</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REPORTING -->
+  <section class="section">
+    <div class="reveal">
+      <div class="section-label">Reporting &amp; Optimization</div>
+      <div class="section-title">Dashboard &amp; Pipeline Monitoring</div>
+      <div class="section-sub">Clean data in means clean decisions out. Every metric tracked, every bottleneck surfaced before leadership has to ask.</div>
+    </div>
+
+    <div class="dash-grid reveal">
+      <div class="dash-stat">
+        <div class="dash-stat-num" style="color:var(--green);">94%</div>
+        <div class="dash-stat-label">Lead Response Rate</div>
+        <div class="dash-stat-trend" style="color:var(--green);">&#8593; from 71%</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-num" style="color:var(--accent);">68s</div>
+        <div class="dash-stat-label">Avg Speed to Lead</div>
+        <div class="dash-stat-trend" style="color:var(--green);">&#8593; from 9 min</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-num" style="color:var(--amber);">41%</div>
+        <div class="dash-stat-label">Booking Rate</div>
+        <div class="dash-stat-trend" style="color:var(--green);">&#8593; from 28%</div>
+      </div>
+      <div class="dash-stat">
+        <div class="dash-stat-num" style="color:var(--green);">0</div>
+        <div class="dash-stat-label">Broken Workflows</div>
+        <div class="dash-stat-trend" style="color:var(--green);">Weekly audit</div>
+      </div>
+    </div>
+
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;" class="reveal">
+      <div class="card-title" style="margin-bottom:4px;">Conversion Funnel Visibility</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">Pipeline tracked at every stage. Bottlenecks flagged before they compound.</div>
+      <div class="bar-chart">
+        <div class="bar-row">
+          <div class="bar-label">Lead &rarr; Contacted</div>
+          <div class="bar-track"><div class="bar-fill" data-width="94" style="background:var(--green);"></div></div>
+          <div class="bar-val" style="color:var(--green);">94%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Contacted &rarr; Appt Set</div>
+          <div class="bar-track"><div class="bar-fill" data-width="41" style="background:var(--accent);"></div></div>
+          <div class="bar-val" style="color:var(--accent);">41%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Appt Set &rarr; Showed</div>
+          <div class="bar-track"><div class="bar-fill" data-width="76" style="background:var(--amber);"></div></div>
+          <div class="bar-val" style="color:var(--amber);">76%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Showed &rarr; Closed</div>
+          <div class="bar-track"><div class="bar-fill" data-width="58" style="background:var(--green);"></div></div>
+          <div class="bar-val" style="color:var(--green);">58%</div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-label">Reactivation Win-Back</div>
+          <div class="bar-track"><div class="bar-fill" data-width="22" style="background:var(--blue);"></div></div>
+          <div class="bar-val" style="color:var(--blue);">22%</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="footer">
+  Built by Saif Shaikh &nbsp;&middot;&nbsp; GHL CRM &amp; Automation Operations &nbsp;&middot;&nbsp; Pipelines &middot; Workflows &middot; SMS &middot; Reporting
+</div>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (el.isIntersecting) {
+        el.target.classList.add('visible');
+        el.target.querySelectorAll('.bar-fill').forEach(bar => {
+          bar.style.width = bar.dataset.width + '%';
+        });
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
