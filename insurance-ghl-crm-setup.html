@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance CRM — GHL Setup Blueprint</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --card: #111111;
+            --border: #1e1e1e;
+            --accent: #6366f1;
+            --green: #22c55e;
+            --amber: #f59e0b;
+            --red: #ef4444;
+            --text: #e5e7eb;
+            --muted: #6b7280;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', -apple-system, sans-serif; }
+
+        .chrome-bar {
+            background: #1a1a1a;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot.red { background: #ef4444; }
+        .dot.yellow { background: #f59e0b; }
+        .dot.green { background: #22c55e; }
+        .url-bar {
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 4px 12px;
+            font-size: 12px;
+            color: var(--muted);
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .nav {
+            background: #111;
+            border-bottom: 1px solid var(--border);
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+        }
+        .nav-logo { font-size: 14px; font-weight: 700; color: var(--accent); padding: 14px 0; margin-right: 32px; }
+        .nav-item { padding: 14px 16px; font-size: 13px; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; }
+        .nav-item.active { color: var(--text); border-bottom-color: var(--accent); }
+
+        .layout { display: flex; min-height: calc(100vh - 88px); }
+
+        .sidebar {
+            width: 220px;
+            background: #0d0d0d;
+            border-right: 1px solid var(--border);
+            padding: 16px 0;
+            flex-shrink: 0;
+        }
+        .sidebar-section { padding: 8px 16px 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+        .sidebar-item { display: flex; align-items: center; gap: 10px; padding: 8px 16px; font-size: 13px; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+        .sidebar-item:hover, .sidebar-item.active { background: rgba(99,102,241,0.08); color: var(--text); }
+        .sidebar-item.active { color: var(--accent); }
+        .sidebar-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+        .main { flex: 1; overflow: auto; padding: 24px; }
+
+        .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .page-title { font-size: 20px; font-weight: 700; }
+        .page-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+        .btn { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500; }
+        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 7px 14px; border-radius: 6px; font-size: 13px; cursor: pointer; }
+
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+        .stat-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+        .stat-value { font-size: 24px; font-weight: 700; }
+        .stat-change { font-size: 12px; margin-top: 4px; }
+        .up { color: var(--green); }
+
+        .section { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+        .section-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .section-sub { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+
+        .pipeline-board { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; overflow-x: auto; }
+        .pipeline-col { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; min-width: 155px; }
+        .col-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .col-title { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .col-count { background: rgba(255,255,255,0.06); color: var(--muted); font-size: 11px; padding: 1px 7px; border-radius: 10px; }
+        .lead-card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 7px; padding: 10px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s; }
+        .lead-card:hover { border-color: var(--accent); }
+        .lead-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+        .lead-meta { font-size: 11px; color: var(--muted); }
+        .lead-tag { display: inline-block; font-size: 10px; padding: 2px 7px; border-radius: 4px; margin-top: 5px; font-weight: 500; }
+        .tag-fb { background: rgba(59,130,246,0.15); color: #60a5fa; }
+        .tag-phone { background: rgba(34,197,94,0.15); color: var(--green); }
+        .tag-web { background: rgba(245,158,11,0.15); color: var(--amber); }
+        .tag-ref { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+
+        .workflow-steps { display: flex; align-items: flex-start; gap: 0; overflow-x: auto; padding-bottom: 8px; }
+        .wf-step { display: flex; flex-direction: column; align-items: center; min-width: 110px; }
+        .wf-node { width: 76px; height: 54px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; text-align: center; gap: 3px; border: 1px solid var(--border); }
+        .wf-node.trigger { background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.4); color: #a5b4fc; }
+        .wf-node.action { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: #86efac; }
+        .wf-node.wait { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: #fcd34d; }
+        .wf-node.sms { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: #93c5fd; }
+        .wf-node.condition { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #fca5a5; }
+        .wf-label { font-size: 10px; color: var(--muted); margin-top: 6px; text-align: center; line-height: 1.4; }
+        .wf-arrow { width: 34px; height: 2px; background: var(--border); margin-top: 26px; flex-shrink: 0; position: relative; }
+        .wf-arrow::after { content: '▶'; position: absolute; right: -8px; top: -7px; font-size: 10px; color: var(--muted); }
+
+        .sms-flow { display: flex; flex-direction: column; gap: 10px; max-width: 340px; }
+        .sms-bubble { padding: 10px 14px; border-radius: 14px; font-size: 12px; line-height: 1.6; max-width: 280px; }
+        .sms-bubble.outbound { background: var(--accent); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .sms-bubble.inbound { background: #1e1e1e; color: var(--text); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .sms-time { font-size: 10px; color: var(--muted); margin-bottom: 2px; }
+        .sms-label-out { text-align: right; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        .email-preview { background: #0a0a0a; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .email-header-bar { background: #161616; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+        .email-field { font-size: 11px; color: var(--muted); margin-bottom: 3px; }
+        .email-field span { color: var(--text); }
+        .email-body { padding: 14px; font-size: 12px; line-height: 1.8; color: var(--text); }
+        .email-var { color: var(--accent); font-weight: 500; }
+
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; border-radius: 6px; cursor: pointer; }
+        .cal-day.header { font-size: 10px; color: var(--muted); font-weight: 600; }
+        .cal-day.empty { opacity: 0; }
+        .cal-day:not(.header):not(.empty):hover { background: rgba(99,102,241,0.1); }
+        .cal-day.has-appt { background: rgba(99,102,241,0.15); color: var(--accent); font-weight: 600; }
+        .cal-day.today { background: var(--accent); color: white; font-weight: 700; }
+        .cal-dot { width: 4px; height: 4px; background: var(--green); border-radius: 50%; margin-top: 2px; }
+
+        .integrations-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .int-card { background: #0a0a0a; border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 10px; }
+        .int-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+        .int-name { font-size: 12px; font-weight: 600; }
+        .int-status { font-size: 11px; margin-top: 2px; }
+        .status-connected { color: var(--green); }
+        .status-pending { color: var(--amber); }
+
+        .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 8px; border-radius: 12px; font-weight: 500; }
+        .badge-green { background: rgba(34,197,94,0.15); color: var(--green); }
+        .badge-blue { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+        .badge-amber { background: rgba(245,158,11,0.15); color: var(--amber); }
+
+        .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.4s, transform 0.4s; }
+        .reveal.visible { opacity: 1; transform: none; }
+
+        @media (max-width: 1024px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .two-col { grid-template-columns: 1fr; }
+            .integrations-grid { grid-template-columns: repeat(2, 1fr); }
+            .pipeline-board { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="chrome-bar">
+    <div class="dot red"></div>
+    <div class="dot yellow"></div>
+    <div class="dot green"></div>
+    <div class="url-bar">app.gohighlevel.com / retirement-benefits-crm</div>
+</div>
+
+<div class="nav">
+    <div class="nav-logo">⚡ GHL</div>
+    <div class="nav-item active">Pipelines</div>
+    <div class="nav-item">Workflows</div>
+    <div class="nav-item">Contacts</div>
+    <div class="nav-item">Calendar</div>
+    <div class="nav-item">Conversations</div>
+    <div class="nav-item">Reporting</div>
+</div>
+
+<div class="layout">
+    <div class="sidebar">
+        <div class="sidebar-section">CRM</div>
+        <div class="sidebar-item active"><div class="sidebar-dot"></div> Insurance Pipeline</div>
+        <div class="sidebar-item"><div class="sidebar-dot"></div> Contacts</div>
+        <div class="sidebar-item"><div class="sidebar-dot"></div> Opportunities</div>
+
+        <div class="sidebar-section" style="margin-top:12px">Automations</div>
+        <div class="sidebar-item"><div class="sidebar-dot"></div> FB Lead Intake</div>
+        <div class="sidebar-item"><div class="sidebar-dot"></div> Appt Reminder</div>
+        <div class="sidebar-item"><div class="sidebar-dot"></div> No-Show Re-engage</div>
+        <div class="sidebar-item"><div class="sidebar-dot"></div> Post-Appt Follow-up</div>
+
+        <div class="sidebar-section" style="margin-top:12px">Campaigns</div>
+        <div class="sidebar-item"><div class="sidebar-dot"></div> Email Sequences</div>
+        <div class="sidebar-item"><div class="sidebar-dot"></div> SMS Campaigns</div>
+
+        <div class="sidebar-section" style="margin-top:12px">Settings</div>
+        <div class="sidebar-item"><div class="sidebar-dot"></div> Integrations</div>
+        <div class="sidebar-item"><div class="sidebar-dot"></div> Custom Fields</div>
+        <div class="sidebar-item"><div class="sidebar-dot"></div> Tags</div>
+    </div>
+
+    <div class="main">
+
+        <div class="page-header">
+            <div>
+                <div class="page-title">Retirement &amp; Benefits Pipeline</div>
+                <div class="page-sub">Insurance leads — Facebook + referral intake</div>
+            </div>
+            <div style="display:flex;gap:8px">
+                <button class="btn-ghost">Import Contacts</button>
+                <button class="btn">+ Add Lead</button>
+            </div>
+        </div>
+
+        <div class="stats-row reveal">
+            <div class="stat-card">
+                <div class="stat-label">Active Leads</div>
+                <div class="stat-value">47</div>
+                <div class="stat-change up">↑ 12 this week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Appts Booked</div>
+                <div class="stat-value">18</div>
+                <div class="stat-change up">↑ 5 from FB ads</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Show Rate</div>
+                <div class="stat-value">72%</div>
+                <div class="stat-change" style="color:var(--muted)">industry avg: 60%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Avg Days to Enroll</div>
+                <div class="stat-value">11d</div>
+                <div class="stat-change up">↓ from 18d</div>
+            </div>
+        </div>
+
+        <!-- Pipeline Board -->
+        <div class="section reveal">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+                <div class="section-title" style="margin-bottom:0">Lead Pipeline</div>
+                <div style="display:flex;gap:8px;align-items:center">
+                    <span class="badge badge-green">● Live</span>
+                    <button class="btn-ghost" style="font-size:12px">Edit Stages</button>
+                </div>
+            </div>
+
+            <div class="pipeline-board">
+                <div class="pipeline-col">
+                    <div class="col-header">
+                        <span class="col-title">New Lead</span>
+                        <span class="col-count">11</span>
+                    </div>
+                    <div class="lead-card">
+                        <div class="lead-name">Robert M.</div>
+                        <div class="lead-meta">65 · Medicare inquiry</div>
+                        <span class="lead-tag tag-fb">FB Lead</span>
+                    </div>
+                    <div class="lead-card">
+                        <div class="lead-name">Patricia L.</div>
+                        <div class="lead-meta">61 · Retirement review</div>
+                        <span class="lead-tag tag-phone">Phone</span>
+                    </div>
+                    <div class="lead-card">
+                        <div class="lead-name">James K.</div>
+                        <div class="lead-meta">58 · Benefits consult</div>
+                        <span class="lead-tag tag-fb">FB Lead</span>
+                    </div>
+                </div>
+
+                <div class="pipeline-col">
+                    <div class="col-header">
+                        <span class="col-title">Contacted</span>
+                        <span class="col-count">8</span>
+                    </div>
+                    <div class="lead-card">
+                        <div class="lead-name">Sandra W.</div>
+                        <div class="lead-meta">63 · Medicare + dental</div>
+                        <span class="lead-tag tag-ref">Referral</span>
+                    </div>
+                    <div class="lead-card">
+                        <div class="lead-name">David H.</div>
+                        <div class="lead-meta">66 · Part D review</div>
+                        <span class="lead-tag tag-fb">FB Lead</span>
+                    </div>
+                </div>
+
+                <div class="pipeline-col">
+                    <div class="col-header">
+                        <span class="col-title">Appt Set</span>
+                        <span class="col-count">9</span>
+                    </div>
+                    <div class="lead-card">
+                        <div class="lead-name">Carol T.</div>
+                        <div class="lead-meta">Thu 2:00pm · Zoom</div>
+                        <span class="lead-tag tag-web">Online</span>
+                    </div>
+                    <div class="lead-card">
+                        <div class="lead-name">Frank G.</div>
+                        <div class="lead-meta">Fri 10:30am · Phone</div>
+                        <span class="lead-tag tag-phone">Phone</span>
+                    </div>
+                </div>
+
+                <div class="pipeline-col">
+                    <div class="col-header">
+                        <span class="col-title">Attended</span>
+                        <span class="col-count">7</span>
+                    </div>
+                    <div class="lead-card">
+                        <div class="lead-name">Helen M.</div>
+                        <div class="lead-meta">Reviewed plan options</div>
+                        <span class="lead-tag tag-ref">Referral</span>
+                    </div>
+                    <div class="lead-card">
+                        <div class="lead-name">George P.</div>
+                        <div class="lead-meta">Requested follow-up</div>
+                        <span class="lead-tag tag-fb">FB Lead</span>
+                    </div>
+                </div>
+
+                <div class="pipeline-col">
+                    <div class="col-header">
+                        <span class="col-title">Quoted</span>
+                        <span class="col-count">5</span>
+                    </div>
+                    <div class="lead-card">
+                        <div class="lead-name">Barbara S.</div>
+                        <div class="lead-meta">Medicare Adv. — $0 plan</div>
+                        <span class="lead-tag tag-web">Online</span>
+                    </div>
+                    <div class="lead-card">
+                        <div class="lead-name">Thomas R.</div>
+                        <div class="lead-meta">Supplement Plan G</div>
+                        <span class="lead-tag tag-phone">Phone</span>
+                    </div>
+                </div>
+
+                <div class="pipeline-col">
+                    <div class="col-header">
+                        <span class="col-title">Enrolled</span>
+                        <span class="col-count">7</span>
+                    </div>
+                    <div class="lead-card" style="border-color:rgba(34,197,94,0.25)">
+                        <div class="lead-name">Dorothy C.</div>
+                        <div class="lead-meta">Medicare Advantage</div>
+                        <span class="lead-tag tag-ref">Referral</span>
+                    </div>
+                    <div class="lead-card" style="border-color:rgba(34,197,94,0.25)">
+                        <div class="lead-name">Richard N.</div>
+                        <div class="lead-meta">Plan G enrolled</div>
+                        <span class="lead-tag tag-fb">FB Lead</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FB Lead Workflow -->
+        <div class="section reveal">
+            <div class="section-title">FB Lead Intake Workflow</div>
+            <div class="section-sub">Facebook form submission triggers auto-tag, instant SMS, and appointment booking sequence</div>
+            <div class="workflow-steps">
+                <div class="wf-step">
+                    <div class="wf-node trigger">📋<span>FB Form</span></div>
+                    <div class="wf-label">Lead submits<br>FB form</div>
+                </div>
+                <div class="wf-arrow"></div>
+                <div class="wf-step">
+                    <div class="wf-node action">🏷️<span>Tag + Field</span></div>
+                    <div class="wf-label">Tag: fb-lead<br>source field set</div>
+                </div>
+                <div class="wf-arrow"></div>
+                <div class="wf-step">
+                    <div class="wf-node sms">💬<span>SMS #1</span></div>
+                    <div class="wf-label">Instant text<br>with book link</div>
+                </div>
+                <div class="wf-arrow"></div>
+                <div class="wf-step">
+                    <div class="wf-node wait">⏱️<span>Wait 15m</span></div>
+                    <div class="wf-label">If no booking<br>yet</div>
+                </div>
+                <div class="wf-arrow"></div>
+                <div class="wf-step">
+                    <div class="wf-node sms">💬<span>SMS #2</span></div>
+                    <div class="wf-label">Follow-up<br>text</div>
+                </div>
+                <div class="wf-arrow"></div>
+                <div class="wf-step">
+                    <div class="wf-node condition">❓<span>Booked?</span></div>
+                    <div class="wf-label">Check appt<br>confirmed</div>
+                </div>
+                <div class="wf-arrow"></div>
+                <div class="wf-step">
+                    <div class="wf-node action">📋<span>Move Stage</span></div>
+                    <div class="wf-label">Pipeline moves<br>to Appt Set</div>
+                </div>
+                <div class="wf-arrow"></div>
+                <div class="wf-step">
+                    <div class="wf-node action">🔔<span>Reminders</span></div>
+                    <div class="wf-label">24h + 1h<br>SMS fires</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="two-col reveal">
+            <!-- SMS Sequence -->
+            <div class="section">
+                <div class="section-title">SMS Follow-up Sequence</div>
+                <div class="section-sub">Auto-fires on Facebook lead intake</div>
+                <div class="sms-flow">
+                    <div>
+                        <div class="sms-time">Immediately on form submit</div>
+                        <div class="sms-bubble outbound">Hi {{first_name}}, this is [Agent]. I saw your request about Medicare/retirement benefits. I have a few open slots this week — grab a 15 min call here: [Calendar Link]</div>
+                    </div>
+                    <div>
+                        <div class="sms-time">Lead replies (+15 min)</div>
+                        <div class="sms-bubble inbound">Is this about the Medicare plan?</div>
+                    </div>
+                    <div>
+                        <div class="sms-time sms-label-out">Agent reply</div>
+                        <div class="sms-bubble outbound">Yes exactly. I help people in your area understand their Medicare and retirement options. Takes 15 min, no cost. Here's my calendar: [link]</div>
+                    </div>
+                    <div>
+                        <div class="sms-time">Lead books</div>
+                        <div class="sms-bubble inbound">Sure, booked for Thursday at 2pm</div>
+                    </div>
+                    <div>
+                        <div class="sms-time sms-label-out">Auto confirmation</div>
+                        <div class="sms-bubble outbound">Perfect {{first_name}}. See you Thursday at 2pm. I'll send a reminder the morning of. Talk soon.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email + Reminder sequence -->
+            <div class="section">
+                <div class="section-title">Appointment Confirmation Email</div>
+                <div class="section-sub">Sends automatically on booking</div>
+                <div class="email-preview">
+                    <div class="email-header-bar">
+                        <div class="email-field">To: <span class="email-var">{{contact.email}}</span></div>
+                        <div class="email-field">Subject: <span>Your appointment is confirmed — {{appointment.date}}</span></div>
+                    </div>
+                    <div class="email-body">
+                        Hi <span class="email-var">{{first_name}}</span>,<br><br>
+                        Your appointment is confirmed for <span class="email-var">{{appointment.date}}</span> at <span class="email-var">{{appointment.time}}</span>.<br><br>
+                        We'll go over your Medicare and retirement benefit options. Usually takes 15-20 minutes, no obligation.<br><br>
+                        <strong>Join here:</strong> <span class="email-var">{{zoom_link}}</span><br><br>
+                        Need to reschedule? Use this link: <span class="email-var">{{reschedule_link}}</span><br><br>
+                        Talk soon,<br>
+                        <span class="email-var">{{sender_name}}</span>
+                    </div>
+                </div>
+
+                <div style="margin-top:16px">
+                    <div style="font-size:13px;font-weight:600;margin-bottom:10px">Reminder Sequence</div>
+                    <div style="display:flex;flex-direction:column;gap:8px">
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#0a0a0a;border-radius:6px;border:1px solid var(--border)">
+                            <span style="font-size:12px">Confirmation email</span>
+                            <span class="badge badge-green">Instant</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#0a0a0a;border-radius:6px;border:1px solid var(--border)">
+                            <span style="font-size:12px">SMS reminder</span>
+                            <span class="badge badge-blue">24h before</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#0a0a0a;border-radius:6px;border:1px solid var(--border)">
+                            <span style="font-size:12px">SMS reminder</span>
+                            <span class="badge badge-blue">1h before</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#0a0a0a;border-radius:6px;border:1px solid var(--border)">
+                            <span style="font-size:12px">No-show re-engage SMS</span>
+                            <span class="badge badge-amber">+2h if no-show</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="two-col reveal">
+            <!-- Calendar -->
+            <div class="section">
+                <div class="section-title">Appointment Calendar — May 2026</div>
+                <div class="section-sub">6 booked this week</div>
+                <div class="cal-grid">
+                    <div class="cal-day header">Su</div><div class="cal-day header">Mo</div><div class="cal-day header">Tu</div><div class="cal-day header">We</div><div class="cal-day header">Th</div><div class="cal-day header">Fr</div><div class="cal-day header">Sa</div>
+                    <div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day empty"></div><div class="cal-day">1</div><div class="cal-day has-appt">2<div class="cal-dot"></div></div><div class="cal-day">3</div>
+                    <div class="cal-day">4</div><div class="cal-day has-appt">5<div class="cal-dot"></div></div><div class="cal-day today">6</div><div class="cal-day has-appt">7<div class="cal-dot"></div></div><div class="cal-day has-appt">8<div class="cal-dot"></div></div><div class="cal-day has-appt">9<div class="cal-dot"></div></div><div class="cal-day">10</div>
+                    <div class="cal-day">11</div><div class="cal-day has-appt">12<div class="cal-dot"></div></div><div class="cal-day">13</div><div class="cal-day">14</div><div class="cal-day has-appt">15<div class="cal-dot"></div></div><div class="cal-day">16</div><div class="cal-day">17</div>
+                    <div class="cal-day">18</div><div class="cal-day">19</div><div class="cal-day">20</div><div class="cal-day has-appt">21<div class="cal-dot"></div></div><div class="cal-day">22</div><div class="cal-day">23</div><div class="cal-day">24</div>
+                    <div class="cal-day">25</div><div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day">28</div><div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day">31</div>
+                </div>
+                <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#0a0a0a;border-radius:6px;border:1px solid var(--border)">
+                        <div>
+                            <div style="font-size:12px;font-weight:600">Carol T.</div>
+                            <div style="font-size:11px;color:var(--muted)">Medicare review · Zoom</div>
+                        </div>
+                        <span class="badge badge-blue">Thu 2:00pm</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#0a0a0a;border-radius:6px;border:1px solid var(--border)">
+                        <div>
+                            <div style="font-size:12px;font-weight:600">Frank G.</div>
+                            <div style="font-size:11px;color:var(--muted)">Supplement plan · Phone</div>
+                        </div>
+                        <span class="badge badge-blue">Fri 10:30am</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Integrations + Session Scope -->
+            <div class="section">
+                <div class="section-title">Connected Integrations</div>
+                <div class="section-sub">Channels feeding the pipeline</div>
+                <div class="integrations-grid">
+                    <div class="int-card">
+                        <div class="int-icon" style="background:rgba(59,130,246,0.1)">f</div>
+                        <div>
+                            <div class="int-name">Facebook Leads</div>
+                            <div class="int-status status-connected">● Connected</div>
+                        </div>
+                    </div>
+                    <div class="int-card">
+                        <div class="int-icon" style="background:rgba(34,197,94,0.1)">📅</div>
+                        <div>
+                            <div class="int-name">GHL Calendar</div>
+                            <div class="int-status status-connected">● Connected</div>
+                        </div>
+                    </div>
+                    <div class="int-card">
+                        <div class="int-icon" style="background:rgba(99,102,241,0.1)">💬</div>
+                        <div>
+                            <div class="int-name">Twilio SMS</div>
+                            <div class="int-status status-connected">● Connected</div>
+                        </div>
+                    </div>
+                    <div class="int-card">
+                        <div class="int-icon" style="background:rgba(245,158,11,0.1)">✉️</div>
+                        <div>
+                            <div class="int-name">SMTP Email</div>
+                            <div class="int-status status-connected">● Connected</div>
+                        </div>
+                    </div>
+                    <div class="int-card">
+                        <div class="int-icon" style="background:rgba(239,68,68,0.1)">📋</div>
+                        <div>
+                            <div class="int-name">Contact Import</div>
+                            <div class="int-status status-pending">⏳ Pending</div>
+                        </div>
+                    </div>
+                    <div class="int-card">
+                        <div class="int-icon" style="background:rgba(99,102,241,0.1)">🔗</div>
+                        <div>
+                            <div class="int-name">Webhooks</div>
+                            <div class="int-status status-pending">⏳ Setup</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:16px">
+                    <div style="font-size:13px;font-weight:600;margin-bottom:10px">Live Session Scope</div>
+                    <div style="display:flex;flex-direction:column;gap:7px">
+                        <div style="display:flex;align-items:center;gap:8px;font-size:12px"><span style="color:var(--green)">✓</span> Pipeline stages + custom fields</div>
+                        <div style="display:flex;align-items:center;gap:8px;font-size:12px"><span style="color:var(--green)">✓</span> Facebook lead form webhook</div>
+                        <div style="display:flex;align-items:center;gap:8px;font-size:12px"><span style="color:var(--green)">✓</span> SMS + email automation sequences</div>
+                        <div style="display:flex;align-items:center;gap:8px;font-size:12px"><span style="color:var(--green)">✓</span> Calendar + appointment reminders</div>
+                        <div style="display:flex;align-items:center;gap:8px;font-size:12px"><span style="color:var(--green)">✓</span> Contact import + deduplication</div>
+                        <div style="display:flex;align-items:center;gap:8px;font-size:12px"><span style="color:var(--green)">✓</span> Opportunity management setup</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        item.addEventListener('click', () => {
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+        });
+    });
+
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+        });
+    });
+</script>
+</body>
+</html>
