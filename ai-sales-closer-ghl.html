@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Sales Closer — GHL + AI Automations</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card: #111111;
+      --border: #1e1e1e;
+      --accent: #6366f1;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --text: #e5e7eb;
+      --muted: #6b7280;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.6;}
+    a{color:var(--accent);text-decoration:none;}
+    .wrapper{max-width:1080px;margin:0 auto;padding:0 24px;}
+    section{padding:60px 0;border-bottom:1px solid var(--border);}
+
+    .hero{padding:72px 0 56px;text-align:center;border-bottom:1px solid var(--border);}
+    .hero-badge{display:inline-block;background:rgba(99,102,241,0.15);color:var(--accent);border:1px solid rgba(99,102,241,0.3);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:20px;}
+    .hero h1{font-size:clamp(24px,5vw,42px);font-weight:700;line-height:1.15;margin-bottom:14px;}
+    .hero h1 span{color:var(--green);}
+    .hero p{color:var(--muted);font-size:16px;max-width:540px;margin:0 auto 28px;}
+    .hero-stats{display:flex;justify-content:center;gap:44px;flex-wrap:wrap;}
+    .hero-stat-num{font-size:26px;font-weight:700;color:var(--accent);}
+    .hero-stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
+
+    .sec-label{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+    .sec-title{font-size:clamp(18px,3vw,24px);font-weight:700;margin-bottom:6px;}
+    .sec-sub{color:var(--muted);font-size:14px;margin-bottom:28px;}
+
+    .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px;}
+    .card h3{font-size:14px;font-weight:600;margin-bottom:6px;}
+    .card p{font-size:13px;color:var(--muted);line-height:1.6;}
+    .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;}
+
+    .pill{display:inline-flex;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;}
+    .pill-green{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.2);}
+    .pill-amber{background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.2);}
+    .pill-accent{background:rgba(99,102,241,0.12);color:var(--accent);border:1px solid rgba(99,102,241,0.2);}
+
+    /* Sales process flow */
+    .flow{display:flex;flex-direction:column;gap:0;}
+    .flow-step{display:grid;grid-template-columns:60px 1fr;background:var(--card);border:1px solid var(--border);border-bottom:none;}
+    .flow-step:first-child{border-radius:10px 10px 0 0;}
+    .flow-step:last-child{border-bottom:1px solid var(--border);border-radius:0 0 10px 10px;}
+    .flow-num{display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--accent);border-right:1px solid var(--border);}
+    .flow-body{padding:16px 20px;}
+    .flow-body h4{font-size:13px;font-weight:600;margin-bottom:4px;}
+    .flow-body p{font-size:12px;color:var(--muted);}
+
+    /* Objection handling */
+    .obj-grid{display:flex;flex-direction:column;gap:10px;}
+    .obj-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px;display:grid;grid-template-columns:auto 1fr;gap:14px;}
+    .obj-trigger{font-size:12px;font-weight:700;color:var(--red);white-space:nowrap;padding-top:2px;}
+    .obj-response{font-size:13px;color:var(--muted);}
+    .obj-response strong{color:var(--text);}
+
+    /* GHL pipeline */
+    .pipeline-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;overflow-x:auto;}
+    .pipeline{display:flex;gap:10px;min-width:700px;}
+    .pipe-col{flex:1;min-width:130px;}
+    .pipe-header{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;text-align:center;padding:6px;border-radius:6px;margin-bottom:8px;}
+    .pipe-card{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:10px;font-size:11px;margin-bottom:6px;}
+    .pipe-card strong{display:block;margin-bottom:2px;font-size:12px;color:var(--text);}
+    .pipe-card span{color:var(--muted);}
+
+    /* Metrics */
+    .metric-row{display:grid;grid-template-columns:160px 1fr 50px;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);}
+    .metric-row:last-child{border-bottom:none;}
+    .metric-label{font-size:13px;color:var(--muted);}
+    .metric-track{background:var(--border);border-radius:4px;height:6px;overflow:hidden;}
+    .metric-fill{height:100%;border-radius:4px;width:0;transition:width 1s ease;}
+    .metric-val{font-size:13px;font-weight:600;text-align:right;}
+
+    .deliverables{display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+    @media(max-width:640px){.deliverables{grid-template-columns:1fr;}}
+    .deliverables h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--accent);margin-bottom:12px;}
+    .deliverables ul{list-style:none;}
+    .deliverables li{font-size:13px;padding:7px 0 7px 20px;border-bottom:1px solid var(--border);position:relative;}
+    .deliverables li:last-child{border-bottom:none;}
+    .deliverables li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:700;font-size:11px;top:8px;}
+
+    .loom-card{background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(99,102,241,0.02));border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:36px;text-align:center;}
+    .loom-card h3{font-size:20px;font-weight:700;margin-bottom:8px;}
+    .loom-card p{color:var(--muted);margin-bottom:24px;}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;border-radius:7px;font-weight:600;font-size:14px;text-decoration:none;}
+    .btn-primary{background:var(--accent);color:#fff;}
+    .btn-outline{background:transparent;color:var(--accent);border:1px solid rgba(99,102,241,0.4);margin-left:10px;}
+
+    .reveal{opacity:0;transform:translateY(16px);transition:opacity 0.45s,transform 0.45s;}
+    .reveal.v{opacity:1;transform:none;}
+    footer{padding:36px 0;text-align:center;color:var(--muted);font-size:12px;border-top:1px solid var(--border);}
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="hero">
+    <div class="hero-badge">AI Sales · GoHighLevel · Performance-Based</div>
+    <h1>AI Automations.<br><span>Closed at $2K–$10K+.</span></h1>
+    <p>Structured sales process, objection handling, and GHL pipeline management for high-ticket AI automation offers sold directly to business owners.</p>
+    <div class="hero-stats">
+      <div><div class="hero-stat-num">$2K–$10K+</div><div class="hero-stat-label">Deal Size</div></div>
+      <div><div class="hero-stat-num">GHL</div><div class="hero-stat-label">CRM + Pipeline</div></div>
+      <div><div class="hero-stat-num">AI</div><div class="hero-stat-label">Product Knowledge</div></div>
+      <div><div class="hero-stat-num">1-Call</div><div class="hero-stat-label">Close Framework</div></div>
+    </div>
+  </div>
+
+  <!-- SALES PROCESS -->
+  <section class="reveal">
+    <div class="sec-label">Structured Sales Process</div>
+    <div class="sec-title">Lead to Close — 6 Steps</div>
+    <div class="sec-sub">Every call follows this structure. Nothing left to guessing or improvisation.</div>
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-num">01</div>
+        <div class="flow-body">
+          <h4>Discovery + Rapport</h4>
+          <p>Understand their business, current tech stack, and daily pain points. Speak their language. Let them talk 70% of the first 5 minutes.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">02</div>
+        <div class="flow-body">
+          <h4>Pain Identification</h4>
+          <p>Get specific: how many leads are they losing? How many hours on manual tasks? What would change if those hours came back? Quantify the cost of inaction.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">03</div>
+        <div class="flow-body">
+          <h4>AI Solution Demo</h4>
+          <p>Show what the AI automation does for their specific case. Not a generic pitch deck. A walkthrough of what their business looks like with the system running.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">04</div>
+        <div class="flow-body">
+          <h4>ROI Framing</h4>
+          <p>Translate the solution into dollars. If the system saves 20 hours a week at $50/hr, that's $4,000/month. The $5K build pays for itself in 5 weeks.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">05</div>
+        <div class="flow-body">
+          <h4>Objection Handling</h4>
+          <p>Address price, timing, trust, and technical concerns using specific frameworks (see below). No defensiveness. Pure problem-solving posture.</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">06</div>
+        <div class="flow-body">
+          <h4>Close + Onboarding Handoff</h4>
+          <p>Direct close: "Want to get started this week?" Collect payment. Move to onboarding pipeline in GHL. Intro to implementation team same day.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- OBJECTION HANDLING -->
+  <section class="reveal">
+    <div class="sec-label">Objection Handling</div>
+    <div class="sec-title">The 5 Objections You'll Hear on Every Call</div>
+    <div class="sec-sub">Every objection is a question in disguise. Here's how each one gets reframed.</div>
+    <div class="obj-grid">
+      <div class="obj-card">
+        <div class="obj-trigger">"Too expensive"</div>
+        <div class="obj-response"><strong>Reframe to cost of inaction.</strong> "You mentioned you're losing 15 leads a month to slow follow-up. At your average deal size that's $X/month walking out the door. The system pays for itself in [weeks]."</div>
+      </div>
+      <div class="obj-card">
+        <div class="obj-trigger">"Need to think"</div>
+        <div class="obj-response"><strong>Isolate the real concern.</strong> "Totally fair. What specifically do you want to think through? Is it the investment, the timeline, or whether this actually works for your business?" Then address the real one.</div>
+      </div>
+      <div class="obj-card">
+        <div class="obj-trigger">"Bad timing"</div>
+        <div class="obj-response"><strong>Flip to urgency.</strong> "When is good timing to stop losing $X a month? The system takes 2 weeks to build. You're losing leads every day between now and when it's live."</div>
+      </div>
+      <div class="obj-card">
+        <div class="obj-trigger">"I don't trust AI"</div>
+        <div class="obj-response"><strong>Ground it in specifics.</strong> "It's not replacing you or your team. It's handling the repetitive stuff — follow-ups, booking, reminders — so your team only talks to people ready to buy. You stay in control."</div>
+      </div>
+      <div class="obj-card">
+        <div class="obj-trigger">"Send me info"</div>
+        <div class="obj-response"><strong>Micro-commitment close.</strong> "Happy to. Let me send you the system walkthrough. If it makes sense after you watch it, are you open to a 10-minute call Thursday to answer any questions?" Book the next step before you hang up.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GHL PIPELINE -->
+  <section class="reveal">
+    <div class="sec-label">GoHighLevel CRM</div>
+    <div class="sec-title">Sales Pipeline — Where Every Deal Lives</div>
+    <div class="sec-sub">Clean pipeline stages in GHL. Every deal tracked from first contact to closed and onboarded.</div>
+    <div class="pipeline-wrap">
+      <div class="pipeline">
+        <div class="pipe-col">
+          <div class="pipe-header" style="background:rgba(99,102,241,0.15);color:var(--accent);">New Lead</div>
+          <div class="pipe-card"><strong>Jake — HVAC Co</strong><span>Booked via chat widget</span></div>
+          <div class="pipe-card"><strong>Maria — Med Spa</strong><span>Facebook ad lead</span></div>
+        </div>
+        <div class="pipe-col">
+          <div class="pipe-header" style="background:rgba(59,130,246,0.15);color:var(--blue);">Discovery Call</div>
+          <div class="pipe-card"><strong>Tyler — Roofing</strong><span>Call scheduled Thu 2pm</span></div>
+        </div>
+        <div class="pipe-col">
+          <div class="pipe-header" style="background:rgba(245,158,11,0.15);color:var(--amber);">Proposal Sent</div>
+          <div class="pipe-card"><strong>Denise — Dental</strong><span>$4,800 proposal · D+2</span></div>
+          <div class="pipe-card"><strong>Omar — Law Firm</strong><span>$7,200 proposal · D+1</span></div>
+        </div>
+        <div class="pipe-col">
+          <div class="pipe-header" style="background:rgba(20,184,166,0.15);color:#14b8a6;">Negotiation</div>
+          <div class="pipe-card"><strong>Rachel — Realtor</strong><span>Payment plan discussed</span></div>
+        </div>
+        <div class="pipe-col">
+          <div class="pipe-header" style="background:rgba(34,197,94,0.15);color:var(--green);">Closed Won</div>
+          <div class="pipe-card"><strong>Steve — Plumbing</strong><span>$5,400 · Paid · Onboarding</span></div>
+          <div class="pipe-card"><strong>Linda — Fitness</strong><span>$3,200 · Paid · Building</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- METRICS -->
+  <section class="reveal">
+    <div class="sec-label">Performance Metrics</div>
+    <div class="sec-title">What I Track and Report On</div>
+    <div class="sec-sub">Performance-based means accountability. Here's what gets measured weekly.</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:24px;">
+      <div class="metric-row">
+        <div class="metric-label">Show Rate</div>
+        <div class="metric-track"><div class="metric-fill" data-w="85" style="background:var(--green);"></div></div>
+        <div class="metric-val" style="color:var(--green);">85%</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-label">Close Rate (showed)</div>
+        <div class="metric-track"><div class="metric-fill" data-w="60" style="background:var(--accent);"></div></div>
+        <div class="metric-val" style="color:var(--accent);">30%</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-label">Avg Deal Size</div>
+        <div class="metric-track"><div class="metric-fill" data-w="55" style="background:var(--amber);"></div></div>
+        <div class="metric-val" style="color:var(--amber);">$5.2K</div>
+      </div>
+      <div class="metric-row">
+        <div class="metric-label">Pipeline Velocity</div>
+        <div class="metric-track"><div class="metric-fill" data-w="70" style="background:var(--blue);"></div></div>
+        <div class="metric-val" style="color:var(--blue);">8 days</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI PRODUCT KNOWLEDGE -->
+  <section class="reveal">
+    <div class="sec-label">Product Knowledge</div>
+    <div class="sec-title">AI Solutions I Can Speak To on a Call</div>
+    <div class="sec-sub">Not selling something I don't understand. I build these systems, which is why I can sell them.</div>
+    <div class="card-grid">
+      <div class="card">
+        <h3>AI Lead Response + Booking</h3>
+        <p>Speed-to-lead automation, AI SMS/chat bots, calendar booking. Typical sell: $2K–$4K.</p>
+      </div>
+      <div class="card">
+        <h3>AI Phone Assistants</h3>
+        <p>Inbound/outbound AI voice agents for qualification, booking, and FAQ handling. Typical sell: $3K–$6K.</p>
+      </div>
+      <div class="card">
+        <h3>Full CRM + Automation Build</h3>
+        <p>GHL buildout with pipelines, follow-ups, review automation, and dashboards. Typical sell: $5K–$10K.</p>
+      </div>
+      <div class="card">
+        <h3>Workflow Automation (n8n)</h3>
+        <p>Backend automations connecting APIs, databases, and AI. Data enrichment, lead routing, reporting. Typical sell: $3K–$8K.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DELIVERABLES -->
+  <section class="reveal">
+    <div class="sec-label">What You Get</div>
+    <div class="sec-title">Deliverables</div>
+    <div class="deliverables">
+      <div>
+        <h4>Sales Execution</h4>
+        <ul>
+          <li>Run all discovery and close calls</li>
+          <li>Follow structured 6-step sales process</li>
+          <li>Handle objections on the call (not after)</li>
+          <li>Close deals at $2K–$10K+</li>
+          <li>Manage full GHL sales pipeline</li>
+          <li>Follow up with pending proposals same day</li>
+          <li>Hand closed deals to onboarding team</li>
+        </ul>
+      </div>
+      <div>
+        <h4>Reporting + Accountability</h4>
+        <ul>
+          <li>Weekly close rate and revenue report</li>
+          <li>Pipeline health update every Friday</li>
+          <li>Call recordings available for review</li>
+          <li>Objection log for offer refinement</li>
+          <li>Show rate and no-show follow-up tracking</li>
+          <li>Deal size and velocity metrics</li>
+          <li>Recommendations for offer positioning</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="reveal" style="border-bottom:none;">
+    <div class="loom-card">
+      <h3>Voice Introduction + Sales Approach</h3>
+      <p>Watch a short intro covering sales background, how I handle AI automation calls, and how GHL fits into the close process.</p>
+      <a href="[LOOM_LINK]" class="btn btn-primary">▶ Watch Introduction</a>
+      <a href="https://blueprints-saif-shaikh-s-projects.vercel.app/ai-sales-closer-ghl.html" class="btn btn-outline">View Blueprint</a>
+    </div>
+  </section>
+
+  <footer>Performance-based. If I don't close, you don't pay.</footer>
+</div>
+
+<script>
+  const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('v');}),{threshold:0.07});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+  const bObs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('.metric-fill').forEach(b=>b.style.width=b.dataset.w+'%');bObs.unobserve(e.target);}}),{threshold:0.2});
+  document.querySelectorAll('[class*="metric"]').forEach(el=>bObs.observe(el.closest('div[style]')||el));
+</script>
+</body>
+</html>
