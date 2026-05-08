@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cold Email Deliverability Infrastructure</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card: #111111;
+      --border: #1e1e1e;
+      --accent: #3b82f6;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --text: #e5e7eb;
+      --muted: #6b7280;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; }
+
+    .header {
+      background: linear-gradient(135deg, #0a0a0a 0%, #0d1520 50%, #0a0f1a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 48px 24px;
+      text-align: center;
+    }
+    .header-tag {
+      display: inline-block;
+      background: rgba(59,130,246,0.12);
+      border: 1px solid rgba(59,130,246,0.25);
+      color: #3b82f6;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    .header h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+    .header p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 580px;
+      margin: 0 auto 28px;
+      line-height: 1.6;
+    }
+    .header-metrics {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .header-metric .value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .header-metric .label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 2px;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 48px 24px; }
+
+    .section { margin-bottom: 48px; }
+    .section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    @media (max-width: 768px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .header h1 { font-size: 1.6rem; }
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      background: rgba(59,130,246,0.08);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 10px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody td {
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .badge-green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .badge-amber { background: rgba(245,158,11,0.12); color: var(--amber); }
+    .badge-red { background: rgba(239,68,68,0.12); color: var(--red); }
+    .badge-blue { background: rgba(59,130,246,0.12); color: var(--accent); }
+
+    .mermaid-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      overflow-x: auto;
+    }
+
+    .dns-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .dns-card .dns-type {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .dns-card .dns-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+    .dns-card .dns-desc {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    .dns-record {
+      background: #060606;
+      border: 1px solid #1a1a1a;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: 'Fira Code', 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: #a3e635;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .rotation-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .domain-box {
+      background: rgba(59,130,246,0.06);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+    }
+    .domain-box .domain-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .inbox-pills { display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; }
+    .inbox-pill {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: rgba(34,197,94,0.1);
+      color: var(--green);
+      border: 1px solid rgba(34,197,94,0.2);
+    }
+
+    .tool-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .tool-row:last-child { border-bottom: none; }
+    .tool-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .tool-name { font-size: 14px; font-weight: 600; color: #fff; }
+    .tool-use { font-size: 12px; color: var(--muted); }
+    .tool-pick { margin-left: auto; font-size: 11px; color: var(--green); font-weight: 600; white-space: nowrap; }
+
+    .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .bar-label { font-size: 12px; color: var(--muted); width: 150px; flex-shrink: 0; text-align: right; }
+    .bar-track { flex: 1; height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; width: 0; border-radius: 4px; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+    .bar-pct { font-size: 12px; color: var(--text); width: 36px; text-align: right; flex-shrink: 0; }
+
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .check-item:last-child { border-bottom: none; }
+    .check-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .check-dot::after { content: '✓'; font-size: 9px; color: var(--green); font-weight: 700; }
+    .check-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+    .check-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+    .star { color: var(--amber); }
+    .star-empty { color: #2a2a2a; }
+
+    .monitor-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+    }
+    .monitor-card .m-icon { font-size: 26px; margin-bottom: 8px; }
+    .monitor-card .m-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .monitor-card .m-desc { font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 10px; }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-tag">Cold Email Infrastructure · 2026 Stack</div>
+  <h1>Deliverability Architecture Blueprint</h1>
+  <p>Infrastructure selection, sender rotation, DNS configuration, warmup protocols, and real-time monitoring — built for 50k+ monthly sends with zero domain burnout.</p>
+  <div class="header-metrics">
+    <div class="header-metric">
+      <div class="value">50k+</div>
+      <div class="label">Emails / Month</div>
+    </div>
+    <div class="header-metric">
+      <div class="value">98%+</div>
+      <div class="label">Inbox Rate Target</div>
+    </div>
+    <div class="header-metric">
+      <div class="value">30+</div>
+      <div class="label">Domains Managed</div>
+    </div>
+    <div class="header-metric">
+      <div class="value">2026</div>
+      <div class="label">Google / Yahoo Compliant</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Architecture -->
+  <div class="section reveal">
+    <div class="section-title">System Architecture</div>
+    <div class="mermaid-wrap">
+      <div class="mermaid">
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#3b82f6', 'primaryTextColor': '#e5e7eb', 'primaryBorderColor': '#1e3a5f', 'lineColor': '#3b82f6', 'secondaryColor': '#111111', 'tertiaryColor': '#0a0f1a', 'background': '#111111', 'mainBkg': '#0d1520', 'nodeBorder': '#1e3a5f', 'clusterBkg': '#0a0f1a', 'titleColor': '#e5e7eb', 'edgeLabelBackground': '#111111', 'fontFamily': 'Inter, sans-serif'} }}%%
+graph LR
+    A[Lead List<br/>Verified] --> B[Sequencer<br/>Instantly / Smartlead]
+    B --> C{Sender Rotation<br/>Engine}
+    C --> D[Domain Pool A<br/>3 inboxes]
+    C --> E[Domain Pool B<br/>3 inboxes]
+    C --> F[Domain Pool C+<br/>3 inboxes]
+    D --> G[Custom Tracking<br/>Domain]
+    E --> G
+    F --> G
+    G --> H[Inbox Placement<br/>Monitor]
+    H --> I{Inbox?}
+    I -->|Yes| J[Reply → CRM]
+    I -->|Spam| K[Pause & Diagnose]
+      </div>
+    </div>
+  </div>
+
+  <!-- Infrastructure Comparison -->
+  <div class="section reveal">
+    <div class="section-title">Infrastructure Stack Comparison — 2026</div>
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <table>
+        <thead>
+          <tr>
+            <th>Provider</th>
+            <th>Setup Time</th>
+            <th>Cost / Inbox</th>
+            <th>Warmup</th>
+            <th>Management</th>
+            <th>Best For</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>ScaledMail</strong></td>
+            <td>1–2 days</td>
+            <td>$3–5/mo</td>
+            <td><span class="badge badge-green">Included</span></td>
+            <td>Managed</td>
+            <td>Agencies, 50k+ scale</td>
+            <td><span class="star">★★★★★</span></td>
+          </tr>
+          <tr>
+            <td><strong>InboxKit</strong></td>
+            <td>2–3 days</td>
+            <td>$4–6/mo</td>
+            <td><span class="badge badge-green">Included</span></td>
+            <td>Managed</td>
+            <td>Done-for-you setups</td>
+            <td><span class="star">★★★★</span><span class="star-empty">★</span></td>
+          </tr>
+          <tr>
+            <td><strong>Inframail</strong></td>
+            <td>Same day</td>
+            <td>$99 flat</td>
+            <td><span class="badge badge-amber">Partial</span></td>
+            <td>Self-serve</td>
+            <td>Cost-conscious scaling</td>
+            <td><span class="star">★★★★</span><span class="star-empty">★</span></td>
+          </tr>
+          <tr>
+            <td><strong>Google Workspace</strong></td>
+            <td>3–5 days</td>
+            <td>$6–12/mo</td>
+            <td><span class="badge badge-red">No</span></td>
+            <td>Self-serve</td>
+            <td>Deliverability reliability</td>
+            <td><span class="star">★★★</span><span class="star-empty">★★</span></td>
+          </tr>
+          <tr>
+            <td><strong>Microsoft 365</strong></td>
+            <td>3–5 days</td>
+            <td>$6/mo</td>
+            <td><span class="badge badge-red">No</span></td>
+            <td>Self-serve</td>
+            <td>Harder-to-filter volume</td>
+            <td><span class="star">★★★</span><span class="star-empty">★★</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Sender Rotation -->
+  <div class="section reveal">
+    <div class="section-title">Sender Rotation Strategy</div>
+    <div class="grid-2">
+      <div class="card">
+        <div style="font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px;">Scale Calculator</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Monthly Volume</th>
+              <th>Inboxes</th>
+              <th>Domains</th>
+              <th>Max/Inbox/Day</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>10,000</td><td>7–10</td><td>3–4</td><td>40–50</td></tr>
+            <tr><td>25,000</td><td>15–20</td><td>6–7</td><td>40–50</td></tr>
+            <tr>
+              <td style="color: var(--accent); font-weight: 700;">50,000</td>
+              <td style="color: var(--accent); font-weight: 700;">25–35</td>
+              <td style="color: var(--accent); font-weight: 700;">10–12</td>
+              <td style="color: var(--accent); font-weight: 700;">40–50</td>
+            </tr>
+            <tr><td>100,000</td><td>60–80</td><td>25–30</td><td>40–50</td></tr>
+            <tr><td>250,000</td><td>150–200</td><td>60–70</td><td>40–50</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div style="font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px;">Domain Pool — 50k/mo Example</div>
+        <div class="rotation-grid">
+          <div class="domain-box">
+            <div class="domain-name">yourbrand-01.com</div>
+            <div class="inbox-pills">
+              <span class="inbox-pill">outreach@</span>
+              <span class="inbox-pill">hello@</span>
+              <span class="inbox-pill">team@</span>
+            </div>
+          </div>
+          <div class="domain-box">
+            <div class="domain-name">yourbrand-02.com</div>
+            <div class="inbox-pills">
+              <span class="inbox-pill">outreach@</span>
+              <span class="inbox-pill">hello@</span>
+              <span class="inbox-pill">team@</span>
+            </div>
+          </div>
+          <div class="domain-box">
+            <div class="domain-name">yourbrand-03.com</div>
+            <div class="inbox-pills">
+              <span class="inbox-pill">outreach@</span>
+              <span class="inbox-pill">hello@</span>
+              <span class="inbox-pill">team@</span>
+            </div>
+          </div>
+          <div class="domain-box">
+            <div class="domain-name">yourbrand-04.com</div>
+            <div class="inbox-pills">
+              <span class="inbox-pill">outreach@</span>
+              <span class="inbox-pill">hello@</span>
+              <span class="inbox-pill">team@</span>
+            </div>
+          </div>
+          <div class="domain-box">
+            <div class="domain-name">yourbrand-05.com</div>
+            <div class="inbox-pills">
+              <span class="inbox-pill">outreach@</span>
+              <span class="inbox-pill">hello@</span>
+              <span class="inbox-pill">team@</span>
+            </div>
+          </div>
+          <div class="domain-box" style="border-style: dashed; opacity: 0.6;">
+            <div class="domain-name" style="color: var(--muted);">+ 5–7 more</div>
+            <div style="font-size: 10px; color: var(--muted); margin-top: 4px;">rotation pool</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DNS Config -->
+  <div class="section reveal">
+    <div class="section-title">DNS Configuration — Record by Record</div>
+    <div class="grid-2" style="gap: 16px;">
+      <div class="dns-card">
+        <div class="dns-type">SPF Record</div>
+        <div class="dns-name">Sender Policy Framework</div>
+        <div class="dns-desc">Authorizes which mail servers can send from your domain. Strict alignment required for DMARC pass.</div>
+        <div class="dns-record">Type: TXT
+Host: @
+Value: v=spf1 include:_spf.google.com
+       include:sendgrid.net ~all</div>
+      </div>
+      <div class="dns-card">
+        <div class="dns-type">DKIM Record</div>
+        <div class="dns-name">DomainKeys Identified Mail</div>
+        <div class="dns-desc">Cryptographic signature on every outbound email. Mandatory per Google & Yahoo 2024+ bulk sender policy.</div>
+        <div class="dns-record">Type: CNAME
+Host: google._domainkey
+Value: google._domainkey.yourdomain.com
+       (auto-generated by mail provider)</div>
+      </div>
+      <div class="dns-card">
+        <div class="dns-type">DMARC Record</div>
+        <div class="dns-name">Domain-based Message Auth</div>
+        <div class="dns-desc">Tells receiving servers what to do with SPF/DKIM failures. Start p=none, escalate to quarantine after 2 weeks.</div>
+        <div class="dns-record">Type: TXT
+Host: _dmarc
+Value: v=DMARC1; p=quarantine;
+       rua=mailto:dmarc@yourdomain.com;
+       pct=100; adkim=s; aspf=s;</div>
+      </div>
+      <div class="dns-card">
+        <div class="dns-type">Custom Tracking Domain</div>
+        <div class="dns-name">Click & Open Tracking</div>
+        <div class="dns-desc">Never use your sequencer's shared tracking domain. Own subdomain protects sender rep from shared blacklists.</div>
+        <div class="dns-record">Type: CNAME
+Host: track
+Value: tracking.instantly.ai
+       (or sequencer-specific endpoint)
+
+Use: track.yourbrand.com</div>
+      </div>
+      <div class="dns-card">
+        <div class="dns-type">MX Records</div>
+        <div class="dns-name">Mail Exchange</div>
+        <div class="dns-desc">Routes inbound mail. Must be active even on sending-only domains — dead MX triggers spam filters immediately.</div>
+        <div class="dns-record">Type: MX  Priority: 1
+Host: @
+Value: aspmx.l.google.com
+       (Google Workspace)
+       mail.protection.outlook.com
+       (Microsoft 365)</div>
+      </div>
+      <div class="dns-card">
+        <div class="dns-type">Forwarding Setup</div>
+        <div class="dns-name">Reply-to Routing</div>
+        <div class="dns-desc">Forward alias replies to a central inbox. Keeps sending domains clean while all replies land in one place.</div>
+        <div class="dns-record">Alias: outreach@yourbrand-01.com
+→ Forward: replies@yourbrand.com
+
+Set "Reply-To" header in sequencer
+to route responses into CRM / Slack.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cost Breakdown -->
+  <div class="section reveal">
+    <div class="section-title">Cost Breakdown — Fixed vs Variable</div>
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Type</th>
+            <th>Unit Cost</th>
+            <th>50k/mo Estimate</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Domains (Cloudflare)</strong></td>
+            <td><span class="badge badge-blue">Fixed</span></td>
+            <td>~$9–12/yr each</td>
+            <td style="color: var(--accent); font-weight: 600;">~$10–15/mo</td>
+            <td>10–12 domains × $10/yr avg</td>
+          </tr>
+          <tr>
+            <td><strong>Mailboxes (GW / M365)</strong></td>
+            <td><span class="badge badge-blue">Fixed</span></td>
+            <td>$6–12/inbox/mo</td>
+            <td style="color: var(--accent); font-weight: 600;">~$180–360/mo</td>
+            <td>30 inboxes × $6–12</td>
+          </tr>
+          <tr>
+            <td><strong>Sequencer (Instantly)</strong></td>
+            <td><span class="badge badge-blue">Fixed</span></td>
+            <td>$97–297/mo</td>
+            <td style="color: var(--accent); font-weight: 600;">~$97–297/mo</td>
+            <td>Hypergrowth tier for 50k+</td>
+          </tr>
+          <tr>
+            <td><strong>Warmup (Instantly built-in)</strong></td>
+            <td><span class="badge badge-blue">Fixed</span></td>
+            <td>Included</td>
+            <td style="color: var(--green); font-weight: 600;">$0</td>
+            <td>Included in Hypergrowth plan</td>
+          </tr>
+          <tr>
+            <td><strong>Lead Verification</strong></td>
+            <td><span class="badge badge-amber">Variable</span></td>
+            <td>~$0.002/email</td>
+            <td style="color: var(--amber); font-weight: 600;">~$50–150/mo</td>
+            <td>Millionverifier or Zerobounce</td>
+          </tr>
+          <tr>
+            <td><strong>Lead Enrichment</strong></td>
+            <td><span class="badge badge-amber">Variable</span></td>
+            <td>~$0.01–0.05/lead</td>
+            <td style="color: var(--amber); font-weight: 600;">~$50–200/mo</td>
+            <td>Apollo / Clay / Findymail</td>
+          </tr>
+          <tr>
+            <td><strong>Deliverability Monitoring</strong></td>
+            <td><span class="badge badge-blue">Fixed</span></td>
+            <td>$29–99/mo</td>
+            <td style="color: var(--accent); font-weight: 600;">~$29–99/mo</td>
+            <td>GlockApps or Mailreach</td>
+          </tr>
+          <tr style="background: rgba(59,130,246,0.04);">
+            <td colspan="2" style="font-weight: 700; color: #fff; font-size: 14px;">Total Estimated</td>
+            <td colspan="3" style="font-weight: 700; color: var(--accent); font-size: 14px;">~$416 – $1,100 / month at 50k sends</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Warmup Comparison -->
+  <div class="section reveal">
+    <div class="section-title">Warmup Pool Comparison</div>
+    <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 16px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Tool</th>
+            <th>Pool Size</th>
+            <th>Placement Monitor</th>
+            <th>Spam Rescue</th>
+            <th>Price</th>
+            <th>Verdict</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Instantly</strong> (built-in)</td>
+            <td>800k+ emails</td>
+            <td><span class="badge badge-green">Yes</span></td>
+            <td><span class="badge badge-green">Yes</span></td>
+            <td>Included</td>
+            <td><span class="badge badge-green">Best Default</span></td>
+          </tr>
+          <tr>
+            <td><strong>Smartlead</strong></td>
+            <td>Large pool</td>
+            <td><span class="badge badge-green">Yes</span></td>
+            <td><span class="badge badge-amber">Partial</span></td>
+            <td>Included</td>
+            <td><span class="badge badge-blue">Solid Alt</span></td>
+          </tr>
+          <tr>
+            <td><strong>Mailreach</strong></td>
+            <td>Curated</td>
+            <td><span class="badge badge-green">Yes</span></td>
+            <td><span class="badge badge-green">Yes</span></td>
+            <td>$25/inbox/mo</td>
+            <td><span class="badge badge-amber">Premium</span></td>
+          </tr>
+          <tr>
+            <td><strong>Lemwarm</strong></td>
+            <td>Medium</td>
+            <td><span class="badge badge-amber">Basic</span></td>
+            <td><span class="badge badge-red">No</span></td>
+            <td>$29/mo</td>
+            <td><span class="badge badge-red">Avoid at Scale</span></td>
+          </tr>
+          <tr>
+            <td><strong>Warmbox</strong></td>
+            <td>50k+ inboxes</td>
+            <td><span class="badge badge-green">Yes</span></td>
+            <td><span class="badge badge-amber">Partial</span></td>
+            <td>$15/inbox/mo</td>
+            <td><span class="badge badge-blue">Backup</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-title" style="margin-bottom: 12px;">Inbox Placement Rate — 5-Week Warmup Ramp</div>
+    <div class="card">
+      <div class="bar-row">
+        <div class="bar-label">Week 1 — new inbox</div>
+        <div class="bar-track"><div class="bar-fill" style="background: var(--red);" data-width="22"></div></div>
+        <div class="bar-pct">22%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Week 2 — building rep</div>
+        <div class="bar-track"><div class="bar-fill" style="background: var(--amber);" data-width="55"></div></div>
+        <div class="bar-pct">55%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Week 3 — stabilising</div>
+        <div class="bar-track"><div class="bar-fill" style="background: var(--amber);" data-width="79"></div></div>
+        <div class="bar-pct">79%</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label">Week 4 — ramp begins</div>
+        <div class="bar-track"><div class="bar-fill" style="background: var(--green);" data-width="91"></div></div>
+        <div class="bar-pct">91%</div>
+      </div>
+      <div class="bar-row" style="margin-bottom: 0;">
+        <div class="bar-label">Week 5+ — full send</div>
+        <div class="bar-track"><div class="bar-fill" style="background: var(--green);" data-width="97"></div></div>
+        <div class="bar-pct">97%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monitoring Stack -->
+  <div class="section reveal">
+    <div class="section-title">Deliverability Monitoring Stack</div>
+    <div class="grid-4">
+      <div class="monitor-card">
+        <div class="m-icon">📊</div>
+        <div class="m-name">Google Postmaster</div>
+        <div class="m-desc">Domain & IP reputation dashboard. First signal of deliverability decay before it hits inbox rates.</div>
+        <span class="badge badge-green">Free</span>
+      </div>
+      <div class="monitor-card">
+        <div class="m-icon">🔧</div>
+        <div class="m-name">MXToolbox</div>
+        <div class="m-desc">Blacklist monitoring, DNS health checks, SPF/DKIM/DMARC record validation.</div>
+        <span class="badge badge-green">Free</span>
+      </div>
+      <div class="monitor-card">
+        <div class="m-icon">📬</div>
+        <div class="m-name">GlockApps</div>
+        <div class="m-desc">Real-time inbox vs spam placement tests across 90+ mailbox providers including Gmail & Outlook.</div>
+        <span class="badge badge-blue">$29/mo</span>
+      </div>
+      <div class="monitor-card">
+        <div class="m-icon">🛡️</div>
+        <div class="m-name">Mailreach</div>
+        <div class="m-desc">Per-inbox spam scores, warmup analytics, and automated health alerts.</div>
+        <span class="badge badge-amber">$25/inbox</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vetted Tool Stack -->
+  <div class="section reveal">
+    <div class="section-title">Vetted Tool Stack — Full Recommendation</div>
+    <div class="grid-2">
+      <div class="card">
+        <div style="font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px;">Sending & Sequencing</div>
+        <div class="tool-row">
+          <div class="tool-icon" style="background: rgba(59,130,246,0.1);">⚡</div>
+          <div>
+            <div class="tool-name">Instantly.ai</div>
+            <div class="tool-use">Primary sequencer — warmup pool + rotation UI built in</div>
+          </div>
+          <div class="tool-pick">Top Pick</div>
+        </div>
+        <div class="tool-row">
+          <div class="tool-icon" style="background: rgba(34,197,94,0.1);">🎯</div>
+          <div>
+            <div class="tool-name">Smartlead</div>
+            <div class="tool-use">Best for multi-client agency setups, sub-account structure</div>
+          </div>
+          <div class="tool-pick">Alt Pick</div>
+        </div>
+        <div style="font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin: 16px 0 14px; padding-top: 16px; border-top: 1px solid var(--border);">Domains & Infrastructure</div>
+        <div class="tool-row">
+          <div class="tool-icon" style="background: rgba(245,158,11,0.1);">🌐</div>
+          <div>
+            <div class="tool-name">Cloudflare Registrar</div>
+            <div class="tool-use">Cheapest domain registration + free DNS management</div>
+          </div>
+          <div class="tool-pick">Top Pick</div>
+        </div>
+        <div class="tool-row">
+          <div class="tool-icon" style="background: rgba(239,68,68,0.1);">📮</div>
+          <div>
+            <div class="tool-name">ScaledMail / InboxKit</div>
+            <div class="tool-use">Managed inbox provisioning — skip the manual setup</div>
+          </div>
+          <div class="tool-pick">Top Pick</div>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px;">Leads & Verification</div>
+        <div class="tool-row">
+          <div class="tool-icon" style="background: rgba(59,130,246,0.1);">🔍</div>
+          <div>
+            <div class="tool-name">Apollo.io</div>
+            <div class="tool-use">Primary lead sourcing — 275M contacts, ICP filtering</div>
+          </div>
+          <div class="tool-pick">Top Pick</div>
+        </div>
+        <div class="tool-row">
+          <div class="tool-icon" style="background: rgba(34,197,94,0.1);">✅</div>
+          <div>
+            <div class="tool-name">Millionverifier</div>
+            <div class="tool-use">Bulk email verification — cheapest, 99%+ accuracy</div>
+          </div>
+          <div class="tool-pick">Top Pick</div>
+        </div>
+        <div style="font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin: 16px 0 14px; padding-top: 16px; border-top: 1px solid var(--border);">Enrichment</div>
+        <div class="tool-row">
+          <div class="tool-icon" style="background: rgba(245,158,11,0.1);">🏗️</div>
+          <div>
+            <div class="tool-name">Clay</div>
+            <div class="tool-use">Waterfall enrichment across 50+ data providers</div>
+          </div>
+          <div class="tool-pick">Top Pick</div>
+        </div>
+        <div class="tool-row">
+          <div class="tool-icon" style="background: rgba(239,68,68,0.1);">📧</div>
+          <div>
+            <div class="tool-name">Findymail</div>
+            <div class="tool-use">Email finding with near-zero bounce rates, API-ready</div>
+          </div>
+          <div class="tool-pick">Alt Pick</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Session Checklist -->
+  <div class="section reveal">
+    <div class="section-title">2-Hour Session Walkthrough Checklist</div>
+    <div class="grid-2">
+      <div class="card">
+        <div style="font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 16px;">Hour 1 — Architecture Decision</div>
+        <div class="check-item">
+          <div class="check-dot"></div>
+          <div>
+            <div class="check-text">Infrastructure stack decision — ScaledMail vs manual</div>
+            <div class="check-sub">Based on volume target, budget, and go-live timeline</div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="check-dot"></div>
+          <div>
+            <div class="check-text">Domain naming convention + quantity defined</div>
+            <div class="check-sub">Forwarding variants, purchase via Cloudflare live</div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="check-dot"></div>
+          <div>
+            <div class="check-text">Mailbox provisioning walkthrough</div>
+            <div class="check-sub">GW vs M365 decision, alias setup, inbox naming convention</div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="check-dot"></div>
+          <div>
+            <div class="check-text">DNS records set live — SPF, DKIM, DMARC</div>
+            <div class="check-sub">Configured and validated on your domain in real time</div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="check-dot"></div>
+          <div>
+            <div class="check-text">Custom tracking domain setup + SSL verified</div>
+            <div class="check-sub">CNAME pointed to sequencer, tested before session ends</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 16px;">Hour 2 — Warmup & Sequencer Config</div>
+        <div class="check-item">
+          <div class="check-dot"></div>
+          <div>
+            <div class="check-text">Warmup protocol configured per inbox</div>
+            <div class="check-sub">5-week ramp: 2 → 5 → 10 → 25 → 40 sends per day</div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="check-dot"></div>
+          <div>
+            <div class="check-text">Sequencer connected + rotation enabled</div>
+            <div class="check-sub">Campaign settings, sending windows, time zone split</div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="check-dot"></div>
+          <div>
+            <div class="check-text">Deliverability monitoring live</div>
+            <div class="check-sub">Google Postmaster linked, GlockApps test run completed</div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="check-dot"></div>
+          <div>
+            <div class="check-text">Architecture roadmap document delivered</div>
+            <div class="check-sub">Tools, settings, volume thresholds, escalation rules</div>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="check-dot"></div>
+          <div>
+            <div class="check-text">Recorded call + written action plan same day</div>
+            <div class="check-sub">Loom recording + step-by-step written summary delivered</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      primaryColor: '#3b82f6',
+      primaryTextColor: '#e5e7eb',
+      primaryBorderColor: '#1e3a5f',
+      lineColor: '#3b82f6',
+      secondaryColor: '#111111',
+      tertiaryColor: '#0a0f1a',
+      background: '#111111',
+      mainBkg: '#0d1520',
+      nodeBorder: '#1e3a5f',
+      clusterBkg: '#0a0f1a',
+      titleColor: '#e5e7eb',
+      edgeLabelBackground: '#111111',
+      fontFamily: 'Inter, sans-serif'
+    }
+  });
+
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        e.target.querySelectorAll('.bar-fill[data-width]').forEach(bar => {
+          bar.style.width = bar.getAttribute('data-width') + '%';
+        });
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+</script>
+
+</body>
+</html>
