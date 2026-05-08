@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Agency Offer Playbook</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card: #111111;
+      --border: #1e1e1e;
+      --accent: #8b5cf6;
+      --accent-dim: rgba(139,92,246,0.12);
+      --accent-border: rgba(139,92,246,0.25);
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --text: #e5e7eb;
+      --muted: #6b7280;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', system-ui, sans-serif; }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #0a0a0a 0%, #0f0a1a 50%, #0a0a0f 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 52px 24px;
+      text-align: center;
+    }
+    .header-tag {
+      display: inline-block;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 18px;
+    }
+    .header h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 12px;
+      letter-spacing: -0.025em;
+    }
+    .header p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 560px;
+      margin: 0 auto 30px;
+      line-height: 1.65;
+    }
+    .header-pills {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .pill {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 5px 14px;
+      border-radius: 20px;
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 1100px; margin: 0 auto; padding: 52px 24px; }
+    .section { margin-bottom: 52px; }
+    .section-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+    .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+    @media (max-width: 768px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .header h1 { font-size: 1.7rem; }
+    }
+
+    /* ── Offer cards ── */
+    .offer-card {
+      background: var(--card);
+      border: 1px solid var(--accent-border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .offer-topbar {
+      background: linear-gradient(90deg, rgba(139,92,246,0.15) 0%, rgba(139,92,246,0.04) 100%);
+      border-bottom: 1px solid var(--accent-border);
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .offer-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .offer-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .offer-body { padding: 22px; }
+    .offer-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.65;
+      margin-bottom: 22px;
+      padding: 16px 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 8px;
+    }
+    .offer-anatomy {
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: 10px;
+    }
+    .anatomy-block {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .anatomy-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+    .anatomy-value {
+      font-size: 12px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .anatomy-value strong { color: var(--accent); }
+
+    /* ── Framework visual ── */
+    .formula-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 28px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .formula-block {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      border-radius: 8px;
+      padding: 14px 18px;
+      text-align: center;
+      min-width: 140px;
+    }
+    .formula-block .f-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .formula-block .f-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.4;
+    }
+    .formula-plus {
+      font-size: 18px;
+      color: var(--muted);
+      font-weight: 300;
+    }
+    .formula-block.green-block {
+      background: rgba(34,197,94,0.08);
+      border-color: rgba(34,197,94,0.2);
+    }
+    .formula-block.green-block .f-label { color: var(--green); }
+    .formula-block.amber-block {
+      background: rgba(245,158,11,0.08);
+      border-color: rgba(245,158,11,0.2);
+    }
+    .formula-block.amber-block .f-label { color: var(--amber); }
+
+    /* ── Risk reversal steps ── */
+    .rr-steps {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 0;
+      position: relative;
+    }
+    .rr-step {
+      padding: 22px 18px;
+      border-right: 1px solid var(--border);
+      position: relative;
+    }
+    .rr-step:last-child { border-right: none; }
+    .rr-step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    .rr-step-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .rr-step-desc { font-size: 12px; color: var(--muted); line-height: 1.55; }
+    @media (max-width: 768px) {
+      .rr-steps { grid-template-columns: 1fr; }
+      .rr-step { border-right: none; border-bottom: 1px solid var(--border); }
+      .rr-step:last-child { border-bottom: none; }
+    }
+
+    /* ── What's converting ── */
+    .offer-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .offer-row:last-child { border-bottom: none; }
+    .offer-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .offer-row-name { font-size: 14px; font-weight: 600; color: #fff; flex: 1; }
+    .offer-row-icp { font-size: 12px; color: var(--muted); flex: 1; }
+    .offer-row-signal { font-size: 12px; font-weight: 600; }
+
+    /* ── Table ── */
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 10px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody td {
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,0.015); }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .badge-green { background: rgba(34,197,94,0.12); color: var(--green); }
+    .badge-amber { background: rgba(245,158,11,0.12); color: var(--amber); }
+    .badge-red   { background: rgba(239,68,68,0.12);  color: var(--red); }
+    .badge-blue  { background: rgba(59,130,246,0.12); color: var(--blue); }
+    .badge-purple{ background: var(--accent-dim); color: var(--accent); }
+
+    /* ── Method stack ── */
+    .method-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .method-icon { font-size: 24px; margin-bottom: 10px; }
+    .method-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .method-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 10px; }
+
+    /* ── ICP matrix ── */
+    .icp-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .icp-topbar {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .icp-body { padding: 16px 18px; }
+    .icp-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 12px;
+    }
+    .icp-row:last-child { border-bottom: none; }
+    .icp-row-label { color: var(--muted); width: 90px; flex-shrink: 0; }
+    .icp-row-value { color: var(--text); }
+
+    /* ── Reveal ── */
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-tag">AI Agency · Offer Playbook · 2026</div>
+  <h1>AI Agency Offer Playbook</h1>
+  <p>Active offer stack for DFY AI automation, CRM builds, and cold email infrastructure — what's converting in the market right now, and the risk reversal framework behind every offer.</p>
+  <div class="header-pills">
+    <div class="pill">Voice AI</div>
+    <div class="pill">CRM Builds</div>
+    <div class="pill">Cold Email Infra</div>
+    <div class="pill">DFY Automation</div>
+    <div class="pill">Risk Reversal</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Offer Framework Formula -->
+  <div class="section reveal">
+    <div class="section-title">The Offer Framework</div>
+    <div class="formula-row">
+      <div class="formula-block">
+        <div class="f-label">Outcome (X)</div>
+        <div class="f-value">I will get you<br/>{specific result}</div>
+      </div>
+      <div class="formula-plus">+</div>
+      <div class="formula-block green-block">
+        <div class="f-label">Timeline (Y)</div>
+        <div class="f-value">In {48 hours}<br/>or stated window</div>
+      </div>
+      <div class="formula-plus">+</div>
+      <div class="formula-block amber-block">
+        <div class="f-label">Risk Reversal</div>
+        <div class="f-value">At no cost / only<br/>pay if you like it</div>
+      </div>
+      <div class="formula-plus">+</div>
+      <div class="formula-block">
+        <div class="f-label">Social Proof</div>
+        <div class="f-value">Used by / trusted<br/>by [credible ref]</div>
+      </div>
+    </div>
+    <div style="margin-top: 12px; padding: 14px 18px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 8px;">
+      <div style="font-size: 11px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600;">Why This Framework Converts</div>
+      <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+        <div style="font-size: 12px; color: var(--text);">✓ &nbsp;Removes all buying friction upfront</div>
+        <div style="font-size: 12px; color: var(--text);">✓ &nbsp;Demonstrates confidence in the product</div>
+        <div style="font-size: 12px; color: var(--text);">✓ &nbsp;Creates reciprocity before a sale is asked</div>
+        <div style="font-size: 12px; color: var(--text);">✓ &nbsp;Differentiates from every other vendor pitching</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Offer Library -->
+  <div class="section reveal">
+    <div class="section-title">Active Offer Library</div>
+    <div class="grid-2">
+
+      <div class="offer-card">
+        <div class="offer-topbar">
+          <div class="offer-num">1</div>
+          <div class="offer-label">CRM Build Offer</div>
+        </div>
+        <div class="offer-body">
+          <div class="offer-text">
+            "I will build you a world-class [industry] CRM that routes hot leads under minutes at no cost. I'll pay for it all myself, do all the work up-front, and only if you like it will I ask you to work with me. Just say yes and I'll send you a link within 48 hours."
+          </div>
+          <div class="offer-anatomy">
+            <div class="anatomy-block">
+              <div class="anatomy-label">Outcome (X)</div>
+              <div class="anatomy-value">World-class <strong>[industry]</strong> CRM that routes hot leads <strong>in minutes</strong></div>
+            </div>
+            <div class="anatomy-block">
+              <div class="anatomy-label">Timeline (Y)</div>
+              <div class="anatomy-value">Link delivered within <strong>48 hours</strong> of saying yes</div>
+            </div>
+            <div class="anatomy-block">
+              <div class="anatomy-label">Risk Reversal</div>
+              <div class="anatomy-value"><strong>At no cost.</strong> I pay for it. Work done upfront. Only ask to work together if they like it.</div>
+            </div>
+            <div class="anatomy-block">
+              <div class="anatomy-label">ICP Best Fit</div>
+              <div class="anatomy-value">Home service businesses, B2B agencies with inbound lead flow</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="offer-card">
+        <div class="offer-topbar">
+          <div class="offer-num">2</div>
+          <div class="offer-label">Proposal Generator Offer</div>
+        </div>
+        <div class="offer-body">
+          <div class="offer-text">
+            "I will build you the same high-converting proposal template generator that's used by multi-billion dollar portfolio agencies. I'll do all the work up-front, and only if you like it will I ask you to work with me. Just say yes and I'll send you yours within 48 hours."
+          </div>
+          <div class="offer-anatomy">
+            <div class="anatomy-block">
+              <div class="anatomy-label">Outcome (X)</div>
+              <div class="anatomy-value">High-converting <strong>proposal template generator</strong> — same system, enterprise grade</div>
+            </div>
+            <div class="anatomy-block">
+              <div class="anatomy-label">Timeline (Y)</div>
+              <div class="anatomy-value">Delivered within <strong>48 hours</strong> of a single yes</div>
+            </div>
+            <div class="anatomy-block">
+              <div class="anatomy-label">Social Proof Hook</div>
+              <div class="anatomy-value">Used by <strong>multi-billion dollar portfolio agencies</strong> — anchors perceived value instantly</div>
+            </div>
+            <div class="anatomy-block">
+              <div class="anatomy-label">ICP Best Fit</div>
+              <div class="anatomy-value">B2B agencies, consultants, service businesses closing deals over $5k</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Risk Reversal Framework -->
+  <div class="section reveal">
+    <div class="section-title">Risk Reversal Framework — How It Works</div>
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <div class="rr-steps">
+        <div class="rr-step">
+          <div class="rr-step-num">1</div>
+          <div class="rr-step-title">Make the Offer</div>
+          <div class="rr-step-desc">Lead with outcome + timeline. No pitch deck, no proposal, no call needed. One message, one ask: just say yes.</div>
+        </div>
+        <div class="rr-step">
+          <div class="rr-step-num">2</div>
+          <div class="rr-step-title">Do the Work First</div>
+          <div class="rr-step-desc">Build the CRM or asset upfront. You absorb the cost and time. They bear zero risk — which means zero friction to saying yes.</div>
+        </div>
+        <div class="rr-step">
+          <div class="rr-step-num">3</div>
+          <div class="rr-step-title">Deliver & Demonstrate</div>
+          <div class="rr-step-desc">Send the link within 48 hours. They see something real, working, built for them. Not a mockup — an actual deliverable.</div>
+        </div>
+        <div class="rr-step">
+          <div class="rr-step-num">4</div>
+          <div class="rr-step-title">Then Ask to Work Together</div>
+          <div class="rr-step-desc">Only after they've seen it. Now the conversation is: "do you want more of this?" — not "will you trust me?"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- What's Converting -->
+  <div class="section reveal">
+    <div class="section-title">What's Converting in the Market Right Now</div>
+    <div class="card">
+      <div class="offer-row">
+        <div class="offer-dot" style="background: var(--accent);"></div>
+        <div class="offer-row-name">Industry CRM Builds (GHL)</div>
+        <div class="offer-row-icp">Home service, B2B agencies, consultants</div>
+        <div class="offer-row-signal" style="color: var(--green);">🔥 High conversion</div>
+      </div>
+      <div class="offer-row">
+        <div class="offer-dot" style="background: var(--green);"></div>
+        <div class="offer-row-name">Voice AI Receptionist / Answering</div>
+        <div class="offer-row-icp">Home service, dental, legal, real estate</div>
+        <div class="offer-row-signal" style="color: var(--green);">🔥 High demand</div>
+      </div>
+      <div class="offer-row">
+        <div class="offer-dot" style="background: var(--amber);"></div>
+        <div class="offer-row-name">Cold Email Infrastructure Setup</div>
+        <div class="offer-row-icp">B2B agencies, outbound teams, founders</div>
+        <div class="offer-row-signal" style="color: var(--green);">🔥 High conversion</div>
+      </div>
+      <div class="offer-row">
+        <div class="offer-dot" style="background: var(--blue);"></div>
+        <div class="offer-row-name">Proposal / Sales Asset Generators</div>
+        <div class="offer-row-icp">Agencies, consultants, service sellers</div>
+        <div class="offer-row-signal" style="color: var(--amber);">↑ Growing</div>
+      </div>
+      <div class="offer-row">
+        <div class="offer-dot" style="background: var(--red);"></div>
+        <div class="offer-row-name">DFY Automation Systems (n8n / Make)</div>
+        <div class="offer-row-icp">Ops-heavy B2B, SaaS, agencies</div>
+        <div class="offer-row-signal" style="color: var(--amber);">↑ Growing</div>
+      </div>
+      <div class="offer-row">
+        <div class="offer-dot" style="background: var(--muted);"></div>
+        <div class="offer-row-name">AI Chatbot / Lead Qualification Bots</div>
+        <div class="offer-row-icp">E-commerce, coaching, service businesses</div>
+        <div class="offer-row-signal" style="color: var(--muted);">→ Saturating</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ICP Matrix -->
+  <div class="section reveal">
+    <div class="section-title">ICP Matrix — Offer to Audience Match</div>
+    <div class="grid-2">
+      <div class="icp-card">
+        <div class="icp-topbar">
+          <span style="font-size: 18px;">🏠</span> Home Service Businesses
+        </div>
+        <div class="icp-body">
+          <div class="icp-row">
+            <div class="icp-row-label">Best offers</div>
+            <div class="icp-row-value">CRM build (GHL), Voice AI receptionist, missed call text-back</div>
+          </div>
+          <div class="icp-row">
+            <div class="icp-row-label">Pain point</div>
+            <div class="icp-row-value">Leads calling after hours, no follow-up system, jobs slipping through</div>
+          </div>
+          <div class="icp-row">
+            <div class="icp-row-label">Hook that works</div>
+            <div class="icp-row-value">"Routes hot leads in minutes" — speed to lead is everything</div>
+          </div>
+          <div class="icp-row">
+            <div class="icp-row-label">Channels</div>
+            <div class="icp-row-value">Cold email, Facebook groups, LinkedIn, cold call</div>
+          </div>
+          <div class="icp-row">
+            <div class="icp-row-label">Close signal</div>
+            <div class="icp-row-value">They've already tried something, it didn't work</div>
+          </div>
+        </div>
+      </div>
+      <div class="icp-card">
+        <div class="icp-topbar">
+          <span style="font-size: 18px;">🏢</span> B2B Companies &amp; Agencies
+        </div>
+        <div class="icp-body">
+          <div class="icp-row">
+            <div class="icp-row-label">Best offers</div>
+            <div class="icp-row-value">Cold email infra, proposal generator, outbound system build, DFY automation</div>
+          </div>
+          <div class="icp-row">
+            <div class="icp-row-label">Pain point</div>
+            <div class="icp-row-value">Inconsistent pipeline, manual ops, slow proposal/sales process</div>
+          </div>
+          <div class="icp-row">
+            <div class="icp-row-label">Hook that works</div>
+            <div class="icp-row-value">Outcome specificity + social proof from comparable companies</div>
+          </div>
+          <div class="icp-row">
+            <div class="icp-row-label">Channels</div>
+            <div class="icp-row-value">Cold email (primary), LinkedIn DMs, Upwork, referral</div>
+          </div>
+          <div class="icp-row">
+            <div class="icp-row-label">Close signal</div>
+            <div class="icp-row-value">Actively hiring, recently funded, or posting about the problem</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Positioning Gaps & Opportunities -->
+  <div class="section reveal">
+    <div class="section-title">Positioning — What to Sharpen</div>
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <table>
+        <thead>
+          <tr>
+            <th>Offer Element</th>
+            <th>Current State</th>
+            <th>Sharpened Version</th>
+            <th>Impact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Outcome specificity</strong></td>
+            <td style="color: var(--muted);">Generic outcome claimed</td>
+            <td>[Industry]-specific, named result ("routes hot leads in minutes")</td>
+            <td><span class="badge badge-green">High</span></td>
+          </tr>
+          <tr>
+            <td><strong>Social proof anchor</strong></td>
+            <td style="color: var(--muted);">Omitted or vague</td>
+            <td>"Used by multi-billion dollar portfolio agencies" — aspirational ref</td>
+            <td><span class="badge badge-green">High</span></td>
+          </tr>
+          <tr>
+            <td><strong>Timeline</strong></td>
+            <td style="color: var(--muted);">Open-ended delivery</td>
+            <td>48-hour hard commitment — creates urgency, signals confidence</td>
+            <td><span class="badge badge-green">High</span></td>
+          </tr>
+          <tr>
+            <td><strong>Risk reversal</strong></td>
+            <td style="color: var(--muted);">Mentioned at close</td>
+            <td>Lead with it — "I'll do the work first" in sentence one</td>
+            <td><span class="badge badge-green">High</span></td>
+          </tr>
+          <tr>
+            <td><strong>Call to action</strong></td>
+            <td style="color: var(--muted);">"Book a call" or "reply for more info"</td>
+            <td>"Just say yes" — lowest possible friction CTA</td>
+            <td><span class="badge badge-amber">Medium</span></td>
+          </tr>
+          <tr>
+            <td><strong>Offer personalization</strong></td>
+            <td style="color: var(--muted);">Generic [industry] placeholder</td>
+            <td>Swap [industry] for their actual vertical in every send</td>
+            <td><span class="badge badge-amber">Medium</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Outbound Method Stack -->
+  <div class="section reveal">
+    <div class="section-title">Outbound Method Stack</div>
+    <div class="grid-4">
+      <div class="method-card">
+        <div class="method-icon">📧</div>
+        <div class="method-name">Cold Email</div>
+        <div class="method-desc">Primary volume driver. Instantly or Smartlead for rotation. Offer in subject line, risk reversal in sentence two.</div>
+        <span class="badge badge-green">Primary</span>
+      </div>
+      <div class="method-card">
+        <div class="method-icon">💼</div>
+        <div class="method-name">LinkedIn DMs</div>
+        <div class="method-desc">Signal-triggered outreach — hiring posts, tool mentions, company growth signals. Shorter, more direct offer delivery.</div>
+        <span class="badge badge-purple">Active</span>
+      </div>
+      <div class="method-card">
+        <div class="method-icon">🛠️</div>
+        <div class="method-name">Upwork</div>
+        <div class="method-desc">Inbound intent channel. Proposal mirrors the offer framework: outcome, timeline, risk reversal, done.</div>
+        <span class="badge badge-purple">Active</span>
+      </div>
+      <div class="method-card">
+        <div class="method-icon">🤝</div>
+        <div class="method-name">Community / Referral</div>
+        <div class="method-desc">Slack groups, Facebook groups, Discord. Show the build, let the work sell. Risk reversal makes sharing easy.</div>
+        <span class="badge badge-amber">Supplemental</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.08 });
+  reveals.forEach(r => observer.observe(r));
+</script>
+
+</body>
+</html>
